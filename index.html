@@ -421,14 +421,20 @@
                 <div class="row justify-content-center">
                     <div class="col-lg-10">
                         <div class="card p-4 shadow-sm mb-4 border-top border-danger border-3">
-                            <h5 class="fw-bold mb-3"><i class="bi bi-people-fill me-2 text-danger"></i>Manajemen Hak Akses Pengguna</h5>
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="fw-bold mb-0"><i class="bi bi-people-fill me-2 text-danger"></i>Manajemen Hak Akses Pengguna</h5>
+                                <button class="btn btn-danger btn-sm" onclick="openAddUserModal()">
+                                    <i class="bi bi-person-plus-fill me-1"></i> Tambah User Baru
+                                </button>
+                            </div>
                             <div class="table-responsive border rounded">
                                 <table class="table table-hover align-middle mb-0">
                                     <thead>
                                         <tr>
                                             <th>Username</th>
-                                            <th>Wilayah</th>
+                                            <th>Wilayah / Kategori</th>
                                             <th>Role</th>
+                                            <th class="text-center">Aksi</th>
                                         </tr>
                                     </thead>
                                     <tbody id="tabelUsersBody">
@@ -476,7 +482,7 @@
             { nama: "RIZKI PRASETIYO", nik: "16974797" }
         ];
 
-        let globalUsersCache = {
+        let globalUsersCache = JSON.parse(localStorage.getItem('nte_users_db')) || {
             "admin": { password: "admin123", role: "admin", kategori: "Pusat / All" },
             "superuser": { password: "super123", role: "superuser", kategori: "WH SO Blimbing" },
             "user": { password: "user123", role: "user", kategori: "Teknisi Lapangan" }
@@ -548,13 +554,12 @@
             document.getElementById('userBadgeName').innerText = currentUser.username;
             document.getElementById('userBadgeRole').innerText = currentUser.role.toUpperCase();
             
-            // Konfigurasi hak akses Admin & Superuser
             if (currentUser.role === 'admin' || currentUser.role === 'superuser') {
                 document.getElementById('adminAddCard').style.display = 'block';
                 document.getElementById('badgeAddRole').innerText = currentUser.role.toUpperCase() + ' GUDANG';
                 if(currentUser.role === 'admin') {
                     document.getElementById('navItemUsers').style.display = 'block';
-                    renderUsersTable(); // Render tabel manajemen user untuk admin
+                    renderUsersTable();
                 }
             }
             if (currentUser.role === 'user') { showView('statusView'); } else { showView('dashboardView'); }
@@ -565,13 +570,119 @@
             const tbody = document.getElementById('tabelUsersBody');
             tbody.innerHTML = '';
             for (const [username, details] of Object.entries(globalUsersCache)) {
+                let badgeRole = 'bg-secondary';
+                if(details.role === 'admin') badgeRole = 'bg-danger';
+                else if(details.role === 'superuser') badgeRole = 'bg-warning text-dark';
+                else badgeRole = 'bg-primary';
+
                 const tr = document.createElement('tr');
                 tr.innerHTML = 
                     '<td><strong>' + username + '</strong></td>' +
                     '<td>' + details.kategori + '</td>' +
-                    '<td><span class="badge bg-danger">' + details.role.toUpperCase() + '</span></td>';
+                    '<td><span class="badge ' + badgeRole + '">' + details.role.toUpperCase() + '</span></td>' +
+                    '<td class="text-center">' +
+                        '<button class="btn btn-sm btn-outline-primary me-1" onclick="editUser(\'' + username + '\')" title="Edit User"><i class="bi bi-pencil-square"></i></button>' +
+                        (username !== 'admin' ? '<button class="btn btn-sm btn-outline-danger" onclick="deleteUser(\'' + username + '\')" title="Hapus User"><i class="bi bi-trash"></i></button>' : '') +
+                    '</td>';
                 tbody.appendChild(tr);
             }
+        }
+
+        async function openAddUserModal() {
+            const { value: formValues } = await Swal.fire({
+                title: 'Tambah Pengguna Baru',
+                html:
+                    '<input id="swal-input-user" class="swal2-input" placeholder="Username">' +
+                    '<input id="swal-input-pass" type="password" class="swal2-input" placeholder="Password">' +
+                    '<input id="swal-input-kat" class="swal2-input" placeholder="Wilayah / Kategori">' +
+                    '<select id="swal-input-role" class="swal2-input">' +
+                        '<option value="admin">Admin</option>' +
+                        '<option value="superuser">Superuser</option>' +
+                        '<option value="user" selected>User (Teknisi)</option>' +
+                    '</select>',
+                focusConfirm: false,
+                showCancelButton: true,
+                confirmButtonText: 'Simpan',
+                cancelButtonText: 'Batal',
+                preConfirm: () => {
+                    return [
+                        document.getElementById('swal-input-user').value.trim(),
+                        document.getElementById('swal-input-pass').value.trim(),
+                        document.getElementById('swal-input-kat').value.trim(),
+                        document.getElementById('swal-input-role').value
+                    ]
+                }
+            });
+
+            if (formValues) {
+                const [username, password, kategori, role] = formValues;
+                if (!username || !password) {
+                    Swal.fire('Gagal', 'Username dan password wajib diisi!', 'error');
+                    return;
+                }
+                if (globalUsersCache[username]) {
+                    Swal.fire('Gagal', 'Username sudah terdaftar!', 'error');
+                    return;
+                }
+                globalUsersCache[username] = { password: password, role: role, kategori: kategori || 'Umum' };
+                localStorage.setItem('nte_users_db', JSON.stringify(globalUsersCache));
+                renderUsersTable();
+                Swal.fire('Berhasil', 'Pengguna baru berhasil ditambahkan.', 'success');
+            }
+        }
+
+        async function editUser(username) {
+            const user = globalUsersCache[username];
+            const { value: formValues } = await Swal.fire({
+                title: 'Edit Pengguna: ' + username,
+                html:
+                    '<input id="swal-input-pass" type="password" class="swal2-input" placeholder="Password Baru" value="' + user.password + '">' +
+                    '<input id="swal-input-kat" class="swal2-input" placeholder="Wilayah / Kategori" value="' + user.kategori + '">' +
+                    '<select id="swal-input-role" class="swal2-input">' +
+                        '<option value="admin" ' + (user.role === 'admin' ? 'selected' : '') + '>Admin</option>' +
+                        '<option value="superuser" ' + (user.role === 'superuser' ? 'selected' : '') + '>Superuser</option>' +
+                        '<option value="user" ' + (user.role === 'user' ? 'selected' : '') + '>User (Teknisi)</option>' +
+                    '</select>',
+                focusConfirm: false,
+                showCancelButton: true,
+                confirmButtonText: 'Perbarui',
+                cancelButtonText: 'Batal',
+                preConfirm: () => {
+                    return [
+                        document.getElementById('swal-input-pass').value.trim(),
+                        document.getElementById('swal-input-kat').value.trim(),
+                        document.getElementById('swal-input-role').value
+                    ]
+                }
+            });
+
+            if (formValues) {
+                const [password, kategori, role] = formValues;
+                globalUsersCache[username].password = password || user.password;
+                globalUsersCache[username].kategori = kategori;
+                globalUsersCache[username].role = role;
+                localStorage.setItem('nte_users_db', JSON.stringify(globalUsersCache));
+                renderUsersTable();
+                Swal.fire('Berhasil', 'Data pengguna berhasil diperbarui.', 'success');
+            }
+        }
+
+        function deleteUser(username) {
+            Swal.fire({
+                title: 'Hapus User?',
+                text: 'Anda yakin ingin menghapus user "' + username + '"?',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: 'Ya, Hapus',
+                cancelButtonText: 'Batal'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    delete globalUsersCache[username];
+                    localStorage.setItem('nte_users_db', JSON.stringify(globalUsersCache));
+                    renderUsersTable();
+                    Swal.fire('Terhapus!', 'Pengguna berhasil dihapus.', 'success');
+                }
+            });
         }
 
         function showView(viewId) {
