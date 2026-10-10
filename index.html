@@ -1,0 +1,863 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Manajemen NTE - WH SO BLIMBING</title>
+    <!-- Bootstrap 5.3 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Google Fonts: Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- SweetAlert2 -->
+    <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+
+    <style>
+        :root {
+            --primary-color: #dc3545;
+            --primary-dark: #b02a37;
+            --bg-color: #f4f6f9;
+            --card-bg: #ffffff;
+            --text-color: #2b2f33;
+            --border-color: #e2e8f0;
+            --table-hover: #f8f9fa;
+        }
+
+        [data-theme="dark"] {
+            --bg-color: #121824;
+            --card-bg: #1e293b;
+            --text-color: #f1f5f9;
+            --border-color: #334155;
+            --table-hover: #273548;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            min-height: 100vh;
+        }
+
+        .card {
+            background-color: var(--card-bg) !important;
+            border: 1px solid var(--border-color) !important;
+            color: var(--text-color) !important;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+        }
+
+        .navbar { background-color: #9b1c28 !important; border-bottom: 2px solid #75121c; padding: 0.75rem 1rem; }
+        .navbar-brand { font-weight: 700; color: #fff !important; }
+        .nav-link { font-weight: 500; border-radius: 4px; padding: 6px 14px !important; margin: 0 3px; color: rgba(255,255,255,0.9) !important; }
+        .nav-link:hover, .nav-link.active { background-color: rgba(255, 255, 255, 0.15) !important; color: #fff !important; font-weight: 600; }
+        
+        .stat-card { transition: transform 0.15s ease, box-shadow 0.15s ease; }
+        .stat-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+        .stat-icon { width: 42px; height: 42px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; }
+        
+        .table { font-size: 0.85rem; color: var(--text-color) !important; }
+        .table-hover tbody tr:hover { background-color: var(--table-hover) !important; color: var(--text-color); }
+        .table-responsive { max-height: 540px; overflow-y: auto; }
+        th { position: sticky; top: 0; background-color: #9b1c28 !important; color: white !important; z-index: 2; white-space: nowrap; font-weight: 600; font-size: 0.8rem; text-transform: uppercase; }
+        
+        .badge-status { font-weight: 600; padding: 4px 10px; border-radius: 4px; display: inline-block; font-size: 0.75rem; }
+        .login-card { max-width: 420px; margin: auto; border-radius: 8px; border-top: 4px solid var(--primary-color); }
+        .view-section { display: none; }
+        .view-section.active { display: block; }
+        .quick-sn-box { background: linear-gradient(135deg, #9b1c28, #dc3545); color: white; border-radius: 8px; }
+        
+        .form-control, .form-select { font-size: 0.95rem; border-color: var(--border-color); background-color: var(--card-bg); color: var(--text-color); border-radius: 6px; }
+        .form-label { font-size: 0.85rem; font-weight: 600; margin-bottom: 0.3rem; }
+        
+        [data-theme="dark"] .bg-light { background-color: #111827 !important; color: #f1f5f9 !important; }
+        [data-theme="dark"] .border { border-color: #334155 !important; }
+        [data-theme="dark"] .text-muted { color: #94a3b8 !important; }
+        [data-theme="dark"] .modal-content { background-color: #1e293b; color: #f1f5f9; border: 1px solid #334155; }
+    </style>
+</head>
+<body data-theme="light">
+
+    <!-- LOGIN SCREEN -->
+    <div id="loginScreen" class="container py-5" style="display: none;">
+        <div class="row justify-content-center pt-5">
+            <div class="col-md-5">
+                <div class="text-center mb-4">
+                    <div class="d-inline-flex p-3 bg-danger text-white rounded-2 shadow-sm mb-3">
+                        <i class="bi bi-shield-lock-fill fs-2"></i>
+                    </div>
+                    <h4 class="fw-bold mb-1">Portal Manajemen Logistik NTE</h4>
+                    <p class="text-muted small">Warehouse SO Blimbing — Telkom Akses</p>
+                </div>
+                <div class="card login-card shadow-sm p-4">
+                    <h6 class="fw-bold mb-3 text-secondary text-uppercase fs-7 text-center">Autentikasi Pengguna</h6>
+                    <form id="formLogin">
+                        <div class="mb-3">
+                            <label class="form-label">Username</label>
+                            <input type="text" id="loginUsername" class="form-control" placeholder="Masukkan username..." required>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Password</label>
+                            <input type="password" id="loginPassword" class="form-control" placeholder="••••••••" required>
+                        </div>
+                        <button type="submit" class="btn btn-danger w-100 py-2 fw-semibold">
+                            <i class="bi bi-box-arrow-in-right me-1"></i> Masuk Sistem
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN APP -->
+    <div id="mainApp" style="display: none;">
+        <nav class="navbar navbar-expand-lg navbar-dark shadow-sm sticky-top">
+            <div class="container-fluid px-lg-4">
+                <a class="navbar-brand d-flex align-items-center" href="#" onclick="showView('dashboardView')">
+                    <i class="bi bi-building-fill-gear me-2"></i><span id="navBrandText">WH SO BLIMBING</span>
+                </a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="navMenu">
+                    <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                        <li class="nav-item"><a class="nav-link active" id="nav-dashboard" href="#" onclick="showView('dashboardView')"><i class="bi bi-speedometer2 me-1"></i> Dashboard</a></li>
+                        <li class="nav-item"><a class="nav-link" id="nav-data" href="#" onclick="showView('dataView')"><i class="bi bi-table me-1"></i> Data Master NTE</a></li>
+                        <li class="nav-item"><a class="nav-link" id="nav-status" href="#" onclick="showView('statusView')"><i class="bi bi-arrow-left-right me-1"></i> Update Status</a></li>
+                        <li class="nav-item" id="navItemUsers" style="display: none;"><a class="nav-link" id="nav-users" href="#" onclick="showView('usersView')"><i class="bi bi-people me-1"></i> Manajemen User</a></li>
+                    </ul>
+                    <div class="d-flex align-items-center gap-2">
+                        <button type="button" class="btn btn-sm btn-outline-light px-2.5 py-1.5" onclick="toggleTheme()" title="Ganti Mode">
+                            <i id="navThemeIcon" class="bi bi-moon-fill"></i>
+                        </button>
+                        <div class="dropdown">
+                            <button class="btn btn-light btn-sm dropdown-toggle d-flex align-items-center gap-2 shadow-sm px-3 py-1.5" type="button" data-bs-toggle="dropdown">
+                                <i class="bi bi-person-badge fs-6 text-danger"></i>
+                                <span id="userBadgeName" class="fw-semibold">User</span>
+                                <span id="userBadgeRole" class="badge bg-danger">Role</span>
+                            </button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                                <li><a class="dropdown-item text-danger py-2" href="#" onclick="handleLogout()"><i class="bi bi-box-arrow-right me-2"></i> Keluar Sistem</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </nav>
+
+        <div class="container-fluid px-lg-4 py-4">
+            <!-- DASHBOARD -->
+            <div id="dashboardView" class="view-section active">
+                <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-2">
+                    <div>
+                        <h4 class="fw-bold mb-1">Dashboard Logistik NTE</h4>
+                        <p class="text-muted small mb-0">Rekapitulasi inventaris perangkat jaringan operasional lapangan</p>
+                    </div>
+                    <button class="btn btn-outline-secondary border shadow-sm btn-sm" onclick="loadData(true)">
+                        <i class="bi bi-arrow-clockwise me-1"></i> Sinkronisasi Data
+                    </button>
+                </div>
+
+                <div class="row g-3 mb-4">
+                    <div class="col-6 col-md-4 col-xl-2"><div class="card stat-card p-3 border-top border-danger border-3"><div class="d-flex justify-content-between align-items-center"><div><span class="text-muted small fw-semibold text-uppercase fs-8">TOTAL NTE</span><h3 class="fw-bold mb-0 text-danger" id="kpiTotalNTE">0</h3></div><div class="stat-icon bg-danger-subtle text-danger"><i class="bi bi-boxes"></i></div></div></div></div>
+                    <div class="col-6 col-md-4 col-xl-2"><div class="card stat-card p-3 border-top border-info border-3"><div class="d-flex justify-content-between align-items-center"><div><span class="text-muted small fw-semibold text-uppercase fs-8">TOTAL STB</span><h3 class="fw-bold mb-0 text-info" id="kpiTotalSTB">0</h3></div><div class="stat-icon bg-info-subtle text-info"><i class="bi bi-tv"></i></div></div></div></div>
+                    <div class="col-6 col-md-4 col-xl-2"><div class="card stat-card p-3 border-top border-secondary border-3"><div class="d-flex justify-content-between align-items-center"><div><span class="text-muted small fw-semibold text-uppercase fs-8">TOTAL MODEM</span><h3 class="fw-bold mb-0 text-secondary" id="kpiTotalModem">0</h3></div><div class="stat-icon bg-secondary-subtle text-secondary"><i class="bi bi-router"></i></div></div></div></div>
+                    <div class="col-6 col-md-4 col-xl-3"><div class="card stat-card p-3 border-top border-success border-3"><div class="d-flex justify-content-between align-items-center"><div><span class="text-muted small fw-semibold text-uppercase fs-8">STOCK</span><h3 class="fw-bold mb-0 text-success" id="kpiTotalStock">0</h3></div><div class="stat-icon bg-success-subtle text-success"><i class="bi bi-check-circle"></i></div></div></div></div>
+                    <div class="col-6 col-md-4 col-xl-3"><div class="card stat-card p-3 border-top border-warning border-3"><div class="d-flex justify-content-between align-items-center"><div><span class="text-muted small fw-semibold text-uppercase fs-8">INTECH</span><h3 class="fw-bold mb-0 text-warning" id="kpiTotalIntech">0</h3></div><div class="stat-icon bg-warning-subtle text-warning"><i class="bi bi-person-gear"></i></div></div></div></div>
+                </div>
+
+                <div class="row g-4">
+                    <div class="col-lg-5"><div class="card p-4 h-100"><h6 class="fw-bold mb-3 text-secondary text-uppercase fs-7">Distribusi Posisi Perangkat</h6><div style="height: 260px; position: relative;"><canvas id="chartStatusPie"></canvas></div></div></div>
+                    <div class="col-lg-7"><div class="card p-4 h-100"><h6 class="fw-bold mb-3 text-secondary text-uppercase fs-7">Komparasi Jenis Perangkat (STB vs Modem)</h6><div style="height: 260px; position: relative;"><canvas id="chartBarBreakdown"></canvas></div></div></div>
+                </div>
+            </div>
+
+            <!-- DATA MASTER NTE -->
+            <div id="dataView" class="view-section">
+                <div id="adminAddCard" class="card p-4 shadow-sm mb-4 border-top border-danger border-3" style="display: none;">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="fw-bold mb-0 text-danger"><i class="bi bi-plus-square me-2"></i>Entri Data Barang Baru</h5>
+                        <span class="badge bg-danger" id="badgeAddRole">Superuser Gudang</span>
+                    </div>
+                    <form id="formNTE">
+                        <div class="row g-3">
+                            <div class="col-md-2">
+                                <label class="form-label">Kategori Sheet</label>
+                                <select id="inputSheet" class="form-select" required>
+                                    <option value="TSEL">TSEL</option>
+                                    <option value="TIF">TIF</option>
+                                    <option value="TELKOM">TELKOM</option>
+                                    <option value="VULA">VULA</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Nama Barang</label>
+                                <input type="text" id="BARANG" class="form-control" placeholder="Contoh: ONT ZTE" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Serial Number (SN)</label>
+                                <input type="text" id="SN" class="form-control" placeholder="Nomor Serial" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">MAC Address</label>
+                                <input type="text" id="MAC" class="form-control" placeholder="AA:BB:CC:11:22:33">
+                            </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Type NTE</label>
+                                <input type="text" id="TYPE" class="form-control" placeholder="ZTE / HG680">
+                            </div>
+
+                            <div class="col-md-2">
+                                <label class="form-label">Status Posisi</label>
+                                <select id="STATUS_AWAL" class="form-select" onchange="toggleInitialStatusFields(this.value)">
+                                    <option value="STOCK">STOCK</option>
+                                    <option value="INTECH">INTECH</option>
+                                    <option value="INSTALLED">INSTALLED</option>
+                                    <option value="DISMANTLE">DISMANTLE</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2 initial-tech-field" style="display: none;">
+                                <label class="form-label">NIK Teknisi</label>
+                                <input type="text" id="NIK_AWAL" class="form-control" placeholder="NIK">
+                            </div>
+                            <div class="col-md-3 initial-tech-field" style="display: none;">
+                                <label class="form-label">Nama Teknisi</label>
+                                <input type="text" id="NAMA_AWAL" class="form-control" placeholder="Nama Teknisi">
+                            </div>
+                            <div class="col-md-2 initial-tech-field" style="display: none;">
+                                <label class="form-label">Mitra</label>
+                                <input type="text" id="MITRA_AWAL" class="form-control" placeholder="GMS / SJU dll">
+                            </div>
+                            <div class="col-md-3 initial-tech-field" style="display: none;">
+                                <label class="form-label">Pekerjaan</label>
+                                <select id="PEKERJAAN_AWAL" class="form-select">
+                                    <option value="PSB">PSB</option>
+                                    <option value="PDA">PDA</option>
+                                    <option value="ASSURANCE">ASSURANCE</option>
+                                    <option value="GARANSI PSB">GARANSI PSB</option>
+                                    <option value="MO">MO</option>
+                                    <option value="REPLACE">REPLACE</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2 initial-tech-field" style="display: none;">
+                                <label class="form-label">Nomor Tiket</label>
+                                <input type="text" id="TIKET_AWAL" class="form-control" placeholder="SCxxxx">
+                            </div>
+
+                            <div class="col-md-3 d-flex align-items-end">
+                                <button type="submit" class="btn btn-danger w-100" id="btnSimpan">
+                                    <i class="bi bi-save me-1"></i> Simpan Data
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+
+                <div class="card p-4 shadow-sm">
+                    <div class="row align-items-center mb-3 g-2">
+                        <div class="col-md-3">
+                            <label class="form-label">Filter Kategori Sheet:</label>
+                            <select id="pilihanSheet" class="form-select" onchange="handleSheetFilterChange()">
+                                <option value="ALL" selected>SEMUA KATEGORI (ALL)</option>
+                                <option value="TSEL">TSEL (Telkomsel)</option>
+                                <option value="TIF">TIF (IndiHome Fiber)</option>
+                                <option value="TELKOM">TELKOM (Reguler)</option>
+                                <option value="VULA">VULA (Partner)</option>
+                            </select>
+                        </div>
+                        <div class="col-md-5">
+                            <label class="form-label">Pencarian Universal:</label>
+                            <div class="input-group">
+                                <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                <input type="text" id="filterTableSearch" class="form-control" placeholder="Cari SN, Teknisi, Mitra, Pekerjaan, Tiket..." onkeyup="handleSearchChange()">
+                            </div>
+                        </div>
+                        <div class="col-md-4 text-md-end pt-md-4">
+                            <button class="btn btn-outline-danger btn-sm me-1" onclick="loadData(true)" id="btnRefresh">
+                                <i class="bi bi-arrow-repeat me-1"></i> Muat Ulang
+                            </button>
+                            <button class="btn btn-outline-secondary btn-sm" onclick="exportTableToCSV()">
+                                <i class="bi bi-download me-1"></i> Ekspor CSV
+                            </button>
+                        </div>
+                    </div>
+                    
+                    <div class="table-responsive border rounded mb-3">
+                        <table class="table table-hover align-middle mb-0" id="mainNteTable">
+                            <thead>
+                                <tr>
+                                    <th>No</th>
+                                    <th>Kategori</th>
+                                    <th>Tgl In</th>
+                                    <th>Barang</th>
+                                    <th>Serial Number (SN)</th>
+                                    <th>Type</th>
+                                    <th>Status Posisi</th>
+                                    <th>Teknisi</th>
+                                    <th>Mitra</th>
+                                    <th>Pekerjaan</th>
+                                    <th>Tiket</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tabelBody">
+                                <tr><td colspan="11" class="text-center py-4 text-muted">Memuat data dari peladen...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- KONTROL PAGINASI & JUMLAH BARIS -->
+                    <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="text-muted small" id="tableDataCount">Menampilkan: 0 data</span>
+                            <select id="selectPageSize" class="form-select form-select-sm" style="width: auto;" onchange="changePageSize(this.value)">
+                                <option value="25">25 per hal</option>
+                                <option value="50" selected>50 per hal</option>
+                                <option value="100">100 per hal</option>
+                                <option value="250">250 per hal</option>
+                                <option value="1000">1000 per hal</option>
+                            </select>
+                        </div>
+                        <nav><ul class="pagination pagination-sm mb-0" id="paginationControls"></ul></nav>
+                    </div>
+                </div>
+            </div>
+
+            <!-- UPDATE STATUS -->
+            <div id="statusView" class="view-section">
+                <div class="row justify-content-center">
+                    <div class="col-lg-8">
+                        <div class="card quick-sn-box p-4 shadow-sm mb-4">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="bg-white text-danger p-3 rounded-2 shadow-sm"><i class="bi bi-arrow-left-right fs-3"></i></div>
+                                <div><h5 class="fw-bold mb-1">Form Pembaruan Status & Mutasi</h5><p class="mb-0 opacity-75 small">Perbarui posisi perangkat lengkap dengan data teknisi, mitra, pekerjaan, dan tiket.</p></div>
+                            </div>
+                        </div>
+
+                        <div class="card p-4 shadow-sm mb-4">
+                            <h6 class="fw-bold mb-3 text-secondary text-uppercase fs-7"><i class="bi bi-1-circle-fill text-danger me-2"></i>Pindai / Masukkan Serial Number (SN)</h6>
+                            <form id="formCariSN" onsubmit="handleCariSN(event)">
+                                <div class="row g-2 align-items-center">
+                                    <div class="col-md-9">
+                                        <div class="input-group">
+                                            <span class="input-group-text"><i class="bi bi-upc-scan"></i></span>
+                                            <input type="text" id="inputCariSN" class="form-control" placeholder="Masukkan Nomor Serial perangkat..." required autofocus>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <button type="submit" class="btn btn-danger w-100" id="btnCariSN"><i class="bi bi-search me-1"></i> Cari Data</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                        <div id="boxDetailUpdate" class="card p-4 shadow-sm mb-4 border-top border-danger border-3" style="display: none;">
+                            <h6 class="fw-bold mb-3 text-secondary text-uppercase fs-7"><i class="bi bi-2-circle-fill text-danger me-2"></i>Konfirmasi Perubahan Status & Detail Lapangan</h6>
+                            <div class="p-3 bg-light rounded-2 border mb-4">
+                                <div class="row g-2">
+                                    <div class="col-sm-6"><span class="text-muted small">Kategori Sheet:</span><h6 class="fw-bold mb-2 text-danger" id="infoKategori">-</h6></div>
+                                    <div class="col-sm-6"><span class="text-muted small">Serial Number (SN):</span><h6 class="fw-bold mb-2" id="infoSN">-</h6></div>
+                                    <div class="col-sm-6"><span class="text-muted small">Barang & Tipe:</span><div class="fw-semibold" id="infoBarangType">-</div></div>
+                                    <div class="col-sm-6"><span class="text-muted small">Status Posisi Saat Ini:</span><div id="infoStatusBadge">-</div></div>
+                                </div>
+                            </div>
+
+                            <form id="formUpdateStatus" onsubmit="handleSimpanStatus(event)">
+                                <div class="mb-3">
+                                    <label class="form-label">Pilih Status / Posisi Baru:</label>
+                                    <select id="updateStatusSelect" class="form-select" onchange="toggleUpdateStatusFields(this.value)" required>
+                                        <option value="STOCK">STOCK</option>
+                                        <option value="INTECH">INTECH</option>
+                                        <option value="INSTALLED">INSTALLED</option>
+                                        <option value="DISMANTLE">DISMANTLE</option>
+                                    </select>
+                                </div>
+
+                                <div id="fieldsTeknisiUpdate" class="p-3 bg-warning-subtle rounded-2 border border-warning mb-4">
+                                    <h6 class="fw-bold text-dark mb-2 fs-7 text-uppercase"><i class="bi bi-person-vcard me-1"></i> Detail Identitas & Lapangan</h6>
+                                    <div class="row g-3">
+                                        <div class="col-md-4">
+                                            <label class="form-label text-dark">NIK Teknisi</label>
+                                            <input type="text" id="updateNIK" class="form-control" placeholder="NIK">
+                                        </div>
+                                        <div class="col-md-8">
+                                            <label class="form-label text-dark">Nama Teknisi</label>
+                                            <input type="text" id="updateNama" class="form-control" placeholder="Nama Lengkap">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label text-dark">Mitra</label>
+                                            <input type="text" id="updateMitra" class="form-control" placeholder="GMS / SJU dll">
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label text-dark">Pekerjaan</label>
+                                            <select id="updatePekerjaan" class="form-select">
+                                                <option value="PSB">PSB</option>
+                                                <option value="PDA">PDA</option>
+                                                <option value="ASSURANCE">ASSURANCE</option>
+                                                <option value="GARANSI PSB">GARANSI PSB</option>
+                                                <option value="MO">MO</option>
+                                                <option value="REPLACE">REPLACE</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <label class="form-label text-dark">Nomor Tiket</label>
+                                            <input type="text" id="updateTiket" class="form-control" placeholder="SCxxxx">
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="d-flex justify-content-end gap-2">
+                                    <button type="button" class="btn btn-outline-secondary px-3" onclick="batalUpdate()">Batal</button>
+                                    <button type="submit" class="btn btn-danger px-4" id="btnSimpanStatus"><i class="bi bi-check-lg me-1"></i> Simpan Perubahan</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- MANAJEMEN USER -->
+            <div id="usersView" class="view-section">
+                <div class="row justify-content-center">
+                    <div class="col-lg-10">
+                        <div class="card p-4 shadow-sm mb-4 border-top border-danger border-3">
+                            <h5 class="fw-bold mb-3"><i class="bi bi-people-fill me-2 text-danger"></i>Manajemen Hak Akses Pengguna</h5>
+                            <div class="table-responsive border rounded">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead><tr><th>Username</th><th>Wilayah</th><th>Role</th></tr></thead>
+                                    <tbody id="tabelUsersBody"></tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxP_5ZwzlXUU7UZ85LfVmb1yyYa0BmVogz3LXDtiUqxzk7MTTfoNEL2BtpU4EqpYR0ywQ/exec';
+        const SPREADSHEET_ID = '1_2fB-ktpA4L7iuQs8ZKPmQk3ic377rMEsnEZdxRUXJ4';
+        
+        const SHEET_GIDS = {
+            "TSEL": "1648472526",
+            "TIF": "1615373967",
+            "TELKOM": "1973685623",
+            "VULA": "491664178"
+        };
+
+        const TEKNISI_MASTER_DB = [
+            { nama: "EMERALDO PRIM", nik: "16963673" }, { nama: "KOIRUL ADI", nik: "16940763" },
+            { nama: "MULYADI", nik: "TAW5MLG_046" }, { nama: "DIO", nik: "16992591" },
+            { nama: "ANAS", nik: "16981757" }, { nama: "ERWIN RAHMADANI", nik: "16002218" },
+            { nama: "DIMAS FIRMANSYAH", nik: "16951656" }, { nama: "M SUEB", nik: "16830665" },
+            { nama: "MUHAMMAD SHOLEH IRFANTO", nik: "16982456" }, { nama: "ANDUK SLAMET HARIYONO", nik: "15889049" },
+            { nama: "IRVAN ANDI", nik: "16943172" }, { nama: "KOIRUL ANGGAR", nik: "16920456" },
+            { nama: "ROEDI", nik: "15885128" }, { nama: "ALRIZA DIOUF", nik: "16220024" },
+            { nama: "AFIF AFFANDI", nik: "16004542" }, { nama: "SONY HARYANTO", nik: "16650052" },
+            { nama: "AGUS SETIAWAN", nik: "16790219" }, { nama: "AHMAD MUSYAFA", nik: "16983579" },
+            { nama: "JOKO PURNOMO", nik: "15892755" }, { nama: "AHMAD JOHAN FUALDI", nik: "16013901" },
+            { nama: "DHEVID WIDHI ANDIKA", nik: "16974527" }, { nama: "EDI SUDRAJAT", nik: "16995159" },
+            { nama: "AGUNG FIRMANSYAH", nik: "16995426" }, { nama: "MUHAMMAD ARIS NUR", nik: "16010921" },
+            { nama: "NGATEMAN", nik: "16740232" }, { nama: "ALE SANDRO FIRDA RAHMAN", nik: "16031033" },
+            { nama: "HARIANTO", nik: "16710111" }, { nama: "ABDI SUROTO", nik: "15896842" },
+            { nama: "ROMLI", nik: "16640053" }, { nama: "AHMAD KHOIRUL HUDA", nik: "16061134" },
+            { nama: "RIZKI PRASETIYO", nik: "16974797" }
+        ];
+
+        let globalUsersCache = {
+            "admin": { password: "admin123", role: "admin", kategori: "Pusat / All" },
+            "superuser": { password: "super123", role: "superuser", kategori: "WH SO Blimbing" },
+            "user": { password: "user123", role: "user", kategori: "Teknisi Lapangan" }
+        };
+
+        let currentUser = null; 
+        let allNormalizedData = []; 
+        let filteredData = []; 
+        let currentPage = 1;
+        let pageSize = 50;
+        let chartPieInstance = null;
+        let chartBarInstance = null;
+        let activeFoundItem = null;
+
+        function initTheme() {
+            const savedTheme = localStorage.getItem('nte_theme') || 'light';
+            document.body.setAttribute('data-theme', savedTheme);
+        }
+
+        function toggleTheme() {
+            const currentTheme = document.body.getAttribute('data-theme');
+            const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
+            document.body.setAttribute('data-theme', newTheme);
+            localStorage.setItem('nte_theme', newTheme);
+        }
+
+        function checkAuth() {
+            initTheme();
+            const savedUser = localStorage.getItem('nte_session_user');
+            if (savedUser) {
+                try { currentUser = JSON.parse(savedUser); initAppUI(); } catch (e) { showLogin(); }
+            } else { showLogin(); }
+        }
+
+        function showLogin() {
+            document.getElementById('loginScreen').style.display = 'block';
+            document.getElementById('mainApp').style.display = 'none';
+        }
+
+        document.getElementById('formLogin').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const u = document.getElementById('loginUsername').value.trim();
+            const p = document.getElementById('loginPassword').value.trim();
+            if (globalUsersCache[u] && globalUsersCache[u].password === p) {
+                currentUser = { username: u, role: globalUsersCache[u].role, kategori: globalUsersCache[u].kategori };
+                localStorage.setItem('nte_session_user', JSON.stringify(currentUser));
+                initAppUI();
+            } else {
+                Swal.fire({ icon: 'error', title: 'Akses Ditolak', text: 'Periksa kembali username atau password Anda.' });
+            }
+        });
+
+        function handleLogout() { localStorage.removeItem('nte_session_user'); currentUser = null; showLogin(); }
+
+        function initAppUI() {
+            document.getElementById('loginScreen').style.display = 'none';
+            document.getElementById('mainApp').style.display = 'block';
+            document.getElementById('userBadgeName').innerText = currentUser.username;
+            document.getElementById('userBadgeRole').innerText = currentUser.role.toUpperCase();
+            
+            if (currentUser.role === 'admin' || currentUser.role === 'superuser') {
+                document.getElementById('adminAddCard').style.display = 'block';
+                if(currentUser.role === 'admin') document.getElementById('navItemUsers').style.display = 'block';
+            }
+            if (currentUser.role === 'user') { showView('statusView'); } else { showView('dashboardView'); }
+            loadData();
+        }
+
+        function showView(viewId) {
+            document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.navbar-nav .nav-link').forEach(el => el.classList.remove('active'));
+            document.getElementById(viewId).classList.add('active');
+            if (viewId === 'dashboardView') document.getElementById('nav-dashboard').classList.add('active');
+            else if (viewId === 'dataView') document.getElementById('nav-data').classList.add('active');
+            else if (viewId === 'statusView') {
+                document.getElementById('nav-status').classList.add('active');
+                setTimeout(() => document.getElementById('inputCariSN').focus(), 200);
+            }
+        }
+
+        function parseGVizTable(sheetName, jsonData) {
+            if(!jsonData || !jsonData.table || !jsonData.table.rows) return [];
+            const rows = jsonData.table.rows;
+            const headers = jsonData.table.cols.map(c => c && c.label ? c.label.toUpperCase().trim() : '');
+            
+            const findCol = (keywords, fallbackIdx) => {
+                let found = headers.findIndex(h => keywords.some(k => h.includes(k)));
+                return found !== -1 ? found : fallbackIdx;
+            };
+
+            const idxSN = findCol(['SN', 'SERIAL NUMBER'], 5);
+            const idxBarang = findCol(['BARANG', 'PERANGKAT'], 4);
+            const idxTglIn = findCol(['TGL', 'TANGGAL'], 2);
+            const idxType = findCol(['TYPE', 'TIPE'], 6);
+            const idxPosisi = findCol(['POSISI', 'STATUS PARADISE', 'STATUS'], 17);
+            const idxNik = findCol(['NIK'], 10);
+            const idxNama = findCol(['NAMA TEKNISI', 'NAMA'], 11);
+            const idxMitra = findCol(['MITRA'], 12);
+            const idxPekerjaan = findCol(['PEKERJAAN'], 13);
+            const idxTiket = findCol(['TIKET'], 14);
+
+            let result = [];
+            rows.forEach(row => {
+                const c = row.c;
+                if (!c) return;
+                const getVal = (idx) => (idx !== -1 && c[idx] && c[idx].v !== null) ? String(c[idx].v).trim() : '';
+                const getFormattedVal = (idx) => (idx !== -1 && c[idx] && c[idx].f !== null) ? String(c[idx].f).trim() : getVal(idx);
+
+                const sn = getVal(idxSN);
+                const barang = getVal(idxBarang);
+                if (!sn && !barang) return;
+
+                let posisiVal = getVal(idxPosisi) || getVal(18) || getVal(17) || 'STOCK';
+
+                result.push({
+                    sheet: sheetName,
+                    sn: sn || '-',
+                    barang: barang || '-',
+                    tglIn: getFormattedVal(idxTglIn) || '-',
+                    type: getVal(idxType) || '-',
+                    posisi: posisiVal.toUpperCase(),
+                    nik: getVal(idxNik) || '-',
+                    nama: getVal(idxNama) || '-',
+                    mitra: getVal(idxMitra) || '-',
+                    pekerjaan: getVal(idxPekerjaan) || '-',
+                    tiket: getVal(idxTiket) || '-'
+                });
+            });
+            return result;
+        }
+
+        async function loadData(isRefresh = false) {
+            const tbody = document.getElementById('tabelBody');
+            tbody.innerHTML = '<tr><td colspan="11" class="text-center py-4">Sinkronisasi database...</td></tr>';
+            try {
+                let allData = [];
+                for (const name of Object.keys(SHEET_GIDS)) {
+                    const url = `https://docs.google.com/spreadsheets/d/${SPREADSHEET_ID}/gviz/tq?tqx=out:json&gid=${SHEET_GIDS[name]}`;
+                    const response = await fetch(url);
+                    const text = await response.text();
+                    const jsonStr = text.substring(text.indexOf('{'), text.lastIndexOf('}') + 1);
+                    allData = allData.concat(parseGVizTable(name, JSON.parse(jsonStr)));
+                }
+                allNormalizedData = allData;
+                applyFilters();
+                updateDashboardStats();
+                if (isRefresh) Swal.fire({ icon: 'success', title: 'Data Diperbarui', timer: 800, showConfirmButton: false });
+            } catch (error) {
+                tbody.innerHTML = '<tr><td colspan="11" class="text-center text-danger py-4">Gagal memuat data peladen.</td></tr>';
+            }
+        }
+
+        document.addEventListener('input', function (e) {
+            if (e.target.id === 'updateNIK' || e.target.id === 'NIK_AWAL') {
+                const found = TEKNISI_MASTER_DB.find(t => t.nik.toLowerCase() === e.target.value.trim().toLowerCase());
+                if (found) {
+                    if (e.target.id === 'updateNIK') document.getElementById('updateNama').value = found.nama;
+                    else document.getElementById('NAMA_AWAL').value = found.nama;
+                }
+            }
+        });
+
+        function applyFilters() {
+            const sheetFilter = document.getElementById('pilihanSheet').value;
+            const q = document.getElementById('filterTableSearch').value.toLowerCase().trim();
+            filteredData = allNormalizedData.filter(item => {
+                let matchSheet = sheetFilter === 'ALL' || item.sheet === sheetFilter;
+                let matchSearch = q === '' || Object.values(item).some(val => String(val).toLowerCase().includes(q));
+                return matchSheet && matchSearch;
+            });
+            currentPage = 1;
+            renderTablePage();
+        }
+
+        function handleSheetFilterChange() { applyFilters(); }
+        function handleSearchChange() { applyFilters(); }
+        function changePageSize(newSize) { pageSize = parseInt(newSize, 10) || 50; currentPage = 1; renderTablePage(); }
+
+        function renderTablePage() {
+            const tbody = document.getElementById('tabelBody');
+            tbody.innerHTML = '';
+            const total = filteredData.length;
+            if (total === 0) {
+                tbody.innerHTML = '<tr><td colspan="11" class="text-center py-4 text-muted">Tidak ada data ditemukan.</td></tr>';
+                document.getElementById('tableDataCount').innerText = 'Menampilkan: 0 data';
+                document.getElementById('paginationControls').innerHTML = '';
+                return;
+            }
+
+            const totalPages = Math.ceil(total / pageSize);
+            if (currentPage > totalPages) currentPage = totalPages;
+            if (currentPage < 1) currentPage = 1;
+
+            const startIndex = (currentPage - 1) * pageSize;
+            const endIndex = Math.min(startIndex + pageSize, total);
+            const pageItems = filteredData.slice(startIndex, endIndex);
+
+            document.getElementById('tableDataCount').innerText = `Menampilkan: ${startIndex + 1} - ${endIndex} dari ${total.toLocaleString('id-ID')} data`;
+
+            let no = startIndex + 1;
+            pageItems.forEach(item => {
+                let pos = item.posisi.toUpperCase();
+                let badgeClass = 'bg-secondary';
+                if (pos === 'STOCK') badgeClass = 'bg-success';
+                else if (pos === 'INTECH') badgeClass = 'bg-warning text-dark';
+                else if (pos === 'INSTALLED') badgeClass = 'bg-primary';
+                else if (pos === 'DISMANTLE') badgeClass = 'bg-dark';
+
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td>${no++}</td>
+                    <td><span class="badge bg-secondary">${item.sheet}</span></td>
+                    <td>${item.tglIn}</td>
+                    <td><strong>${item.barang}</strong></td>
+                    <td><code>${item.sn}</code></td>
+                    <td>${item.type}</td>
+                    <td><span class="badge-status ${badgeClass}">${item.posisi}</span></td>
+                    <td>${item.nama !== '-' ? `\${item.nama} <br><small class="text-muted">\${item.nik}</small>` : '-'}</td>
+                    <td>${item.mitra}</td>
+                    <td><span class="badge bg-light text-dark border">${item.pekerjaan}</span></td>
+                    <td><code>${item.tiket}</code></td>
+                `;
+                tbody.appendChild(tr);
+            });
+            renderPaginationButtons(totalPages);
+        }
+
+        function renderPaginationButtons(totalPages) {
+            const ul = document.getElementById('paginationControls');
+            ul.innerHTML = '';
+            if (totalPages <= 1) return;
+
+            const liPrev = document.createElement('li');
+            liPrev.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+            liPrev.innerHTML = `<a class="page-link">&laquo;</a>`;
+            liPrev.onclick = () => { if (currentPage > 1) { currentPage--; renderTablePage(); } };
+            ul.appendChild(liPrev);
+
+            const liInfo = document.createElement('li');
+            liInfo.className = 'page-item active';
+            liInfo.innerHTML = `<a class="page-link">${currentPage} / ${totalPages}</a>`;
+            ul.appendChild(liInfo);
+
+            const liNext = document.createElement('li');
+            liNext.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
+            liNext.innerHTML = `<a class="page-link">&raquo;</a>`;
+            liNext.onclick = () => { if (currentPage < totalPages) { currentPage++; renderTablePage(); } };
+            ul.appendChild(liNext);
+        }
+
+        function updateDashboardStats() {
+            let totalSTB = 0, totalModem = 0, totalStock = 0, totalIntech = 0;
+            allNormalizedData.forEach(item => {
+                const b = item.barang.toUpperCase();
+                const p = item.posisi.toUpperCase();
+                if (b.includes('STB')) totalSTB++; else totalModem++;
+                if (p.includes('STOCK')) totalStock++;
+                if (p.includes('INTECH')) totalIntech++;
+            });
+            document.getElementById('kpiTotalNTE').innerText = allNormalizedData.length.toLocaleString('id-ID');
+            document.getElementById('kpiTotalSTB').innerText = totalSTB.toLocaleString('id-ID');
+            document.getElementById('kpiTotalModem').innerText = totalModem.toLocaleString('id-ID');
+            document.getElementById('kpiTotalStock').innerText = totalStock.toLocaleString('id-ID');
+            document.getElementById('kpiTotalIntech').innerText = totalIntech.toLocaleString('id-ID');
+            renderCharts(allNormalizedData, totalSTB, totalModem);
+        }
+
+        function renderCharts(dataList, stb, modem) {
+            let statusCounts = {};
+            dataList.forEach(item => {
+                let st = item.posisi || 'STOCK';
+                statusCounts[st] = (statusCounts[st] || 0) + 1;
+            });
+
+            const ctxPie = document.getElementById('chartStatusPie').getContext('2d');
+            if (chartPieInstance) chartPieInstance.destroy();
+            chartPieInstance = new Chart(ctxPie, {
+                type: 'doughnut',
+                data: { labels: Object.keys(statusCounts), datasets: [{ data: Object.values(statusCounts), backgroundColor: ['#198754', '#ffc107', '#0d6efd', '#212529'] }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+            });
+
+            const ctxBar = document.getElementById('chartBarBreakdown').getContext('2d');
+            if (chartBarInstance) chartBarInstance.destroy();
+            chartBarInstance = new Chart(ctxBar, {
+                type: 'bar',
+                data: { labels: ['TOTAL'], datasets: [{ label: 'STB', data: [stb], backgroundColor: '#0dcaf0' }, { label: 'Modem', data: [modem], backgroundColor: '#6c757d' }] },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
+            });
+        }
+
+        function toggleInitialStatusFields(val) {
+            document.querySelectorAll('.initial-tech-field').forEach(f => f.style.display = val !== 'STOCK' ? 'block' : 'none');
+        }
+
+        document.getElementById('formNTE').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btnSimpan');
+            btn.disabled = true;
+            fetch(SCRIPT_URL, {
+                method: 'POST', mode: 'no-cors',
+                body: JSON.stringify({
+                    action: 'create', sheetName: document.getElementById('inputSheet').value,
+                    "BARANG": document.getElementById('BARANG').value.trim(),
+                    "SN": document.getElementById('SN').value.trim(),
+                    "MAC": document.getElementById('MAC').value.trim(),
+                    "TYPE": document.getElementById('TYPE').value.trim(),
+                    "POSISI": document.getElementById('STATUS_AWAL').value,
+                    "NIK": document.getElementById('NIK_AWAL').value.trim(),
+                    "NAMA": document.getElementById('NAMA_AWAL').value.trim(),
+                    "MITRA": document.getElementById('MITRA_AWAL').value.trim(),
+                    "PEKERJAAN": document.getElementById('PEKERJAAN_AWAL').value,
+                    "TIKET": document.getElementById('TIKET_AWAL').value.trim()
+                })
+            }).then(() => {
+                Swal.fire('Berhasil', 'Data berhasil ditambahkan.', 'success');
+                document.getElementById('formNTE').reset();
+                setTimeout(() => loadData(), 2000);
+            }).finally(() => btn.disabled = false);
+        });
+
+        function handleCariSN(e) {
+            e.preventDefault();
+            const sn = document.getElementById('inputCariSN').value.trim();
+            const found = allNormalizedData.find(i => i.sn.toUpperCase() === sn.toUpperCase());
+            if (found) {
+                activeFoundItem = found;
+                document.getElementById('boxDetailUpdate').style.display = 'block';
+                document.getElementById('infoKategori').innerText = found.sheet;
+                document.getElementById('infoSN').innerText = found.sn;
+                document.getElementById('infoBarangType').innerText = `${found.barang} (${found.type})`;
+                
+                let badgeClass = 'bg-secondary';
+                let pos = found.posisi.toUpperCase();
+                if (pos === 'STOCK') badgeClass = 'bg-success';
+                else if (pos === 'INTECH') badgeClass = 'bg-warning text-dark';
+                else if (pos === 'INSTALLED') badgeClass = 'bg-primary';
+                else if (pos === 'DISMANTLE') badgeClass = 'bg-dark';
+
+                document.getElementById('infoStatusBadge').innerHTML = `<span class="badge-status ${badgeClass}">${found.posisi}</span>`;
+
+                document.getElementById('updateStatusSelect').value = found.posisi || 'STOCK';
+                document.getElementById('updateNIK').value = found.nik !== '-' ? found.nik : '';
+                document.getElementById('updateNama').value = found.nama !== '-' ? found.nama : '';
+                document.getElementById('updateMitra').value = found.mitra !== '-' ? found.mitra : '';
+                document.getElementById('updatePekerjaan').value = found.pekerjaan !== '-' ? found.pekerjaan : 'PSB';
+                document.getElementById('updateTiket').value = found.tiket !== '-' ? found.tiket : '';
+                document.getElementById('boxDetailUpdate').scrollIntoView({ behavior: 'smooth' });
+            } else {
+                Swal.fire('Tidak Ditemukan', `SN "${sn}" tidak terdaftar.`, 'warning');
+            }
+        }
+
+        function batalUpdate() { document.getElementById('boxDetailUpdate').style.display = 'none'; activeFoundItem = null; }
+
+        function handleSimpanStatus(e) {
+            e.preventDefault();
+            if (!activeFoundItem) return;
+            const newStatus = document.getElementById('updateStatusSelect').value;
+            
+            Swal.fire({ title: 'Menyimpan...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+            fetch(SCRIPT_URL, {
+                method: 'POST', mode: 'no-cors',
+                body: JSON.stringify({
+                    action: 'update_status', sheetName: activeFoundItem.sheet, sn: activeFoundItem.sn,
+                    status: newStatus,
+                    nik: newStatus === 'STOCK' ? '' : document.getElementById('updateNIK').value.trim(),
+                    nama: newStatus === 'STOCK' ? '' : document.getElementById('updateNama').value.trim(),
+                    mitra: newStatus === 'STOCK' ? '' : document.getElementById('updateMitra').value.trim(),
+                    pekerjaan: newStatus === 'STOCK' ? '' : document.getElementById('updatePekerjaan').value,
+                    tiket: newStatus === 'STOCK' ? '' : document.getElementById('updateTiket').value.trim()
+                })
+            }).then(() => {
+                Swal.fire('Berhasil', 'Status & detail lapangan diperbarui.', 'success');
+                batalUpdate();
+                setTimeout(() => loadData(), 2000);
+            });
+        }
+
+        function exportTableToCSV() {
+            if (filteredData.length === 0) return Swal.fire('Info', 'Tidak ada data.', 'info');
+            let csv = "No,Kategori,Tgl In,Barang,SN,Type,Posisi,Nama Teknisi,Mitra,Pekerjaan,Tiket\n";
+            filteredData.forEach((r, idx) => { csv += `"${idx+1}","${r.sheet}","${r.tglIn}","${r.barang}","${r.sn}","${r.type}","${r.posisi}","${r.nama}","${r.mitra}","${r.pekerjaan}","${r.tiket}"\n`; });
+            const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
+            a.download = `NTE_Report.csv`; a.click();
+        }
+
+        window.addEventListener('DOMContentLoaded', () => { checkAuth(); });
+    </script>
+</body>
+</html>
