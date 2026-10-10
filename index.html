@@ -48,16 +48,11 @@
             color: var(--text-color) !important;
             border-radius: 8px;
             box-shadow: 0 1px 3px rgba(0,0,0,0.04);
-            transition: background-color 0.3s ease, border-color 0.3s ease;
         }
 
-        .bg-primary { background-color: var(--primary-color) !important; }
-        .btn-primary { background-color: var(--primary-color) !important; border-color: var(--primary-color) !important; font-weight: 500; }
-        .btn-primary:hover { background-color: var(--primary-dark) !important; border-color: var(--primary-dark) !important; }
-        
         .navbar { background-color: #9b1c28 !important; border-bottom: 2px solid #75121c; padding: 0.75rem 1rem; }
-        .navbar-brand { font-weight: 700; letter-spacing: 0.3px; font-size: 1.1rem; color: #fff !important; }
-        .nav-link { font-weight: 500; border-radius: 4px; padding: 6px 14px !important; margin: 0 3px; transition: all 0.2s; color: rgba(255,255,255,0.9) !important; font-size: 0.95rem; }
+        .navbar-brand { font-weight: 700; color: #fff !important; }
+        .nav-link { font-weight: 500; border-radius: 4px; padding: 6px 14px !important; margin: 0 3px; color: rgba(255,255,255,0.9) !important; }
         .nav-link:hover, .nav-link.active { background-color: rgba(255, 255, 255, 0.15) !important; color: #fff !important; font-weight: 600; }
         
         .stat-card { transition: transform 0.15s ease, box-shadow 0.15s ease; }
@@ -67,28 +62,21 @@
         .table { font-size: 0.85rem; color: var(--text-color) !important; }
         .table-hover tbody tr:hover { background-color: var(--table-hover) !important; color: var(--text-color); }
         .table-responsive { max-height: 540px; overflow-y: auto; }
-        th { position: sticky; top: 0; background-color: #9b1c28 !important; color: white !important; z-index: 2; white-space: nowrap; font-weight: 600; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        th { position: sticky; top: 0; background-color: #9b1c28 !important; color: white !important; z-index: 2; white-space: nowrap; font-weight: 600; font-size: 0.8rem; text-transform: uppercase; }
         
-        .badge-status { font-weight: 600; padding: 3px 8px; border-radius: 4px; display: inline-block; font-size: 0.75rem; }
-        
+        .badge-status { font-weight: 600; padding: 4px 10px; border-radius: 4px; display: inline-block; font-size: 0.75rem; }
         .login-card { max-width: 420px; margin: auto; border-radius: 8px; border-top: 4px solid var(--primary-color); }
         .view-section { display: none; }
         .view-section.active { display: block; }
         .quick-sn-box { background: linear-gradient(135deg, #9b1c28, #dc3545); color: white; border-radius: 8px; }
         
         .form-control, .form-select { font-size: 0.95rem; border-color: var(--border-color); background-color: var(--card-bg); color: var(--text-color); border-radius: 6px; }
-        .form-control:focus, .form-select:focus { border-color: var(--primary-color); box-shadow: 0 0 0 0.2rem rgba(220, 53, 69, 0.15); background-color: var(--card-bg); color: var(--text-color); }
         .form-label { font-size: 0.85rem; font-weight: 600; margin-bottom: 0.3rem; }
         
         [data-theme="dark"] .bg-light { background-color: #111827 !important; color: #f1f5f9 !important; }
         [data-theme="dark"] .border { border-color: #334155 !important; }
         [data-theme="dark"] .text-muted { color: #94a3b8 !important; }
         [data-theme="dark"] .modal-content { background-color: #1e293b; color: #f1f5f9; border: 1px solid #334155; }
-        [data-theme="dark"] .dropdown-menu { background-color: #1e293b; border: 1px solid #334155; }
-        [data-theme="dark"] .dropdown-item { color: #f1f5f9; }
-        [data-theme="dark"] .dropdown-item:hover { background-color: #334155; color: #fff; }
-        [data-theme="dark"] .dropdown-divider { border-color: #334155; }
-        [data-theme="dark"] code { color: #f87171; }
     </style>
 </head>
 <body data-theme="light">
@@ -97,11 +85,6 @@
     <div id="loginScreen" class="container py-5" style="display: none;">
         <div class="row justify-content-center pt-5">
             <div class="col-md-5">
-                <div class="d-flex justify-content-end mb-2">
-                    <button type="button" class="btn btn-sm btn-outline-secondary rounded-pill px-3" onclick="toggleTheme()">
-                        <i id="loginThemeIcon" class="bi bi-moon-fill me-1"></i> <span id="loginThemeText">Dark Mode</span>
-                    </button>
-                </div>
                 <div class="text-center mb-4">
                     <div class="d-inline-flex p-3 bg-danger text-white rounded-2 shadow-sm mb-3">
                         <i class="bi bi-shield-lock-fill fs-2"></i>
@@ -112,23 +95,15 @@
 
                 <div class="card login-card shadow-sm p-4">
                     <h6 class="fw-bold mb-3 text-secondary text-uppercase fs-7 text-center">Autentikasi Pengguna</h6>
-                    
                     <form id="formLogin">
                         <div class="mb-3">
                             <label class="form-label">Username</label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-light text-muted"><i class="bi bi-person"></i></span>
-                                <input type="text" id="loginUsername" class="form-control" placeholder="Masukkan username..." required>
-                            </div>
+                            <input type="text" id="loginUsername" class="form-control" placeholder="Masukkan username..." required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Password</label>
-                            <div class="input-group">
-                                <span class="input-group-text bg-light text-muted"><i class="bi bi-lock"></i></span>
-                                <input type="password" id="loginPassword" class="form-control" placeholder="••••••••" required>
-                            </div>
+                            <input type="password" id="loginPassword" class="form-control" placeholder="••••••••" required>
                         </div>
-
                         <button type="submit" class="btn btn-danger w-100 py-2 fw-semibold">
                             <i class="bi bi-box-arrow-in-right me-1"></i> Masuk Sistem
                         </button>
@@ -159,7 +134,6 @@
                         <button type="button" class="btn btn-sm btn-outline-light px-2.5 py-1.5" onclick="toggleTheme()" title="Ganti Mode Tampilan">
                             <i id="navThemeIcon" class="bi bi-moon-fill"></i>
                         </button>
-
                         <div class="dropdown">
                             <button class="btn btn-light btn-sm dropdown-toggle d-flex align-items-center gap-2 shadow-sm px-3 py-1.5" type="button" data-bs-toggle="dropdown">
                                 <i class="bi bi-person-badge fs-6 text-danger"></i>
@@ -167,9 +141,6 @@
                                 <span id="userBadgeRole" class="badge bg-danger">Role</span>
                             </button>
                             <ul class="dropdown-menu dropdown-menu-end shadow border-0">
-                                <li><h6 class="dropdown-header text-uppercase fs-8">Informasi Sesi</h6></li>
-                                <li><span class="dropdown-item-text small text-muted" id="userInfoDetail">Wilayah: -</span></li>
-                                <li><hr class="dropdown-divider"></li>
                                 <li><a class="dropdown-item text-danger py-2" href="#" onclick="handleLogout()"><i class="bi bi-box-arrow-right me-2"></i> Keluar Sistem</a></li>
                             </ul>
                         </div>
@@ -339,7 +310,15 @@
                     </div>
 
                     <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
-                        <span class="text-muted small" id="tableDataCount">Menampilkan: 0 data</span>
+                        <div class="d-flex align-items-center gap-2">
+                            <span class="text-muted small" id="tableDataCount">Menampilkan: 0 data</span>
+                            <select id="selectPageSize" class="form-select form-select-sm" style="width: auto;" onchange="changePageSize(this.value)">
+                                <option value="25">25 per hal</option>
+                                <option value="50" selected>50 per hal</option>
+                                <option value="100">100 per hal</option>
+                                <option value="250">250 per hal</option>
+                            </select>
+                        </div>
                         <nav><ul class="pagination pagination-sm mb-0" id="paginationControls"></ul></nav>
                     </div>
                 </div>
@@ -580,6 +559,7 @@
             const idxBarang = headers.findIndex(h => h.includes('BARANG') || h.includes('NAMA BARANG'));
             const idxTglIn = headers.findIndex(h => h.includes('TGL IN') || h.includes('TANGGAL'));
             const idxType = headers.findIndex(h => h.includes('TYPE') || h === 'TIPE');
+            // Deteksi kolom posisi secara fleksibel (mencakup POSISI atau STATUS PARADISE)
             const idxPosisi = headers.findIndex(h => h.includes('POSISI') || h.includes('STATUS'));
             const idxNik = headers.findIndex(h => h === 'NIK' || h.includes('NIK TEKNISI'));
             const idxNama = headers.findIndex(h => h === 'NAMA TEKNISI' || h === 'NAMA');
@@ -660,6 +640,7 @@
 
         function handleSheetFilterChange() { applyFilters(); }
         function handleSearchChange() { applyFilters(); }
+        function changePageSize(newSize) { pageSize = parseInt(newSize, 10) || 50; currentPage = 1; renderTablePage(); }
 
         function renderTablePage() {
             const tbody = document.getElementById('tabelBody');
@@ -668,21 +649,29 @@
             if (total === 0) {
                 tbody.innerHTML = '<tr><td colspan="11" class="text-center py-4 text-muted">Tidak ada data ditemukan.</td></tr>';
                 document.getElementById('tableDataCount').innerText = 'Menampilkan: 0 data';
+                document.getElementById('paginationControls').innerHTML = '';
                 return;
             }
 
             const totalPages = Math.ceil(total / pageSize);
             if (currentPage > totalPages) currentPage = totalPages;
-            const startIndex = (currentPage - 1) * pageSize;
-            const pageItems = filteredData.slice(startIndex, startIndex + pageSize);
+            if (currentPage < 1) currentPage = 1;
 
-            document.getElementById('tableDataCount').innerText = `Menampilkan: ${startIndex + 1} - ${startIndex + pageItems.length} dari ${total} data`;
+            const startIndex = (currentPage - 1) * pageSize;
+            const endIndex = Math.min(startIndex + pageSize, total);
+            const pageItems = filteredData.slice(startIndex, endIndex);
+
+            document.getElementById('tableDataCount').innerText = `Menampilkan: ${startIndex + 1} - ${endIndex} dari ${total.toLocaleString('id-ID')} data`;
 
             let no = startIndex + 1;
             pageItems.forEach(item => {
                 let pos = item.posisi.toUpperCase();
-                let badgeClass = pos === 'STOCK' ? 'bg-success' : pos === 'INTECH' ? 'bg-warning text-dark' : pos === 'INSTALLED' ? 'bg-primary' : 'bg-dark';
-                
+                let badgeClass = 'bg-secondary';
+                if (pos === 'STOCK') badgeClass = 'bg-success';
+                else if (pos === 'INTECH') badgeClass = 'bg-warning text-dark';
+                else if (pos === 'INSTALLED') badgeClass = 'bg-primary';
+                else if (pos === 'DISMANTLE') badgeClass = 'bg-dark';
+
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
                     <td>${no++}</td>
@@ -699,6 +688,30 @@
                 `;
                 tbody.appendChild(tr);
             });
+            renderPaginationButtons(totalPages);
+        }
+
+        function renderPaginationButtons(totalPages) {
+            const ul = document.getElementById('paginationControls');
+            ul.innerHTML = '';
+            if (totalPages <= 1) return;
+
+            const liPrev = document.createElement('li');
+            liPrev.className = `page-item ${currentPage === 1 ? 'disabled' : ''}`;
+            liPrev.innerHTML = `<a class="page-link">&laquo;</a>`;
+            liPrev.onclick = () => { if (currentPage > 1) { currentPage--; renderTablePage(); } };
+            ul.appendChild(liPrev);
+
+            const liInfo = document.createElement('li');
+            liInfo.className = 'page-item active';
+            liInfo.innerHTML = `<a class="page-link">${currentPage} / ${totalPages}</a>`;
+            ul.appendChild(liInfo);
+
+            const liNext = document.createElement('li');
+            liNext.className = `page-item ${currentPage === totalPages ? 'disabled' : ''}`;
+            liNext.innerHTML = `<a class="page-link">&raquo;</a>`;
+            liNext.onclick = () => { if (currentPage < totalPages) { currentPage++; renderTablePage(); } };
+            ul.appendChild(liNext);
         }
 
         function updateDashboardStats() {
@@ -710,11 +723,11 @@
                 if (p.includes('STOCK')) totalStock++;
                 if (p.includes('INTECH')) totalIntech++;
             });
-            document.getElementById('kpiTotalNTE').innerText = allNormalizedData.length;
-            document.getElementById('kpiTotalSTB').innerText = totalSTB;
-            document.getElementById('kpiTotalModem').innerText = totalModem;
-            document.getElementById('kpiTotalStock').innerText = totalStock;
-            document.getElementById('kpiTotalIntech').innerText = totalIntech;
+            document.getElementById('kpiTotalNTE').innerText = allNormalizedData.length.toLocaleString('id-ID');
+            document.getElementById('kpiTotalSTB').innerText = totalSTB.toLocaleString('id-ID');
+            document.getElementById('kpiTotalModem').innerText = totalModem.toLocaleString('id-ID');
+            document.getElementById('kpiTotalStock').innerText = totalStock.toLocaleString('id-ID');
+            document.getElementById('kpiTotalIntech').innerText = totalIntech.toLocaleString('id-ID');
             renderCharts(allNormalizedData, totalSTB, totalModem);
         }
 
@@ -782,6 +795,17 @@
                 document.getElementById('infoKategori').innerText = found.sheet;
                 document.getElementById('infoSN').innerText = found.sn;
                 document.getElementById('infoBarangType').innerText = `${found.barang} (${found.type})`;
+                
+                // Menampilkan badge status posisi saat ini dengan benar
+                let badgeClass = 'bg-secondary';
+                let pos = found.posisi.toUpperCase();
+                if (pos === 'STOCK') badgeClass = 'bg-success';
+                else if (pos === 'INTECH') badgeClass = 'bg-warning text-dark';
+                else if (pos === 'INSTALLED') badgeClass = 'bg-primary';
+                else if (pos === 'DISMANTLE') badgeClass = 'bg-dark';
+
+                document.getElementById('infoStatusBadge').innerHTML = `<span class="badge-status ${badgeClass}">${found.posisi}</span>`;
+
                 document.getElementById('updateStatusSelect').value = found.posisi || 'STOCK';
                 document.getElementById('updateNIK').value = found.nik !== '-' ? found.nik : '';
                 document.getElementById('updateNama').value = found.nama !== '-' ? found.nama : '';
