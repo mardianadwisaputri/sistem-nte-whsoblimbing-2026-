@@ -81,7 +81,7 @@
 <body data-theme="light">
 
     <!-- LOGIN SCREEN -->
-    <div id="loginScreen" class="container py-5" style="display: none;">
+    <div id="loginScreen" class="container py-5">
         <div class="row justify-content-center pt-5">
             <div class="col-md-5">
                 <div class="text-center mb-4">
@@ -102,7 +102,7 @@
                             <label class="form-label">Password</label>
                             <input type="password" id="loginPassword" class="form-control" placeholder="••••••••" required>
                         </div>
-                        <button type="submit" class="btn btn-danger w-100 py-2 fw-semibold">
+                        <button type="submit" class="btn btn-danger w-100 py-2 fw-semibold shadow-sm">
                             <i class="bi bi-box-arrow-in-right me-1"></i> Masuk Sistem
                         </button>
                     </form>
@@ -179,7 +179,7 @@
                 <div id="adminAddCard" class="card p-4 shadow-sm mb-4 border-top border-danger border-3" style="display: none;">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="fw-bold mb-0 text-danger"><i class="bi bi-plus-square me-2"></i>Entri Data Barang Baru</h5>
-                        <span class="badge bg-danger" id="badgeAddRole">Superuser Gudang</span>
+                        <span class="badge bg-danger" id="badgeAddRole">Administrator Gudang</span>
                     </div>
                     <form id="formNTE">
                         <div class="row g-3">
@@ -248,7 +248,7 @@
 
                             <div class="col-md-3 d-flex align-items-end">
                                 <button type="submit" class="btn btn-danger w-100" id="btnSimpan">
-                                    <i class="bi bi-save me-1"></i> Simpan Data
+                                    <i class="bi bi-save me-1"></i> Simpan Data Baru
                                 </button>
                             </div>
                         </div>
@@ -307,7 +307,6 @@
                         </table>
                     </div>
 
-                    <!-- KONTROL PAGINASI & JUMLAH BARIS -->
                     <div class="d-flex flex-wrap justify-content-between align-items-center gap-2">
                         <div class="d-flex align-items-center gap-2">
                             <span class="text-muted small" id="tableDataCount">Menampilkan: 0 data</span>
@@ -425,8 +424,16 @@
                             <h5 class="fw-bold mb-3"><i class="bi bi-people-fill me-2 text-danger"></i>Manajemen Hak Akses Pengguna</h5>
                             <div class="table-responsive border rounded">
                                 <table class="table table-hover align-middle mb-0">
-                                    <thead><tr><th>Username</th><th>Wilayah</th><th>Role</th></tr></thead>
-                                    <tbody id="tabelUsersBody"></tbody>
+                                    <thead>
+                                        <tr>
+                                            <th>Username</th>
+                                            <th>Wilayah</th>
+                                            <th>Role</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="tabelUsersBody">
+                                        <!-- Diisi otomatis via JavaScript -->
+                                    </tbody>
                                 </table>
                             </div>
                         </div>
@@ -452,7 +459,7 @@
 
         const TEKNISI_MASTER_DB = [
             { nama: "EMERALDO PRIM", nik: "16963673" }, { nama: "KOIRUL ADI", nik: "16940763" },
-            { nama: "MULYADI", nik: "15885114" }, { nama: "DIO", nik: "16992591" },
+            { nama: "MULYADI", nik: "TAW5MLG_046" }, { nama: "DIO", nik: "16992591" },
             { nama: "ANAS", nik: "16981757" }, { nama: "ERWIN RAHMADANI", nik: "16002218" },
             { nama: "DIMAS FIRMANSYAH", nik: "16951656" }, { nama: "M SUEB", nik: "16830665" },
             { nama: "MUHAMMAD SHOLEH IRFANTO", nik: "16982456" }, { nama: "ANDUK SLAMET HARIYONO", nik: "15889049" },
@@ -466,8 +473,7 @@
             { nama: "NGATEMAN", nik: "16740232" }, { nama: "ALE SANDRO FIRDA RAHMAN", nik: "16031033" },
             { nama: "HARIANTO", nik: "16710111" }, { nama: "ABDI SUROTO", nik: "15896842" },
             { nama: "ROMLI", nik: "16640053" }, { nama: "AHMAD KHOIRUL HUDA", nik: "16061134" },
-            { nama: "RIZKI PRASETIYO", nik: "16974797" }, { nama: "YOGA A", nik: "26990111" },
-            { nama: "RENDY ANDIKA", nik: "26070088" }, { nama: "MIKAELL", nik: "26000155" }
+            { nama: "RIZKI PRASETIYO", nik: "16974797" }
         ];
 
         let globalUsersCache = {
@@ -501,8 +507,15 @@
             initTheme();
             const savedUser = localStorage.getItem('nte_session_user');
             if (savedUser) {
-                try { currentUser = JSON.parse(savedUser); initAppUI(); } catch (e) { showLogin(); }
-            } else { showLogin(); }
+                try { 
+                    currentUser = JSON.parse(savedUser); 
+                    initAppUI(); 
+                } catch (e) { 
+                    showLogin(); 
+                }
+            } else { 
+                showLogin(); 
+            }
         }
 
         function showLogin() {
@@ -523,7 +536,11 @@
             }
         });
 
-        function handleLogout() { localStorage.removeItem('nte_session_user'); currentUser = null; showLogin(); }
+        function handleLogout() { 
+            localStorage.removeItem('nte_session_user'); 
+            currentUser = null; 
+            showLogin(); 
+        }
 
         function initAppUI() {
             document.getElementById('loginScreen').style.display = 'none';
@@ -531,12 +548,30 @@
             document.getElementById('userBadgeName').innerText = currentUser.username;
             document.getElementById('userBadgeRole').innerText = currentUser.role.toUpperCase();
             
+            // Konfigurasi hak akses Admin & Superuser
             if (currentUser.role === 'admin' || currentUser.role === 'superuser') {
                 document.getElementById('adminAddCard').style.display = 'block';
-                if(currentUser.role === 'admin') document.getElementById('navItemUsers').style.display = 'block';
+                document.getElementById('badgeAddRole').innerText = currentUser.role.toUpperCase() + ' GUDANG';
+                if(currentUser.role === 'admin') {
+                    document.getElementById('navItemUsers').style.display = 'block';
+                    renderUsersTable(); // Render tabel manajemen user untuk admin
+                }
             }
             if (currentUser.role === 'user') { showView('statusView'); } else { showView('dashboardView'); }
             loadData();
+        }
+
+        function renderUsersTable() {
+            const tbody = document.getElementById('tabelUsersBody');
+            tbody.innerHTML = '';
+            for (const [username, details] of Object.entries(globalUsersCache)) {
+                const tr = document.createElement('tr');
+                tr.innerHTML = 
+                    '<td><strong>' + username + '</strong></td>' +
+                    '<td>' + details.kategori + '</td>' +
+                    '<td><span class="badge bg-danger">' + details.role.toUpperCase() + '</span></td>';
+                tbody.appendChild(tr);
+            }
         }
 
         function showView(viewId) {
@@ -548,6 +583,8 @@
             else if (viewId === 'statusView') {
                 document.getElementById('nav-status').classList.add('active');
                 setTimeout(() => document.getElementById('inputCariSN').focus(), 200);
+            } else if (viewId === 'usersView') {
+                document.getElementById('nav-users').classList.add('active');
             }
         }
 
@@ -674,7 +711,6 @@
             pageItems.forEach(item => {
                 let pos = item.posisi.toUpperCase();
                 
-                // WARNA BADGE YANG MENCOLOK & KONTRAS
                 let badgeClass = 'bg-secondary';
                 if (pos.includes('STOCK')) badgeClass = 'bg-success text-white';
                 else if (pos.includes('INTECH')) badgeClass = 'bg-warning text-dark';
