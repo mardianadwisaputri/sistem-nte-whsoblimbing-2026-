@@ -126,6 +126,7 @@
                         <li class="nav-item"><a class="nav-link active" id="nav-dashboard" href="#" onclick="showView('dashboardView')"><i class="bi bi-speedometer2 me-1"></i> Dashboard</a></li>
                         <li class="nav-item"><a class="nav-link" id="nav-data" href="#" onclick="showView('dataView')"><i class="bi bi-table me-1"></i> Data Master NTE</a></li>
                         <li class="nav-item"><a class="nav-link" id="nav-status" href="#" onclick="showView('statusView')"><i class="bi bi-arrow-left-right me-1"></i> Update Status</a></li>
+                        <!-- Hanya Admin yang bisa melihat menu Manajemen User -->
                         <li class="nav-item" id="navItemUsers" style="display: none;"><a class="nav-link" id="nav-users" href="#" onclick="showView('usersView')"><i class="bi bi-people me-1"></i> Manajemen User</a></li>
                     </ul>
                     <div class="d-flex align-items-center gap-2">
@@ -176,6 +177,7 @@
 
             <!-- DATA MASTER NTE -->
             <div id="dataView" class="view-section">
+                <!-- Form Entri Barang Baru (Hanya Admin dan Superuser yang bisa melihat) -->
                 <div id="adminAddCard" class="card p-4 shadow-sm mb-4 border-top border-danger border-3" style="display: none;">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="fw-bold mb-0 text-danger"><i class="bi bi-plus-square me-2"></i>Entri Data Barang Baru</h5>
@@ -373,7 +375,8 @@
                                     </select>
                                 </div>
 
-                                <div id="fieldsTeknisiUpdate" class="p-3 bg-warning-subtle rounded-2 border border-warning mb-4">
+                                <!-- Form field detail teknisi (Muncul otomatis jika status baru bukan STOCK) -->
+                                <div id="fieldsTeknisiUpdate" class="p-3 bg-warning-subtle rounded-2 border border-warning mb-4" style="display: none;">
                                     <h6 class="fw-bold text-dark mb-2 fs-7 text-uppercase"><i class="bi bi-person-vcard me-1"></i> Detail Identitas & Lapangan</h6>
                                     <div class="row g-3">
                                         <div class="col-md-4">
@@ -400,8 +403,8 @@
                                             </select>
                                         </div>
                                         <div class="col-md-4">
-                                            <label class="form-label text-dark">Nomor Tiket</label>
-                                            <input type="text" id="updateTiket" class="form-control" placeholder="SCxxxx">
+                                            <label class="form-label text-dark">Nomor Tiket / Internet</label>
+                                            <input type="text" id="updateTiket" class="form-control" placeholder="SCxxxx / No Internet">
                                         </div>
                                     </div>
                                 </div>
@@ -416,7 +419,7 @@
                 </div>
             </div>
 
-            <!-- MANAJEMEN USER -->
+            <!-- MANAJEMEN USER (Hanya Admin yang bisa akses) -->
             <div id="usersView" class="view-section">
                 <div class="row justify-content-center">
                     <div class="col-lg-10">
@@ -479,8 +482,8 @@
             { nama: "NGATEMAN", nik: "16740232", pekerjaan: "PSB" }, { nama: "ALE SANDRO FIRDA RAHMAN", nik: "16031033", pekerjaan: "PSB" },
             { nama: "HARIANTO", nik: "16710111", pekerjaan: "PSB" }, { nama: "ABDI SUROTO", nik: "15896842", pekerjaan: "PSB" },
             { nama: "ROMLI", nik: "16640053", pekerjaan: "PSB" }, { nama: "AHMAD KHOIRUL HUDA", nik: "16061134", pekerjaan: "PSB" },
-            { nama: "RIZKI PRASETIYO", nik: "16974797", pekerjaan: "PSB" }, { nama: "YOGA A", nik: "26990111", pekerjaan: "REPLACEMENT" },
-            { nama: "RENDY ANDIKA", nik: "26070088", pekerjaan: "REPLACEMENT" }, { nama: "MIKAELL", nik: "26000155", pekerjaan: "REPLACEMENT" }
+            { nama: "RIZKI PRASETIYO", nik: "16974797", pekerjaan: "PSB" }, { nama: "YOGA A", nik: "26990111", pekerjaan: "REPLACE" },
+            { nama: "RENDY ANDIKA", nik: "26070088", pekerjaan: "REPLACE" }, { nama: "MIKAELL", nik: "26000155", pekerjaan: "REPLACE" }
         ];
 
         let globalUsersCache = JSON.parse(localStorage.getItem('nte_users_db')) || {
@@ -555,19 +558,34 @@
             document.getElementById('userBadgeName').innerText = currentUser.username;
             document.getElementById('userBadgeRole').innerText = currentUser.role.toUpperCase();
             
-            if (currentUser.role === 'admin' || currentUser.role === 'superuser') {
-                document.getElementById('adminAddCard').style.display = 'block';
-                document.getElementById('badgeAddRole').innerText = currentUser.role.toUpperCase() + ' GUDANG';
-                if(currentUser.role === 'admin') {
-                    document.getElementById('navItemUsers').style.display = 'block';
-                    renderUsersTable();
-                }
+            // ATUR HAK AKSES BERDASARKAN ROLE
+            const role = currentUser.role;
+            const adminAddCard = document.getElementById('adminAddCard');
+            const navItemUsers = document.getElementById('navItemUsers');
+
+            if (role === 'admin') {
+                // Admin: Akses Entri Barang, Akses Manajemen User
+                if(adminAddCard) adminAddCard.style.display = 'block';
+                if(document.getElementById('badgeAddRole')) document.getElementById('badgeAddRole').innerText = 'ADMIN GUDANG';
+                if(navItemUsers) navItemUsers.style.display = 'block';
+                renderUsersTable();
+            } else if (role === 'superuser') {
+                // Superuser: Akses Entri Barang, TIDAK BISA Manajemen User
+                if(adminAddCard) adminAddCard.style.display = 'block';
+                if(document.getElementById('badgeAddRole')) document.getElementById('badgeAddRole').innerText = 'SUPERUSER GUDANG';
+                if(navItemUsers) navItemUsers.style.display = 'none';
+            } else {
+                // User (Teknisi): TIDAK BISA Entri Barang, TIDAK BISA Manajemen User
+                if(adminAddCard) adminAddCard.style.display = 'none';
+                if(navItemUsers) navItemUsers.style.display = 'none';
             }
-            if (currentUser.role === 'user') { showView('statusView'); } else { showView('dashboardView'); }
+
+            if (role === 'user') { showView('statusView'); } else { showView('dashboardView'); }
             loadData();
         }
 
         function renderUsersTable() {
+            if (currentUser.role !== 'admin') return;
             const tbody = document.getElementById('tabelUsersBody');
             tbody.innerHTML = '';
             for (const [username, details] of Object.entries(globalUsersCache)) {
@@ -590,6 +608,7 @@
         }
 
         async function openAddUserModal() {
+            if (currentUser.role !== 'admin') return Swal.fire('Akses Ditolak', 'Hanya Admin utama yang dapat mengelola pengguna.', 'error');
             const { value: formValues } = await Swal.fire({
                 title: 'Tambah Pengguna Baru',
                 html:
@@ -633,6 +652,7 @@
         }
 
         async function editUser(username) {
+            if (currentUser.role !== 'admin') return;
             const user = globalUsersCache[username];
             const { value: formValues } = await Swal.fire({
                 title: 'Edit Pengguna: ' + username,
@@ -669,6 +689,7 @@
         }
 
         function deleteUser(username) {
+            if (currentUser.role !== 'admin') return;
             Swal.fire({
                 title: 'Hapus User?',
                 text: 'Anda yakin ingin menghapus user "' + username + '"?',
@@ -687,6 +708,9 @@
         }
 
         function showView(viewId) {
+            if (viewId === 'usersView' && currentUser.role !== 'admin') {
+                return Swal.fire('Akses Ditolak', 'Menu ini khusus untuk Administrator.', 'error');
+            }
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.navbar-nav .nav-link').forEach(el => el.classList.remove('active'));
             document.getElementById(viewId).classList.add('active');
@@ -926,12 +950,20 @@
             document.querySelectorAll('.initial-tech-field').forEach(f => f.style.display = val !== 'STOCK' ? 'block' : 'none');
         }
 
+        // FUNGSI INI YANG MEMBUAT KOLOM TEKNISI MUNCUL JIKA STATUS BUKAN STOCK
         function toggleUpdateStatusFields(val) {
-            document.getElementById('fieldsTeknisiUpdate').style.display = val !== 'STOCK' ? 'block' : 'none';
+            const fieldContainer = document.getElementById('fieldsTeknisiUpdate');
+            if (val !== 'STOCK') {
+                fieldContainer.style.display = 'block';
+            } else {
+                fieldContainer.style.display = 'none';
+            }
         }
 
         document.getElementById('formNTE').addEventListener('submit', function(e) {
             e.preventDefault();
+            if (currentUser.role === 'user') return Swal.fire('Akses Ditolak', 'Teknisi lapangan tidak memiliki izin menambah barang baru.', 'error');
+            
             const btn = document.getElementById('btnSimpan');
             btn.disabled = true;
 
@@ -997,6 +1029,7 @@
                 document.getElementById('updatePekerjaan').value = found.pekerjaan !== '-' ? found.pekerjaan : 'PSB';
                 document.getElementById('updateTiket').value = found.tiket !== '-' ? found.tiket : '';
                 
+                // Jalankan fungsi toggle agar kolom teknisi langsung menyesuaikan status saat data ditemukan
                 toggleUpdateStatusFields(found.posisi || 'STOCK');
                 document.getElementById('boxDetailUpdate').scrollIntoView({ behavior: 'smooth' });
             } else {
