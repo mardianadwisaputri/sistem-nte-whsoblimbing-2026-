@@ -558,24 +558,20 @@
             document.getElementById('userBadgeName').innerText = currentUser.username;
             document.getElementById('userBadgeRole').innerText = currentUser.role.toUpperCase();
             
-            // ATUR HAK AKSES BERDASARKAN ROLE
             const role = currentUser.role;
             const adminAddCard = document.getElementById('adminAddCard');
             const navItemUsers = document.getElementById('navItemUsers');
 
             if (role === 'admin') {
-                // Admin: Akses Entri Barang, Akses Manajemen User
                 if(adminAddCard) adminAddCard.style.display = 'block';
                 if(document.getElementById('badgeAddRole')) document.getElementById('badgeAddRole').innerText = 'ADMIN GUDANG';
                 if(navItemUsers) navItemUsers.style.display = 'block';
                 renderUsersTable();
             } else if (role === 'superuser') {
-                // Superuser: Akses Entri Barang, TIDAK BISA Manajemen User
                 if(adminAddCard) adminAddCard.style.display = 'block';
                 if(document.getElementById('badgeAddRole')) document.getElementById('badgeAddRole').innerText = 'SUPERUSER GUDANG';
                 if(navItemUsers) navItemUsers.style.display = 'none';
             } else {
-                // User (Teknisi): TIDAK BISA Entri Barang, TIDAK BISA Manajemen User
                 if(adminAddCard) adminAddCard.style.display = 'none';
                 if(navItemUsers) navItemUsers.style.display = 'none';
             }
@@ -950,7 +946,6 @@
             document.querySelectorAll('.initial-tech-field').forEach(f => f.style.display = val !== 'STOCK' ? 'block' : 'none');
         }
 
-        // FUNGSI INI YANG MEMBUAT KOLOM TEKNISI MUNCUL JIKA STATUS BUKAN STOCK
         function toggleUpdateStatusFields(val) {
             const fieldContainer = document.getElementById('fieldsTeknisiUpdate');
             if (val !== 'STOCK') {
@@ -969,8 +964,10 @@
 
             Swal.fire({ title: 'Menyimpan Barang Baru...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
+            // PERBAIKAN: Menggunakan headers text/plain untuk bypass CORS preflight Google Apps Script
             fetch(SCRIPT_URL, {
                 method: 'POST',
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
                 body: JSON.stringify({
                     action: 'create', 
                     sheetName: document.getElementById('inputSheet').value,
@@ -1029,7 +1026,6 @@
                 document.getElementById('updatePekerjaan').value = found.pekerjaan !== '-' ? found.pekerjaan : 'PSB';
                 document.getElementById('updateTiket').value = found.tiket !== '-' ? found.tiket : '';
                 
-                // Jalankan fungsi toggle agar kolom teknisi langsung menyesuaikan status saat data ditemukan
                 toggleUpdateStatusFields(found.posisi || 'STOCK');
                 document.getElementById('boxDetailUpdate').scrollIntoView({ behavior: 'smooth' });
             } else {
@@ -1049,8 +1045,10 @@
             
             Swal.fire({ title: 'Menyimpan ke Spreadsheet...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
             
+            // PERBAIKAN: Menggunakan headers text/plain untuk bypass CORS preflight Google Apps Script
             fetch(SCRIPT_URL, {
                 method: 'POST',
+                headers: { "Content-Type": "text/plain;charset=utf-8" },
                 body: JSON.stringify({
                     action: 'update_status', 
                     sheetName: activeFoundItem.sheet, 
