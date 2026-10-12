@@ -776,8 +776,13 @@
             if (e.target.id === 'updateNIK' || e.target.id === 'NIK_AWAL') {
                 const found = TEKNISI_MASTER_DB.find(t => t.nik.toLowerCase() === e.target.value.trim().toLowerCase());
                 if (found) {
-                    if (e.target.id === 'updateNIK') document.getElementById('updateNama').value = found.nama;
-                    else document.getElementById('NAMA_AWAL').value = found.nama;
+                    if (e.target.id === 'updateNIK') {
+                        document.getElementById('updateNama').value = found.nama;
+                        document.getElementById('updatePekerjaan').value = found.pekerjaan;
+                    } else {
+                        document.getElementById('NAMA_AWAL').value = found.nama;
+                        document.getElementById('PEKERJAAN_AWAL').value = found.pekerjaan;
+                    }
                 }
             }
         });
@@ -921,14 +926,22 @@
             document.querySelectorAll('.initial-tech-field').forEach(f => f.style.display = val !== 'STOCK' ? 'block' : 'none');
         }
 
+        function toggleUpdateStatusFields(val) {
+            document.getElementById('fieldsTeknisiUpdate').style.display = val !== 'STOCK' ? 'block' : 'none';
+        }
+
         document.getElementById('formNTE').addEventListener('submit', function(e) {
             e.preventDefault();
             const btn = document.getElementById('btnSimpan');
             btn.disabled = true;
+
+            Swal.fire({ title: 'Menyimpan Barang Baru...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
             fetch(SCRIPT_URL, {
-                method: 'POST', mode: 'no-cors',
+                method: 'POST',
                 body: JSON.stringify({
-                    action: 'create', sheetName: document.getElementById('inputSheet').value,
+                    action: 'create', 
+                    sheetName: document.getElementById('inputSheet').value,
                     "BARANG": document.getElementById('BARANG').value.trim(),
                     "SN": document.getElementById('SN').value.trim(),
                     "MAC": document.getElementById('MAC').value.trim(),
@@ -940,11 +953,21 @@
                     "PEKERJAAN": document.getElementById('PEKERJAAN_AWAL').value,
                     "TIKET": document.getElementById('TIKET_AWAL').value.trim()
                 })
-            }).then(() => {
-                Swal.fire('Berhasil', 'Data berhasil ditambahkan.', 'success');
-                document.getElementById('formNTE').reset();
-                setTimeout(() => loadData(), 2000);
-            }).finally(() => btn.disabled = false);
+            })
+            .then(res => res.json())
+            .then(res => {
+                if(res.status === 'success') {
+                    Swal.fire('Berhasil', res.message, 'success');
+                    document.getElementById('formNTE').reset();
+                    loadData();
+                } else {
+                    Swal.fire('Gagal', res.message, 'error');
+                }
+            })
+            .catch(err => {
+                Swal.fire('Error', 'Terjadi kesalahan koneksi.', 'error');
+            })
+            .finally(() => btn.disabled = false);
         });
 
         function handleCariSN(e) {
@@ -973,24 +996,32 @@
                 document.getElementById('updateMitra').value = found.mitra !== '-' ? found.mitra : '';
                 document.getElementById('updatePekerjaan').value = found.pekerjaan !== '-' ? found.pekerjaan : 'PSB';
                 document.getElementById('updateTiket').value = found.tiket !== '-' ? found.tiket : '';
+                
+                toggleUpdateStatusFields(found.posisi || 'STOCK');
                 document.getElementById('boxDetailUpdate').scrollIntoView({ behavior: 'smooth' });
             } else {
-                Swal.fire('Tidak Ditemukan', 'SN "' + sn + '" tidak terdaftar.', 'warning');
+                Swal.fire('Tidak Ditemukan', 'SN "' + sn + '" tidak terdaftar di sistem.', 'warning');
             }
         }
 
-        function batalUpdate() { document.getElementById('boxDetailUpdate').style.display = 'none'; activeFoundItem = null; }
+        function batalUpdate() { 
+            document.getElementById('boxDetailUpdate').style.display = 'none'; 
+            activeFoundItem = null; 
+        }
 
         function handleSimpanStatus(e) {
             e.preventDefault();
             if (!activeFoundItem) return;
             const newStatus = document.getElementById('updateStatusSelect').value;
             
-            Swal.fire({ title: 'Menyimpan...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+            Swal.fire({ title: 'Menyimpan ke Spreadsheet...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+            
             fetch(SCRIPT_URL, {
-                method: 'POST', mode: 'no-cors',
+                method: 'POST',
                 body: JSON.stringify({
-                    action: 'update_status', sheetName: activeFoundItem.sheet, sn: activeFoundItem.sn,
+                    action: 'update_status', 
+                    sheetName: activeFoundItem.sheet, 
+                    sn: activeFoundItem.sn,
                     status: newStatus,
                     nik: newStatus === 'STOCK' ? '' : document.getElementById('updateNIK').value.trim(),
                     nama: newStatus === 'STOCK' ? '' : document.getElementById('updateNama').value.trim(),
@@ -998,10 +1029,19 @@
                     pekerjaan: newStatus === 'STOCK' ? '' : document.getElementById('updatePekerjaan').value,
                     tiket: newStatus === 'STOCK' ? '' : document.getElementById('updateTiket').value.trim()
                 })
-            }).then(() => {
-                Swal.fire('Berhasil', 'Status & detail lapangan diperbarui.', 'success');
-                batalUpdate();
-                setTimeout(() => loadData(), 2000);
+            })
+            .then(res => res.json())
+            .then(res => {
+                if(res.status === 'success') {
+                    Swal.fire('Berhasil!', res.message, 'success');
+                    batalUpdate();
+                    loadData();
+                } else {
+                    Swal.fire('Gagal!', res.message, 'error');
+                }
+            })
+            .catch(err => {
+                Swal.fire('Error', 'Gagal terhubung ke peladen backend.', 'error');
             });
         }
 
