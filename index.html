@@ -4,15 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistem Manajemen NTE - WH SO BLIMBING</title>
-    <!-- Bootstrap 5.3 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <!-- Bootstrap Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-    <!-- Google Fonts: Inter -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- SweetAlert2 -->
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
-    <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
     <style>
@@ -126,7 +121,6 @@
                         <li class="nav-item"><a class="nav-link active" id="nav-dashboard" href="#" onclick="showView('dashboardView')"><i class="bi bi-speedometer2 me-1"></i> Dashboard</a></li>
                         <li class="nav-item"><a class="nav-link" id="nav-data" href="#" onclick="showView('dataView')"><i class="bi bi-table me-1"></i> Data Master NTE</a></li>
                         <li class="nav-item"><a class="nav-link" id="nav-status" href="#" onclick="showView('statusView')"><i class="bi bi-arrow-left-right me-1"></i> Update Status</a></li>
-                        <!-- Hanya Admin yang bisa melihat menu Manajemen User -->
                         <li class="nav-item" id="navItemUsers" style="display: none;"><a class="nav-link" id="nav-users" href="#" onclick="showView('usersView')"><i class="bi bi-people me-1"></i> Manajemen User</a></li>
                     </ul>
                     <div class="d-flex align-items-center gap-2">
@@ -177,7 +171,6 @@
 
             <!-- DATA MASTER NTE -->
             <div id="dataView" class="view-section">
-                <!-- Form Entri Barang Baru (Hanya Admin dan Superuser yang bisa melihat) -->
                 <div id="adminAddCard" class="card p-4 shadow-sm mb-4 border-top border-danger border-3" style="display: none;">
                     <div class="d-flex justify-content-between align-items-center mb-3">
                         <h5 class="fw-bold mb-0 text-danger"><i class="bi bi-plus-square me-2"></i>Entri Data Barang Baru</h5>
@@ -222,11 +215,11 @@
                             </div>
                             <div class="col-md-2 initial-tech-field" style="display: none;">
                                 <label class="form-label">NIK Teknisi</label>
-                                <input type="text" id="NIK_AWAL" class="form-control" placeholder="NIK">
+                                <input type="text" id="NIK_AWAL" class="form-control tech-nik-input" placeholder="NIK">
                             </div>
                             <div class="col-md-3 initial-tech-field" style="display: none;">
                                 <label class="form-label">Nama Teknisi</label>
-                                <input type="text" id="NAMA_AWAL" class="form-control" placeholder="Nama Teknisi">
+                                <input type="text" id="NAMA_AWAL" class="form-control tech-nama-input" list="listTeknisi" placeholder="Pilih / Ketik Nama">
                             </div>
                             <div class="col-md-2 initial-tech-field" style="display: none;">
                                 <label class="form-label">Mitra</label>
@@ -375,17 +368,16 @@
                                     </select>
                                 </div>
 
-                                <!-- Form field detail teknisi (Muncul otomatis jika status baru bukan STOCK) -->
                                 <div id="fieldsTeknisiUpdate" class="p-3 bg-warning-subtle rounded-2 border border-warning mb-4" style="display: none;">
                                     <h6 class="fw-bold text-dark mb-2 fs-7 text-uppercase"><i class="bi bi-person-vcard me-1"></i> Detail Identitas & Lapangan</h6>
                                     <div class="row g-3">
                                         <div class="col-md-4">
                                             <label class="form-label text-dark">NIK Teknisi</label>
-                                            <input type="text" id="updateNIK" class="form-control" placeholder="NIK">
+                                            <input type="text" id="updateNIK" class="form-control tech-nik-input" placeholder="NIK">
                                         </div>
                                         <div class="col-md-8">
                                             <label class="form-label text-dark">Nama Teknisi</label>
-                                            <input type="text" id="updateNama" class="form-control" placeholder="Nama Lengkap">
+                                            <input type="text" id="updateNama" class="form-control tech-nama-input" list="listTeknisi" placeholder="Pilih / Ketik Nama">
                                         </div>
                                         <div class="col-md-4">
                                             <label class="form-label text-dark">Mitra</label>
@@ -419,7 +411,7 @@
                 </div>
             </div>
 
-            <!-- MANAJEMEN USER (Hanya Admin yang bisa akses) -->
+            <!-- MANAJEMEN USER -->
             <div id="usersView" class="view-section">
                 <div class="row justify-content-center">
                     <div class="col-lg-10">
@@ -440,9 +432,7 @@
                                             <th class="text-center">Aksi</th>
                                         </tr>
                                     </thead>
-                                    <tbody id="tabelUsersBody">
-                                        <!-- Diisi otomatis via JavaScript -->
-                                    </tbody>
+                                    <tbody id="tabelUsersBody"></tbody>
                                 </table>
                             </div>
                         </div>
@@ -451,6 +441,35 @@
             </div>
         </div>
     </div>
+
+    <!-- Datalist Master Teknisi untuk Auto-Complete / Pilih Nama -->
+    <datalist id="listTeknisi">
+        <script>
+            // Render list nama teknisi otomatis dari database
+            const TEKNISI_MASTER_DB = [
+                { nama: "EMERALDO PRIM", nik: "16963673", pekerjaan: "Gangguan" }, { nama: "KOIRUL ADI", nik: "16940763", pekerjaan: "Gangguan" },
+                { nama: "MULYADI", nik: "15885114", pekerjaan: "Gangguan" }, { nama: "DIO", nik: "16992591", pekerjaan: "Gangguan" },
+                { nama: "ANAS", nik: "16981757", pekerjaan: "Gangguan" }, { nama: "ERWIN RAHMADANI", nik: "16002218", pekerjaan: "Gangguan" },
+                { nama: "DIMAS FIRMANSYAH", nik: "16951656", pekerjaan: "Gangguan" }, { nama: "M SUEB", nik: "16830665", pekerjaan: "Gangguan" },
+                { nama: "MUHAMMAD SHOLEH IRFANTO", nik: "16982456", pekerjaan: "Gangguan" }, { nama: "ANDUK SLAMET HARIYONO", nik: "15889049", pekerjaan: "Gangguan" },
+                { nama: "IRVAN ANDI", nik: "16943172", pekerjaan: "Gangguan" }, { nama: "KOIRUL ANGGAR", nik: "16920456", pekerjaan: "Gangguan" },
+                { nama: "ROEDI", nik: "15885128", pekerjaan: "Gangguan" }, { nama: "ALRIZA DIOUF", nik: "16220024", pekerjaan: "Gangguan" },
+                { nama: "AFIF AFFANDI", nik: "16004542", pekerjaan: "PSB" }, { nama: "SONY HARYANTO", nik: "16650052", pekerjaan: "PSB" },
+                { nama: "AGUS SETIAWAN", nik: "16790219", pekerjaan: "PSB" }, { nama: "AHMAD MUSYAFA", nik: "16983579", pekerjaan: "PSB" },
+                { nama: "JOKO PURNOMO", nik: "15892755", pekerjaan: "PSB" }, { nama: "AHMAD JOHAN FUALDI", nik: "16013901", pekerjaan: "PSB" },
+                { nama: "DHEVID WIDHI ANDIKA", nik: "16974527", pekerjaan: "PSB" }, { nama: "EDI SUDRAJAT", nik: "16995159", pekerjaan: "PSB" },
+                { nama: "AGUNG FIRMANSYAH", nik: "16995426", pekerjaan: "PSB" }, { nama: "MUHAMMAD ARIS NUR", nik: "16010921", pekerjaan: "PSB" },
+                { nama: "NGATEMAN", nik: "16740232", pekerjaan: "PSB" }, { nama: "ALE SANDRO FIRDA RAHMAN", nik: "16031033", pekerjaan: "PSB" },
+                { nama: "HARIANTO", nik: "16710111", pekerjaan: "PSB" }, { nama: "ABDI SUROTO", nik: "15896842", pekerjaan: "PSB" },
+                { nama: "ROMLI", nik: "16640053", pekerjaan: "PSB" }, { nama: "AHMAD KHOIRUL HUDA", nik: "16061134", pekerjaan: "PSB" },
+                { nama: "RIZKI PRASETIYO", nik: "16974797", pekerjaan: "PSB" }, { nama: "YOGA A", nik: "26990111", pekerjaan: "REPLACE" },
+                { nama: "RENDY ANDIKA", nik: "26070088", pekerjaan: "REPLACE" }, { nama: "MIKAELL", nik: "26000155", pekerjaan: "REPLACE" }
+            ];
+            TEKNISI_MASTER_DB.forEach(t => {
+                document.write('<option value="' + t.nama + '">');
+            });
+        </script>
+    </datalist>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -465,26 +484,6 @@
             "TELKOM": "1973685623",
             "VULA": "491664178"
         };
-
-        const TEKNISI_MASTER_DB = [
-            { nama: "EMERALDO PRIM", nik: "16963673", pekerjaan: "Gangguan" }, { nama: "KOIRUL ADI", nik: "16940763", pekerjaan: "Gangguan" },
-            { nama: "MULYADI", nik: "15885114", pekerjaan: "Gangguan" }, { nama: "DIO", nik: "16992591", pekerjaan: "Gangguan" },
-            { nama: "ANAS", nik: "16981757", pekerjaan: "Gangguan" }, { nama: "ERWIN RAHMADANI", nik: "16002218", pekerjaan: "Gangguan" },
-            { nama: "DIMAS FIRMANSYAH", nik: "16951656", pekerjaan: "Gangguan" }, { nama: "M SUEB", nik: "16830665", pekerjaan: "Gangguan" },
-            { nama: "MUHAMMAD SHOLEH IRFANTO", nik: "16982456", pekerjaan: "Gangguan" }, { nama: "ANDUK SLAMET HARIYONO", nik: "15889049", pekerjaan: "Gangguan" },
-            { nama: "IRVAN ANDI", nik: "16943172", pekerjaan: "Gangguan" }, { nama: "KOIRUL ANGGAR", nik: "16920456", pekerjaan: "Gangguan" },
-            { nama: "ROEDI", nik: "15885128", pekerjaan: "Gangguan" }, { nama: "ALRIZA DIOUF", nik: "16220024", pekerjaan: "Gangguan" },
-            { nama: "AFIF AFFANDI", nik: "16004542", pekerjaan: "PSB" }, { nama: "SONY HARYANTO", nik: "16650052", pekerjaan: "PSB" },
-            { nama: "AGUS SETIAWAN", nik: "16790219", pekerjaan: "PSB" }, { nama: "AHMAD MUSYAFA", nik: "16983579", pekerjaan: "PSB" },
-            { nama: "JOKO PURNOMO", nik: "15892755", pekerjaan: "PSB" }, { nama: "AHMAD JOHAN FUALDI", nik: "16013901", pekerjaan: "PSB" },
-            { nama: "DHEVID WIDHI ANDIKA", nik: "16974527", pekerjaan: "PSB" }, { nama: "EDI SUDRAJAT", nik: "16995159", pekerjaan: "PSB" },
-            { nama: "AGUNG FIRMANSYAH", nik: "16995426", pekerjaan: "PSB" }, { nama: "MUHAMMAD ARIS NUR", nik: "16010921", pekerjaan: "PSB" },
-            { nama: "NGATEMAN", nik: "16740232", pekerjaan: "PSB" }, { nama: "ALE SANDRO FIRDA RAHMAN", nik: "16031033", pekerjaan: "PSB" },
-            { nama: "HARIANTO", nik: "16710111", pekerjaan: "PSB" }, { nama: "ABDI SUROTO", nik: "15896842", pekerjaan: "PSB" },
-            { nama: "ROMLI", nik: "16640053", pekerjaan: "PSB" }, { nama: "AHMAD KHOIRUL HUDA", nik: "16061134", pekerjaan: "PSB" },
-            { nama: "RIZKI PRASETIYO", nik: "16974797", pekerjaan: "PSB" }, { nama: "YOGA A", nik: "26990111", pekerjaan: "REPLACE" },
-            { nama: "RENDY ANDIKA", nik: "26070088", pekerjaan: "REPLACE" }, { nama: "MIKAELL", nik: "26000155", pekerjaan: "REPLACE" }
-        ];
 
         let globalUsersCache = JSON.parse(localStorage.getItem('nte_users_db')) || {
             "admin": { password: "admin123", role: "admin", kategori: "Pusat / All" },
@@ -792,16 +791,30 @@
             }
         }
 
+        // AUTO-FILL NIK & NAMA DUA ARAH (Ketik NIK muncul Nama, Ketik/Pilih Nama muncul NIK)
         document.addEventListener('input', function (e) {
-            if (e.target.id === 'updateNIK' || e.target.id === 'NIK_AWAL') {
-                const found = TEKNISI_MASTER_DB.find(t => t.nik.toLowerCase() === e.target.value.trim().toLowerCase());
+            if (e.target.classList.contains('tech-nik-input')) {
+                const val = e.target.value.trim().toLowerCase();
+                const found = TEKNISI_MASTER_DB.find(t => t.nik.toLowerCase() === val);
                 if (found) {
-                    if (e.target.id === 'updateNIK') {
-                        document.getElementById('updateNama').value = found.nama;
-                        document.getElementById('updatePekerjaan').value = found.pekerjaan;
-                    } else {
-                        document.getElementById('NAMA_AWAL').value = found.nama;
-                        document.getElementById('PEKERJAAN_AWAL').value = found.pekerjaan;
+                    const wrapper = e.target.closest('form');
+                    if (wrapper) {
+                        const namaInput = wrapper.querySelector('.tech-nama-input');
+                        const pekInput = wrapper.querySelector('#updatePekerjaan, #PEKERJAAN_AWAL');
+                        if (namaInput) namaInput.value = found.nama;
+                        if (pekInput) pekInput.value = found.pekerjaan;
+                    }
+                }
+            } else if (e.target.classList.contains('tech-nama-input')) {
+                const val = e.target.value.trim().toUpperCase();
+                const found = TEKNISI_MASTER_DB.find(t => t.nama.toUpperCase() === val);
+                if (found) {
+                    const wrapper = e.target.closest('form');
+                    if (wrapper) {
+                        const nikInput = wrapper.querySelector('.tech-nik-input');
+                        const pekInput = wrapper.querySelector('#updatePekerjaan, #PEKERJAAN_AWAL');
+                        if (nikInput) nikInput.value = found.nik;
+                        if (pekInput) pekInput.value = found.pekerjaan;
                     }
                 }
             }
@@ -964,7 +977,6 @@
 
             Swal.fire({ title: 'Menyimpan Barang Baru...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
-            // PERBAIKAN: Menggunakan headers text/plain untuk bypass CORS preflight Google Apps Script
             fetch(SCRIPT_URL, {
                 method: 'POST',
                 headers: { "Content-Type": "text/plain;charset=utf-8" },
@@ -1045,7 +1057,6 @@
             
             Swal.fire({ title: 'Menyimpan ke Spreadsheet...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
             
-            // PERBAIKAN: Menggunakan headers text/plain untuk bypass CORS preflight Google Apps Script
             fetch(SCRIPT_URL, {
                 method: 'POST',
                 headers: { "Content-Type": "text/plain;charset=utf-8" },
