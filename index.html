@@ -12,8 +12,8 @@
 
     <style>
         :root {
-            --primary-color: #dc3545;
-            --primary-dark: #b02a37;
+            --primary-color: #9b1c28; /* Burgundy Utama */
+            --primary-dark: #75121c;  /* Burgundy Gelap */
             --bg-color: #f4f6f9;
             --card-bg: #ffffff;
             --text-color: #2b2f33;
@@ -49,6 +49,40 @@
         .nav-link { font-weight: 500; border-radius: 4px; padding: 6px 14px !important; margin: 0 3px; color: rgba(255,255,255,0.9) !important; }
         .nav-link:hover, .nav-link.active { background-color: rgba(255, 255, 255, 0.15) !important; color: #fff !important; font-weight: 600; }
         
+        /* Perbaikan Nav Pills: Tombol Aktif Burgundy, Teks Tidak Putih Polos saat tidak aktif agar jelas */
+        .nav-pills .nav-link {
+            color: #9b1c28;
+            font-weight: 600;
+            border: 1px solid #9b1c28;
+            margin-right: 5px;
+        }
+        .nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+            background-color: #9b1c28 !important;
+            color: #ffffff !important;
+        }
+
+        /* Penyesuaian Tombol & Badge Burgundy */
+        .btn-danger {
+            background-color: #9b1c28 !important;
+            border-color: #75121c !important;
+        }
+        .btn-danger:hover, .btn-danger:focus {
+            background-color: #75121c !important;
+            border-color: #75121c !important;
+        }
+        .btn-outline-danger {
+            color: #9b1c28 !important;
+            border-color: #9b1c28 !important;
+        }
+        .btn-outline-danger:hover {
+            background-color: #9b1c28 !important;
+            color: #fff !important;
+        }
+
+        .text-danger { color: #9b1c28 !important; }
+        .border-danger { border-color: #9b1c28 !important; }
+        .bg-danger { background-color: #9b1c28 !important; }
+        
         .stat-card { transition: transform 0.15s ease, box-shadow 0.15s ease; }
         .stat-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
         .stat-icon { width: 42px; height: 42px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; }
@@ -59,10 +93,10 @@
         th { position: sticky; top: 0; background-color: #9b1c28 !important; color: white !important; z-index: 2; white-space: nowrap; font-weight: 600; font-size: 0.8rem; text-transform: uppercase; }
         
         .badge-status { font-weight: 700; padding: 5px 12px; border-radius: 6px; display: inline-block; font-size: 0.75rem; letter-spacing: 0.5px; }
-        .login-card { max-width: 420px; margin: auto; border-radius: 8px; border-top: 4px solid var(--primary-color); }
+        .login-card { max-width: 420px; margin: auto; border-radius: 8px; border-top: 4px solid #9b1c28; }
         .view-section { display: none; }
         .view-section.active { display: block; }
-        .quick-sn-box { background: linear-gradient(135deg, #9b1c28, #dc3545); color: white; border-radius: 8px; }
+        .quick-sn-box { background: linear-gradient(135deg, #9b1c28, #75121c); color: white; border-radius: 8px; }
         
         .form-control, .form-select { font-size: 0.95rem; border-color: var(--border-color); background-color: var(--card-bg); color: var(--text-color); border-radius: 6px; }
         .form-label { font-size: 0.85rem; font-weight: 600; margin-bottom: 0.3rem; }
@@ -233,7 +267,6 @@
                                             <option value="INTECH">INTECH</option>
                                             <option value="INSTALLED">INSTALLED</option>
                                             <option value="DISMANTLE">DISMANTLE</option>
-                                            <!-- Ditambahkan opsi SCMT jika TIF/TELKOM terpilih -->
                                             <option value="STATUS SCMT" id="optScmtInitial" style="display: none;">STATUS SCMT</option>
                                         </select>
                                     </div>
@@ -761,7 +794,6 @@
             }
         }
 
-        // AUTO-FILL LENGKAP (NIK, NAMA, PEKERJAAN, MITRA DUA ARAH)
         document.addEventListener('input', function (e) {
             if (e.target.classList.contains('tech-nik-input')) {
                 const val = e.target.value.trim().toLowerCase();
@@ -910,7 +942,7 @@
             if (chartPieInstance) chartPieInstance.destroy();
             chartPieInstance = new Chart(ctxPie, {
                 type: 'doughnut',
-                data: { labels: Object.keys(statusCounts), datasets: [{ data: Object.values(statusCounts), backgroundColor: ['#198754', '#ffc107', '#0d6efd', '#dc3545', '#334155', '#6c757d'] }] },
+                data: { labels: Object.keys(statusCounts), datasets: [{ data: Object.values(statusCounts), backgroundColor: ['#198754', '#ffc107', '#0d6efd', '#9b1c28', '#334155', '#6c757d'] }] },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
             });
 
@@ -931,7 +963,6 @@
             document.getElementById('fieldsTeknisiUpdate').style.display = val !== 'STOCK' ? 'block' : 'none';
         }
 
-        // UNDUH CONTOH FORMAT CSV UNTUK SUPERUSER / ADMIN
         function downloadTemplateCSV() {
             const csvContent = "BARANG,SN,MAC,TYPE,POSISI\nONT PREMIUM,SN12345678,AA:BB:CC:11:22:33,ZTE,STOCK\nSTB,SN87654321,AA:BB:CC:44:55:66,HG680,STATUS SCMT";
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
@@ -942,7 +973,6 @@
             a.click();
         }
 
-        // FORM TAMBAH BARANG BARU SATUAN
         document.getElementById('formNTE').addEventListener('submit', function(e) {
             e.preventDefault();
             if (currentUser.role === 'user') return Swal.fire('Akses Ditolak', 'Tidak memiliki izin.', 'error');
@@ -992,7 +1022,6 @@
             .finally(() => btn.disabled = false);
         });
 
-        // PROSES UPLOAD BATCH CSV
         function processBatchUpload() {
             const fileInput = document.getElementById('batchFile');
             const targetSheet = document.getElementById('batchSheet').value;
