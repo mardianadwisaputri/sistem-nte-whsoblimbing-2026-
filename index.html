@@ -12,8 +12,8 @@
 
     <style>
         :root {
-            --primary-color: #dc3545;
-            --primary-dark: #b02a37;
+            --primary-color: #9b1c28; /* Diubah ke Burgundy */
+            --primary-dark: #75121c;  /* Burgundy lebih gelap */
             --bg-color: #f4f6f9;
             --card-bg: #ffffff;
             --text-color: #2b2f33;
@@ -44,11 +44,44 @@
             box-shadow: 0 1px 3px rgba(0,0,0,0.04);
         }
 
-        .navbar { background-color: #9b1c28 !important; border-bottom: 2px solid #75121c; padding: 0.75rem 1rem; }
+        .navbar { background-color: var(--primary-color) !important; border-bottom: 2px solid var(--primary-dark); padding: 0.75rem 1rem; }
         .navbar-brand { font-weight: 700; color: #fff !important; }
         .nav-link { font-weight: 500; border-radius: 4px; padding: 6px 14px !important; margin: 0 3px; color: rgba(255,255,255,0.9) !important; }
         .nav-link:hover, .nav-link.active { background-color: rgba(255, 255, 255, 0.15) !important; color: #fff !important; font-weight: 600; }
         
+        /* Kustomisasi Nav Pills Burgundy (Menggantikan Biru Standar) */
+        .nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+            background-color: var(--primary-color) !important;
+            color: #fff !important;
+        }
+        .nav-pills .nav-link {
+            color: var(--primary-color);
+            font-weight: 600;
+        }
+
+        /* Penyesuaian Tombol Bootstrap Utama menjadi Burgundy */
+        .btn-danger {
+            background-color: var(--primary-color) !important;
+            border-color: var(--primary-dark) !important;
+        }
+        .btn-danger:hover, .btn-danger:focus {
+            background-color: var(--primary-dark) !important;
+            border-color: var(--primary-dark) !important;
+        }
+        .btn-outline-danger {
+            color: var(--primary-color) !important;
+            border-color: var(--primary-color) !important;
+        }
+        .btn-outline-danger:hover {
+            background-color: var(--primary-color) !important;
+            color: #fff !important;
+        }
+
+        .text-danger { color: var(--primary-color) !important; }
+        .border-danger { border-color: var(--primary-color) !important; }
+        .bg-danger { background-color: var(--primary-color) !important; }
+        .bg-danger-subtle { background-color: rgba(155, 28, 40, 0.1) !important; }
+
         .stat-card { transition: transform 0.15s ease, box-shadow 0.15s ease; }
         .stat-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
         .stat-icon { width: 42px; height: 42px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; }
@@ -56,13 +89,13 @@
         .table { font-size: 0.85rem; color: var(--text-color) !important; }
         .table-hover tbody tr:hover { background-color: var(--table-hover) !important; color: var(--text-color); }
         .table-responsive { max-height: 540px; overflow-y: auto; }
-        th { position: sticky; top: 0; background-color: #9b1c28 !important; color: white !important; z-index: 2; white-space: nowrap; font-weight: 600; font-size: 0.8rem; text-transform: uppercase; }
+        th { position: sticky; top: 0; background-color: var(--primary-color) !important; color: white !important; z-index: 2; white-space: nowrap; font-weight: 600; font-size: 0.8rem; text-transform: uppercase; }
         
         .badge-status { font-weight: 700; padding: 5px 12px; border-radius: 6px; display: inline-block; font-size: 0.75rem; letter-spacing: 0.5px; }
         .login-card { max-width: 420px; margin: auto; border-radius: 8px; border-top: 4px solid var(--primary-color); }
         .view-section { display: none; }
         .view-section.active { display: block; }
-        .quick-sn-box { background: linear-gradient(135deg, #9b1c28, #dc3545); color: white; border-radius: 8px; }
+        .quick-sn-box { background: linear-gradient(135deg, #9b1c28, #75121c); color: white; border-radius: 8px; }
         
         .form-control, .form-select { font-size: 0.95rem; border-color: var(--border-color); background-color: var(--card-bg); color: var(--text-color); border-radius: 6px; }
         .form-label { font-size: 0.85rem; font-weight: 600; margin-bottom: 0.3rem; }
@@ -233,7 +266,6 @@
                                             <option value="INTECH">INTECH</option>
                                             <option value="INSTALLED">INSTALLED</option>
                                             <option value="DISMANTLE">DISMANTLE</option>
-                                            <!-- Ditambahkan opsi SCMT jika TIF/TELKOM terpilih -->
                                             <option value="STATUS SCMT" id="optScmtInitial" style="display: none;">STATUS SCMT</option>
                                         </select>
                                     </div>
@@ -910,7 +942,7 @@
             if (chartPieInstance) chartPieInstance.destroy();
             chartPieInstance = new Chart(ctxPie, {
                 type: 'doughnut',
-                data: { labels: Object.keys(statusCounts), datasets: [{ data: Object.values(statusCounts), backgroundColor: ['#198754', '#ffc107', '#0d6efd', '#dc3545', '#334155', '#6c757d'] }] },
+                data: { labels: Object.keys(statusCounts), datasets: [{ data: Object.values(statusCounts), backgroundColor: ['#198754', '#ffc107', '#0d6efd', '#9b1c28', '#334155', '#6c757d'] }] },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
             });
 
@@ -989,152 +1021,4 @@
                 document.getElementById('formNTE').reset();
                 loadData();
             })
-            .finally(() => btn.disabled = false);
-        });
-
-        // PROSES UPLOAD BATCH CSV
-        function processBatchUpload() {
-            const fileInput = document.getElementById('batchFile');
-            const targetSheet = document.getElementById('batchSheet').value;
-            if (fileInput.files.length === 0) return Swal.fire('Peringatan', 'Pilih file CSV terlebih dahulu.', 'warning');
-
-            const file = fileInput.files[0];
-            const reader = new FileReader();
-            reader.onload = async function(e) {
-                const text = e.target.result;
-                const lines = text.split(/\r\n|\n/);
-                if (lines.length <= 1) return Swal.fire('Error', 'File CSV kosong atau format tidak sesuai.', 'error');
-
-                Swal.fire({ title: 'Mengunggah Data Massal...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-
-                let successCount = 0;
-                for (let i = 1; i < lines.length; i++) {
-                    const line = lines[i].trim();
-                    if (!line) continue;
-                    const cols = line.split(',');
-                    if (cols.length >= 2) {
-                        const barang = cols[0] ? cols[0].replace(/"/g, '').trim() : '';
-                        const sn = cols[1] ? cols[1].replace(/"/g, '').trim() : '';
-                        const mac = cols[2] ? cols[2].replace(/"/g, '').trim() : '';
-                        const type = cols[3] ? cols[3].replace(/"/g, '').trim() : '';
-                        const posisi = cols[4] ? cols[4].replace(/"/g, '').trim() : 'STOCK';
-
-                        if (sn) {
-                            try {
-                                await fetch(SCRIPT_URL, {
-                                    method: 'POST',
-                                    headers: { "Content-Type": "text/plain;charset=utf-8" },
-                                    body: JSON.stringify({
-                                        action: 'create', sheetName: targetSheet,
-                                        BARANG: barang, SN: sn, MAC: mac, TYPE: type, POSISI: posisi, PEKERJAAN: ""
-                                    })
-                                });
-                                successCount++;
-                            } catch(err) {}
-                        }
-                    }
-                }
-                Swal.fire('Berhasil!', successCount + ' data berhasil diunggah secara massal ke ' + targetSheet, 'success');
-                fileInput.value = '';
-                loadData();
-            };
-            reader.readAsText(file);
-        }
-
-        function handleCariSN(e) {
-            e.preventDefault();
-            const sn = document.getElementById('inputCariSN').value.trim();
-            const found = allNormalizedData.find(i => i.sn.toUpperCase() === sn.toUpperCase());
-            if (found) {
-                activeFoundItem = found;
-                document.getElementById('boxDetailUpdate').style.display = 'block';
-                document.getElementById('infoKategori').innerText = found.sheet;
-                document.getElementById('infoSN').innerText = found.sn;
-                document.getElementById('infoBarangType').innerText = found.barang + ' (' + found.type + ')';
-                
-                let badgeClass = 'bg-secondary';
-                let pos = found.posisi.toUpperCase();
-                if (pos.includes('STOCK')) badgeClass = 'bg-success text-white';
-                else if (pos.includes('INTECH')) badgeClass = 'bg-warning text-dark';
-                else if (pos.includes('INSTALLED')) badgeClass = 'bg-primary text-white';
-                else if (pos.includes('SCMT')) badgeClass = 'bg-dark text-white';
-                else if (pos.includes('DISMANTLE')) badgeClass = 'bg-danger text-white';
-
-                document.getElementById('infoStatusBadge').innerHTML = '<span class="badge-status ' + badgeClass + '">' + found.posisi + '</span>';
-                
-                updatePosisiDropdownOptions();
-                document.getElementById('updateStatusSelect').value = found.posisi || 'STOCK';
-                document.getElementById('updateNIK').value = found.nik !== '-' ? found.nik : '';
-                document.getElementById('updateNama').value = found.nama !== '-' ? found.nama : '';
-                document.getElementById('updateMitra').value = found.mitra !== '-' ? found.mitra : '';
-                document.getElementById('updatePekerjaan').value = found.pekerjaan !== '-' ? found.pekerjaan : 'PSB';
-                document.getElementById('updateTiket').value = found.tiket !== '-' ? found.tiket : '';
-                
-                toggleUpdateStatusFields(found.posisi || 'STOCK');
-                document.getElementById('boxDetailUpdate').scrollIntoView({ behavior: 'smooth' });
-            } else {
-                Swal.fire('Tidak Ditemukan', 'SN "' + sn + '" tidak terdaftar di sistem.', 'warning');
-            }
-        }
-
-        function batalUpdate() { 
-            document.getElementById('boxDetailUpdate').style.display = 'none'; 
-            activeFoundItem = null; 
-            document.getElementById('formCariSN').reset();
-            document.getElementById('inputCariSN').focus();
-        }
-
-        function handleSimpanStatus(e) {
-            e.preventDefault();
-            if (!activeFoundItem) return;
-            const newStatus = document.getElementById('updateStatusSelect').value;
-            
-            Swal.fire({ title: 'Menyimpan ke Spreadsheet...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-            
-            fetch(SCRIPT_URL, {
-                method: 'POST',
-                headers: { "Content-Type": "text/plain;charset=utf-8" },
-                body: JSON.stringify({
-                    action: 'update_status', 
-                    sheetName: activeFoundItem.sheet, 
-                    sn: activeFoundItem.sn,
-                    status: newStatus,
-                    nik: newStatus === 'STOCK' ? '' : document.getElementById('updateNIK').value.trim(),
-                    nama: newStatus === 'STOCK' ? '' : document.getElementById('updateNama').value.trim(),
-                    mitra: newStatus === 'STOCK' ? '' : document.getElementById('updateMitra').value.trim(),
-                    pekerjaan: newStatus === 'STOCK' ? '' : document.getElementById('updatePekerjaan').value,
-                    tiket: newStatus === 'STOCK' ? '' : document.getElementById('updateTiket').value.trim()
-                })
-            })
-            .then(res => res.text())
-            .then(text => {
-                let res;
-                try { res = JSON.parse(text); } catch(err) { res = { status: 'success', message: 'Status berhasil diperbarui.' }; }
-
-                if(res.status === 'success' || !res.status) {
-                    Swal.fire({ icon: 'success', title: 'Berhasil!', text: res.message || 'Status perangkat berhasil diperbarui.', timer: 1500, showConfirmButton: false });
-                    batalUpdate();
-                    loadData();
-                } else {
-                    Swal.fire('Gagal!', res.message || 'Terjadi kesalahan.', 'error');
-                }
-            })
-            .catch(() => {
-                Swal.fire({ icon: 'success', title: 'Berhasil!', text: 'Perubahan status berhasil dikirim.', timer: 1500, showConfirmButton: false });
-                batalUpdate();
-                loadData();
-            });
-        }
-
-        function exportTableToCSV() {
-            if (filteredData.length === 0) return Swal.fire('Info', 'Tidak ada data.', 'info');
-            let csv = "No,Kategori,Tgl In,Barang,SN,Type,Posisi,Nama Teknisi,Mitra,Pekerjaan,Tiket\n";
-            filteredData.forEach((r, idx) => { csv += '"' + (idx+1) + '","' + r.sheet + '","' + r.tglIn + '","' + r.barang + '","' + r.sn + '","' + r.type + '","' + r.posisi + '","' + r.nama + '","' + r.mitra + '","' + r.pekerjaan + '","' + r.tiket + '"\n'; });
-            const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
-            a.download = 'NTE_Report.csv'; a.click();
-        }
-
-        window.addEventListener('DOMContentLoaded', () => { checkAuth(); });
-    </script>
-</body>
-</html>
+            .finally(() => btn.disabled =
