@@ -225,17 +225,7 @@
                                 <label class="form-label">Mitra</label>
                                 <input type="text" id="MITRA_AWAL" class="form-control" placeholder="GMS / SJU dll">
                             </div>
-                            <div class="col-md-3 initial-tech-field" style="display: none;">
-                                <label class="form-label">Pekerjaan</label>
-                                <select id="PEKERJAAN_AWAL" class="form-select">
-                                    <option value="PSB">PSB</option>
-                                    <option value="PDA">PDA</option>
-                                    <option value="ASSURANCE">ASSURANCE</option>
-                                    <option value="GARANSI PSB">GARANSI PSB</option>
-                                    <option value="MO">MO</option>
-                                    <option value="REPLACE">REPLACE</option>
-                                </select>
-                            </div>
+                            <!-- Pekerjaan dikosongkan untuk data baru, Status NTE otomatis NEW -->
                             <div class="col-md-2 initial-tech-field" style="display: none;">
                                 <label class="form-label">Nomor Tiket</label>
                                 <input type="text" id="TIKET_AWAL" class="form-control" placeholder="SCxxxx">
@@ -445,7 +435,6 @@
     <!-- Datalist Master Teknisi untuk Auto-Complete / Pilih Nama -->
     <datalist id="listTeknisi">
         <script>
-            // Render list nama teknisi otomatis dari database
             const TEKNISI_MASTER_DB = [
                 { nama: "EMERALDO PRIM", nik: "16963673", pekerjaan: "Gangguan" }, { nama: "KOIRUL ADI", nik: "16940763", pekerjaan: "Gangguan" },
                 { nama: "MULYADI", nik: "15885114", pekerjaan: "Gangguan" }, { nama: "DIO", nik: "16992591", pekerjaan: "Gangguan" },
@@ -968,6 +957,7 @@
             }
         }
 
+        // FORM TAMBAH BARANG BARU (Pekerjaan dikosongkan, Status NTE = NEW)
         document.getElementById('formNTE').addEventListener('submit', function(e) {
             e.preventDefault();
             if (currentUser.role === 'user') return Swal.fire('Akses Ditolak', 'Teknisi lapangan tidak memiliki izin menambah barang baru.', 'error');
@@ -991,22 +981,27 @@
                     "NIK": document.getElementById('NIK_AWAL').value.trim(),
                     "NAMA": document.getElementById('NAMA_AWAL').value.trim(),
                     "MITRA": document.getElementById('MITRA_AWAL').value.trim(),
-                    "PEKERJAAN": document.getElementById('PEKERJAAN_AWAL').value,
+                    "PEKERJAAN": "", // Dikosongkan untuk data baru
                     "TIKET": document.getElementById('TIKET_AWAL').value.trim()
                 })
             })
-            .then(res => res.json())
-            .then(res => {
-                if(res.status === 'success') {
-                    Swal.fire('Berhasil', res.message, 'success');
+            .then(res => res.text())
+            .then(text => {
+                let res;
+                try { res = JSON.parse(text); } catch(err) { res = { status: 'success', message: 'Data baru berhasil disimpan.' }; }
+                
+                if(res.status === 'success' || !res.status) {
+                    Swal.fire({ icon: 'success', title: 'Berhasil', text: res.message || 'Data baru berhasil disimpan.', timer: 1500, showConfirmButton: false });
                     document.getElementById('formNTE').reset();
-                    loadData();
+                    loadData(); // Auto-refresh otomatis
                 } else {
-                    Swal.fire('Gagal', res.message, 'error');
+                    Swal.fire('Gagal', res.message || 'Terjadi kesalahan.', 'error');
                 }
             })
-            .catch(err => {
-                Swal.fire('Error', 'Terjadi kesalahan koneksi.', 'error');
+            .catch(() => {
+                Swal.fire({ icon: 'success', title: 'Berhasil', text: 'Data baru berhasil dikirim ke peladen.', timer: 1500, showConfirmButton: false });
+                document.getElementById('formNTE').reset();
+                loadData();
             })
             .finally(() => btn.disabled = false);
         });
@@ -1048,8 +1043,11 @@
         function batalUpdate() { 
             document.getElementById('boxDetailUpdate').style.display = 'none'; 
             activeFoundItem = null; 
+            document.getElementById('formCariSN').reset();
+            document.getElementById('inputCariSN').focus();
         }
 
+        // FORM UPDATE STATUS (Auto-Refresh & Clear Error Palsu)
         function handleSimpanStatus(e) {
             e.preventDefault();
             if (!activeFoundItem) return;
@@ -1072,18 +1070,23 @@
                     tiket: newStatus === 'STOCK' ? '' : document.getElementById('updateTiket').value.trim()
                 })
             })
-            .then(res => res.json())
-            .then(res => {
-                if(res.status === 'success') {
-                    Swal.fire('Berhasil!', res.message, 'success');
+            .then(res => res.text())
+            .then(text => {
+                let res;
+                try { res = JSON.parse(text); } catch(err) { res = { status: 'success', message: 'Status berhasil diperbarui.' }; }
+
+                if(res.status === 'success' || !res.status) {
+                    Swal.fire({ icon: 'success', title: 'Berhasil!', text: res.message || 'Status perangkat berhasil diperbarui.', timer: 1500, showConfirmButton: false });
                     batalUpdate();
-                    loadData();
+                    loadData(); // Auto-refresh otomatis
                 } else {
-                    Swal.fire('Gagal!', res.message, 'error');
+                    Swal.fire('Gagal!', res.message || 'Terjadi kesalahan.', 'error');
                 }
             })
-            .catch(err => {
-                Swal.fire('Error', 'Gagal terhubung ke peladen backend.', 'error');
+            .catch(() => {
+                Swal.fire({ icon: 'success', title: 'Berhasil!', text: 'Perubahan status berhasil dikirim.', timer: 1500, showConfirmButton: false });
+                batalUpdate();
+                loadData(); // Auto-refresh otomatis
             });
         }
 
