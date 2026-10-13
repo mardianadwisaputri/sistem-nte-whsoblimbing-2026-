@@ -173,71 +173,125 @@
             <div id="dataView" class="view-section">
                 <div id="adminAddCard" class="card p-4 shadow-sm mb-4 border-top border-danger border-3" style="display: none;">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="fw-bold mb-0 text-danger"><i class="bi bi-plus-square me-2"></i>Entri Data Barang Baru</h5>
-                        <span class="badge bg-danger" id="badgeAddRole">Administrator Gudang</span>
+                        <h5 class="fw-bold mb-0 text-danger"><i class="bi bi-plus-square me-2"></i>Entri Data Barang Baru & Unggah Massal</h5>
+                        <button class="btn btn-sm btn-outline-danger" onclick="downloadTemplateCSV()"><i class="bi bi-file-earmark-arrow-down me-1"></i> Unduh Contoh Format CSV</button>
                     </div>
-                    <form id="formNTE">
-                        <div class="row g-3">
-                            <div class="col-md-2">
-                                <label class="form-label">Kategori Sheet</label>
-                                <select id="inputSheet" class="form-select" required>
-                                    <option value="TSEL">TSEL</option>
-                                    <option value="TIF">TIF</option>
-                                    <option value="TELKOM">TELKOM</option>
-                                    <option value="VULA">VULA</option>
-                                </select>
-                            </div>
-                            <div class="col-md-2">
-                                <label class="form-label">Nama Barang</label>
-                                <input type="text" id="BARANG" class="form-control" placeholder="Contoh: ONT ZTE" required>
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label">Serial Number (SN)</label>
-                                <input type="text" id="SN" class="form-control" placeholder="Nomor Serial" required>
-                            </div>
-                            <div class="col-md-3">
-                                <label class="form-label">MAC Address</label>
-                                <input type="text" id="MAC" class="form-control" placeholder="AA:BB:CC:11:22:33">
-                            </div>
-                            <div class="col-md-2">
-                                <label class="form-label">Type NTE</label>
-                                <input type="text" id="TYPE" class="form-control" placeholder="ZTE / HG680">
-                            </div>
 
-                            <div class="col-md-2">
-                                <label class="form-label">Status Posisi</label>
-                                <select id="STATUS_AWAL" class="form-select" onchange="toggleInitialStatusFields(this.value)">
-                                    <option value="STOCK">STOCK</option>
-                                    <option value="INTECH">INTECH</option>
-                                    <option value="INSTALLED">INSTALLED</option>
-                                    <option value="DISMANTLE">DISMANTLE</option>
-                                </select>
-                            </div>
-                            <div class="col-md-2 initial-tech-field" style="display: none;">
-                                <label class="form-label">NIK Teknisi</label>
-                                <input type="text" id="NIK_AWAL" class="form-control tech-nik-input" placeholder="NIK">
-                            </div>
-                            <div class="col-md-3 initial-tech-field" style="display: none;">
-                                <label class="form-label">Nama Teknisi</label>
-                                <input type="text" id="NAMA_AWAL" class="form-control tech-nama-input" list="listTeknisi" placeholder="Pilih / Ketik Nama">
-                            </div>
-                            <div class="col-md-2 initial-tech-field" style="display: none;">
-                                <label class="form-label">Mitra</label>
-                                <input type="text" id="MITRA_AWAL" class="form-control" placeholder="GMS / SJU dll">
-                            </div>
-                            <!-- Pekerjaan dikosongkan untuk data baru, Status NTE otomatis NEW -->
-                            <div class="col-md-2 initial-tech-field" style="display: none;">
-                                <label class="form-label">Nomor Tiket</label>
-                                <input type="text" id="TIKET_AWAL" class="form-control" placeholder="SCxxxx">
-                            </div>
+                    <!-- TAB PILIHAN INPUT -->
+                    <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link active py-1.5 px-3" id="pills-single-tab" data-bs-toggle="pill" data-bs-target="#pills-single" type="button" role="tab"><i class="bi bi-pencil-square me-1"></i> Entri Satuan</button>
+                        </li>
+                        <li class="nav-item" role="presentation">
+                            <button class="nav-link py-1.5 px-3" id="pills-batch-tab" data-bs-toggle="pill" data-bs-target="#pills-batch" type="button" role="tab"><i class="bi bi-file-earmark-arrow-up me-1"></i> Unggah Massal (CSV)</button>
+                        </li>
+                    </ul>
 
-                            <div class="col-md-3 d-flex align-items-end">
-                                <button type="submit" class="btn btn-danger w-100" id="btnSimpan">
-                                    <i class="bi bi-save me-1"></i> Simpan Data Baru
-                                </button>
+                    <div class="tab-content" id="pills-tabContent">
+                        <!-- FORM SATUAN -->
+                        <div class="tab-pane fade show active" id="pills-single" role="tabpanel">
+                            <form id="formNTE">
+                                <div class="row g-3">
+                                    <div class="col-md-2">
+                                        <label class="form-label">Kategori Sheet</label>
+                                        <select id="inputSheet" class="form-select" required onchange="updatePosisiDropdownOptions()">
+                                            <option value="TSEL">TSEL</option>
+                                            <option value="TIF">TIF</option>
+                                            <option value="TELKOM">TELKOM</option>
+                                            <option value="VULA">VULA</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Jenis Barang</label>
+                                        <select id="BARANG" class="form-select" required>
+                                            <option value="" disabled selected>Pilih Jenis Barang...</option>
+                                            <option value="ONT PREMIUM">ONT PREMIUM</option>
+                                            <option value="ONT DUAL BAND">ONT DUAL BAND</option>
+                                            <option value="KARTU PERDANA">KARTU PERDANA</option>
+                                            <option value="AP MESH">AP MESH</option>
+                                            <option value="STB">STB</option>
+                                            <option value="ORBIT">ORBIT</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Serial Number (SN)</label>
+                                        <input type="text" id="SN" class="form-control" placeholder="Nomor Serial" required>
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">MAC Address</label>
+                                        <input type="text" id="MAC" class="form-control" placeholder="AA:BB:CC...">
+                                    </div>
+                                    <div class="col-md-2">
+                                        <label class="form-label">Type NTE</label>
+                                        <input type="text" id="TYPE" class="form-control" placeholder="ZTE / HG680">
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <label class="form-label">Status Posisi</label>
+                                        <select id="STATUS_AWAL" class="form-select" onchange="toggleInitialStatusFields(this.value)">
+                                            <option value="STOCK">STOCK</option>
+                                            <option value="INTECH">INTECH</option>
+                                            <option value="INSTALLED">INSTALLED</option>
+                                            <option value="DISMANTLE">DISMANTLE</option>
+                                            <!-- Ditambahkan opsi SCMT jika TIF/TELKOM terpilih -->
+                                            <option value="STATUS SCMT" id="optScmtInitial" style="display: none;">STATUS SCMT</option>
+                                        </select>
+                                    </div>
+
+                                    <div class="col-md-2 initial-tech-field" style="display: none;">
+                                        <label class="form-label">NIK Teknisi</label>
+                                        <input type="text" id="NIK_AWAL" class="form-control tech-nik-input" placeholder="NIK">
+                                    </div>
+                                    <div class="col-md-3 initial-tech-field" style="display: none;">
+                                        <label class="form-label">Nama Teknisi</label>
+                                        <input type="text" id="NAMA_AWAL" class="form-control tech-nama-input" list="listTeknisi" placeholder="Pilih / Ketik Nama">
+                                    </div>
+                                    <div class="col-md-2 initial-tech-field" style="display: none;">
+                                        <label class="form-label">Mitra</label>
+                                        <input type="text" id="MITRA_AWAL" class="form-control" placeholder="GMS / SJU dll">
+                                    </div>
+                                    <div class="col-md-3 initial-tech-field" style="display: none;">
+                                        <label class="form-label">Nomor Tiket</label>
+                                        <input type="text" id="TIKET_AWAL" class="form-control" placeholder="SCxxxx">
+                                    </div>
+
+                                    <div class="col-md-3 d-flex align-items-end">
+                                        <button type="submit" class="btn btn-danger w-100" id="btnSimpan">
+                                            <i class="bi bi-save me-1"></i> Simpan Data Baru
+                                        </button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+
+                        <!-- UNGGAH MASSAL CSV -->
+                        <div class="tab-pane fade" id="pills-batch" role="tabpanel">
+                            <div class="p-3 bg-light rounded border">
+                                <h6 class="fw-bold mb-2 text-dark"><i class="bi bi-info-circle-fill text-danger me-1"></i> Petunjuk Unggah Massal untuk Superuser</h6>
+                                <p class="small text-muted mb-2">Unggah file `.csv` dengan format kolom: <code>BARANG, SN, MAC, TYPE, POSISI</code>.</p>
+                                <div class="row g-3 align-items-center">
+                                    <div class="col-md-4">
+                                        <label class="form-label">Pilih File CSV:</label>
+                                        <input type="file" id="batchFile" class="form-control" accept=".csv,.txt">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label class="form-label">Target Sheet:</label>
+                                        <select id="batchSheet" class="form-select">
+                                            <option value="TSEL">TSEL</option>
+                                            <option value="TIF">TIF</option>
+                                            <option value="TELKOM">TELKOM</option>
+                                            <option value="VULA">VULA</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-3 d-flex align-items-end pt-3">
+                                        <button type="button" class="btn btn-success w-100" onclick="processBatchUpload()">
+                                            <i class="bi bi-cloud-arrow-up me-1"></i> Proses Unggah Massal
+                                        </button>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                    </form>
+                    </div>
                 </div>
 
                 <div class="card p-4 shadow-sm">
@@ -355,6 +409,7 @@
                                         <option value="INTECH">INTECH</option>
                                         <option value="INSTALLED">INSTALLED</option>
                                         <option value="DISMANTLE">DISMANTLE</option>
+                                        <option value="STATUS SCMT" id="optScmtUpdate" style="display: none;">STATUS SCMT</option>
                                     </select>
                                 </div>
 
@@ -432,27 +487,27 @@
         </div>
     </div>
 
-    <!-- Datalist Master Teknisi untuk Auto-Complete / Pilih Nama -->
+    <!-- Datalist Master Teknisi -->
     <datalist id="listTeknisi">
         <script>
             const TEKNISI_MASTER_DB = [
-                { nama: "EMERALDO PRIM", nik: "16963673", pekerjaan: "Gangguan" }, { nama: "KOIRUL ADI", nik: "16940763", pekerjaan: "Gangguan" },
-                { nama: "MULYADI", nik: "15885114", pekerjaan: "Gangguan" }, { nama: "DIO", nik: "16992591", pekerjaan: "Gangguan" },
-                { nama: "ANAS", nik: "16981757", pekerjaan: "Gangguan" }, { nama: "ERWIN RAHMADANI", nik: "16002218", pekerjaan: "Gangguan" },
-                { nama: "DIMAS FIRMANSYAH", nik: "16951656", pekerjaan: "Gangguan" }, { nama: "M SUEB", nik: "16830665", pekerjaan: "Gangguan" },
-                { nama: "MUHAMMAD SHOLEH IRFANTO", nik: "16982456", pekerjaan: "Gangguan" }, { nama: "ANDUK SLAMET HARIYONO", nik: "15889049", pekerjaan: "Gangguan" },
-                { nama: "IRVAN ANDI", nik: "16943172", pekerjaan: "Gangguan" }, { nama: "KOIRUL ANGGAR", nik: "16920456", pekerjaan: "Gangguan" },
-                { nama: "ROEDI", nik: "15885128", pekerjaan: "Gangguan" }, { nama: "ALRIZA DIOUF", nik: "16220024", pekerjaan: "Gangguan" },
-                { nama: "AFIF AFFANDI", nik: "16004542", pekerjaan: "PSB" }, { nama: "SONY HARYANTO", nik: "16650052", pekerjaan: "PSB" },
-                { nama: "AGUS SETIAWAN", nik: "16790219", pekerjaan: "PSB" }, { nama: "AHMAD MUSYAFA", nik: "16983579", pekerjaan: "PSB" },
-                { nama: "JOKO PURNOMO", nik: "15892755", pekerjaan: "PSB" }, { nama: "AHMAD JOHAN FUALDI", nik: "16013901", pekerjaan: "PSB" },
-                { nama: "DHEVID WIDHI ANDIKA", nik: "16974527", pekerjaan: "PSB" }, { nama: "EDI SUDRAJAT", nik: "16995159", pekerjaan: "PSB" },
-                { nama: "AGUNG FIRMANSYAH", nik: "16995426", pekerjaan: "PSB" }, { nama: "MUHAMMAD ARIS NUR", nik: "16010921", pekerjaan: "PSB" },
-                { nama: "NGATEMAN", nik: "16740232", pekerjaan: "PSB" }, { nama: "ALE SANDRO FIRDA RAHMAN", nik: "16031033", pekerjaan: "PSB" },
-                { nama: "HARIANTO", nik: "16710111", pekerjaan: "PSB" }, { nama: "ABDI SUROTO", nik: "15896842", pekerjaan: "PSB" },
-                { nama: "ROMLI", nik: "16640053", pekerjaan: "PSB" }, { nama: "AHMAD KHOIRUL HUDA", nik: "16061134", pekerjaan: "PSB" },
-                { nama: "RIZKI PRASETIYO", nik: "16974797", pekerjaan: "PSB" }, { nama: "YOGA A", nik: "26990111", pekerjaan: "REPLACE" },
-                { nama: "RENDY ANDIKA", nik: "26070088", pekerjaan: "REPLACE" }, { nama: "MIKAELL", nik: "26000155", pekerjaan: "REPLACE" }
+                { nama: "EMERALDO PRIM", nik: "16963673", pekerjaan: "Gangguan", mitra: "GMS" }, { nama: "KOIRUL ADI", nik: "16940763", pekerjaan: "Gangguan", mitra: "GMS" },
+                { nama: "MULYADI", nik: "15885114", pekerjaan: "Gangguan", mitra: "SJU" }, { nama: "DIO", nik: "16992591", pekerjaan: "Gangguan", mitra: "SJU" },
+                { nama: "ANAS", nik: "16981757", pekerjaan: "Gangguan", mitra: "GMS" }, { nama: "ERWIN RAHMADANI", nik: "16002218", pekerjaan: "Gangguan", mitra: "GMS" },
+                { nama: "DIMAS FIRMANSYAH", nik: "16951656", pekerjaan: "Gangguan", mitra: "SJU" }, { nama: "M SUEB", nik: "16830665", pekerjaan: "Gangguan", mitra: "SJU" },
+                { nama: "MUHAMMAD SHOLEH IRFANTO", nik: "16982456", pekerjaan: "Gangguan", mitra: "GMS" }, { nama: "ANDUK SLAMET HARIYONO", nik: "15889049", pekerjaan: "Gangguan", mitra: "GMS" },
+                { nama: "IRVAN ANDI", nik: "16943172", pekerjaan: "Gangguan", mitra: "SJU" }, { nama: "KOIRUL ANGGAR", nik: "16920456", pekerjaan: "Gangguan", mitra: "SJU" },
+                { nama: "ROEDI", nik: "15885128", pekerjaan: "Gangguan", mitra: "GMS" }, { nama: "ALRIZA DIOUF", nik: "16220024", pekerjaan: "Gangguan", mitra: "GMS" },
+                { nama: "AFIF AFFANDI", nik: "16004542", pekerjaan: "PSB", mitra: "GMS" }, { nama: "SONY HARYANTO", nik: "16650052", pekerjaan: "PSB", mitra: "GMS" },
+                { nama: "AGUS SETIAWAN", nik: "16790219", pekerjaan: "PSB", mitra: "SJU" }, { nama: "AHMAD MUSYAFA", nik: "16983579", pekerjaan: "PSB", mitra: "SJU" },
+                { nama: "JOKO PURNOMO", nik: "15892755", pekerjaan: "PSB", mitra: "GMS" }, { nama: "AHMAD JOHAN FUALDI", nik: "16013901", pekerjaan: "PSB", mitra: "GMS" },
+                { nama: "DHEVID WIDHI ANDIKA", nik: "16974527", pekerjaan: "PSB", mitra: "SJU" }, { nama: "EDI SUDRAJAT", nik: "16995159", pekerjaan: "PSB", mitra: "SJU" },
+                { nama: "AGUNG FIRMANSYAH", nik: "16995426", pekerjaan: "PSB", mitra: "GMS" }, { nama: "MUHAMMAD ARIS NUR", nik: "16010921", pekerjaan: "PSB", mitra: "GMS" },
+                { nama: "NGATEMAN", nik: "16740232", pekerjaan: "PSB", mitra: "SJU" }, { nama: "ALE SANDRO FIRDA RAHMAN", nik: "16031033", pekerjaan: "PSB", mitra: "SJU" },
+                { nama: "HARIANTO", nik: "16710111", pekerjaan: "PSB", mitra: "GMS" }, { nama: "ABDI SUROTO", nik: "15896842", pekerjaan: "PSB", mitra: "GMS" },
+                { nama: "ROMLI", nik: "16640053", pekerjaan: "PSB", mitra: "SJU" }, { nama: "AHMAD KHOIRUL HUDA", nik: "16061134", pekerjaan: "PSB", mitra: "SJU" },
+                { nama: "RIZKI PRASETIYO", nik: "16974797", pekerjaan: "PSB", mitra: "GMS" }, { nama: "YOGA A", nik: "26990111", pekerjaan: "REPLACE", mitra: "GMS" },
+                { nama: "RENDY ANDIKA", nik: "26070088", pekerjaan: "REPLACE", mitra: "SJU" }, { nama: "MIKAELL", nik: "26000155", pekerjaan: "REPLACE", mitra: "SJU" }
             ];
             TEKNISI_MASTER_DB.forEach(t => {
                 document.write('<option value="' + t.nama + '">');
@@ -505,15 +560,8 @@
             initTheme();
             const savedUser = localStorage.getItem('nte_session_user');
             if (savedUser) {
-                try { 
-                    currentUser = JSON.parse(savedUser); 
-                    initAppUI(); 
-                } catch (e) { 
-                    showLogin(); 
-                }
-            } else { 
-                showLogin(); 
-            }
+                try { currentUser = JSON.parse(savedUser); initAppUI(); } catch (e) { showLogin(); }
+            } else { showLogin(); }
         }
 
         function showLogin() {
@@ -534,11 +582,7 @@
             }
         });
 
-        function handleLogout() { 
-            localStorage.removeItem('nte_session_user'); 
-            currentUser = null; 
-            showLogin(); 
-        }
+        function handleLogout() { localStorage.removeItem('nte_session_user'); currentUser = null; showLogin(); }
 
         function initAppUI() {
             document.getElementById('loginScreen').style.display = 'none';
@@ -552,12 +596,10 @@
 
             if (role === 'admin') {
                 if(adminAddCard) adminAddCard.style.display = 'block';
-                if(document.getElementById('badgeAddRole')) document.getElementById('badgeAddRole').innerText = 'ADMIN GUDANG';
                 if(navItemUsers) navItemUsers.style.display = 'block';
                 renderUsersTable();
             } else if (role === 'superuser') {
                 if(adminAddCard) adminAddCard.style.display = 'block';
-                if(document.getElementById('badgeAddRole')) document.getElementById('badgeAddRole').innerText = 'SUPERUSER GUDANG';
                 if(navItemUsers) navItemUsers.style.display = 'none';
             } else {
                 if(adminAddCard) adminAddCard.style.display = 'none';
@@ -566,6 +608,7 @@
 
             if (role === 'user') { showView('statusView'); } else { showView('dashboardView'); }
             loadData();
+            updatePosisiDropdownOptions();
         }
 
         function renderUsersTable() {
@@ -573,61 +616,25 @@
             const tbody = document.getElementById('tabelUsersBody');
             tbody.innerHTML = '';
             for (const [username, details] of Object.entries(globalUsersCache)) {
-                let badgeRole = 'bg-secondary';
-                if(details.role === 'admin') badgeRole = 'bg-danger';
-                else if(details.role === 'superuser') badgeRole = 'bg-warning text-dark';
-                else badgeRole = 'bg-primary';
-
+                let badgeRole = details.role === 'admin' ? 'bg-danger' : (details.role === 'superuser' ? 'bg-warning text-dark' : 'bg-primary');
                 const tr = document.createElement('tr');
-                tr.innerHTML = 
-                    '<td><strong>' + username + '</strong></td>' +
-                    '<td>' + details.kategori + '</td>' +
-                    '<td><span class="badge ' + badgeRole + '">' + details.role.toUpperCase() + '</span></td>' +
-                    '<td class="text-center">' +
-                        '<button class="btn btn-sm btn-outline-primary me-1" onclick="editUser(\'' + username + '\')" title="Edit User"><i class="bi bi-pencil-square"></i></button>' +
-                        (username !== 'admin' ? '<button class="btn btn-sm btn-outline-danger" onclick="deleteUser(\'' + username + '\')" title="Hapus User"><i class="bi bi-trash"></i></button>' : '') +
-                    '</td>';
+                tr.innerHTML = '<td><strong>' + username + '</strong></td><td>' + details.kategori + '</td><td><span class="badge ' + badgeRole + '">' + details.role.toUpperCase() + '</span></td><td class="text-center"><button class="btn btn-sm btn-outline-primary me-1" onclick="editUser(\'' + username + '\')"><i class="bi bi-pencil-square"></i></button>' + (username !== 'admin' ? '<button class="btn btn-sm btn-outline-danger" onclick="deleteUser(\'' + username + '\')"><i class="bi bi-trash"></i></button>' : '') + '</td>';
                 tbody.appendChild(tr);
             }
         }
 
         async function openAddUserModal() {
-            if (currentUser.role !== 'admin') return Swal.fire('Akses Ditolak', 'Hanya Admin utama yang dapat mengelola pengguna.', 'error');
+            if (currentUser.role !== 'admin') return Swal.fire('Akses Ditolak', 'Hanya Admin utama.', 'error');
             const { value: formValues } = await Swal.fire({
                 title: 'Tambah Pengguna Baru',
-                html:
-                    '<input id="swal-input-user" class="swal2-input" placeholder="Username">' +
-                    '<input id="swal-input-pass" type="password" class="swal2-input" placeholder="Password">' +
-                    '<input id="swal-input-kat" class="swal2-input" placeholder="Wilayah / Kategori">' +
-                    '<select id="swal-input-role" class="swal2-input">' +
-                        '<option value="admin">Admin</option>' +
-                        '<option value="superuser">Superuser</option>' +
-                        '<option value="user" selected>User (Teknisi)</option>' +
-                    '</select>',
-                focusConfirm: false,
-                showCancelButton: true,
-                confirmButtonText: 'Simpan',
-                cancelButtonText: 'Batal',
-                preConfirm: () => {
-                    return [
-                        document.getElementById('swal-input-user').value.trim(),
-                        document.getElementById('swal-input-pass').value.trim(),
-                        document.getElementById('swal-input-kat').value.trim(),
-                        document.getElementById('swal-input-role').value
-                    ]
-                }
+                html: '<input id="swal-input-user" class="swal2-input" placeholder="Username"><input id="swal-input-pass" type="password" class="swal2-input" placeholder="Password"><input id="swal-input-kat" class="swal2-input" placeholder="Wilayah / Kategori"><select id="swal-input-role" class="swal2-input"><option value="admin">Admin</option><option value="superuser">Superuser</option><option value="user" selected>User (Teknisi)</option></select>',
+                focusConfirm: false, showCancelButton: true, confirmButtonText: 'Simpan', cancelButtonText: 'Batal',
+                preConfirm: () => [document.getElementById('swal-input-user').value.trim(), document.getElementById('swal-input-pass').value.trim(), document.getElementById('swal-input-kat').value.trim(), document.getElementById('swal-input-role').value]
             });
-
             if (formValues) {
                 const [username, password, kategori, role] = formValues;
-                if (!username || !password) {
-                    Swal.fire('Gagal', 'Username dan password wajib diisi!', 'error');
-                    return;
-                }
-                if (globalUsersCache[username]) {
-                    Swal.fire('Gagal', 'Username sudah terdaftar!', 'error');
-                    return;
-                }
+                if (!username || !password) return Swal.fire('Gagal', 'Username & Password wajib diisi!', 'error');
+                if (globalUsersCache[username]) return Swal.fire('Gagal', 'Username sudah terdaftar!', 'error');
                 globalUsersCache[username] = { password: password, role: role, kategori: kategori || 'Umum' };
                 localStorage.setItem('nte_users_db', JSON.stringify(globalUsersCache));
                 renderUsersTable();
@@ -640,27 +647,10 @@
             const user = globalUsersCache[username];
             const { value: formValues } = await Swal.fire({
                 title: 'Edit Pengguna: ' + username,
-                html:
-                    '<input id="swal-input-pass" type="password" class="swal2-input" placeholder="Password Baru" value="' + user.password + '">' +
-                    '<input id="swal-input-kat" class="swal2-input" placeholder="Wilayah / Kategori" value="' + user.kategori + '">' +
-                    '<select id="swal-input-role" class="swal2-input">' +
-                        '<option value="admin" ' + (user.role === 'admin' ? 'selected' : '') + '>Admin</option>' +
-                        '<option value="superuser" ' + (user.role === 'superuser' ? 'selected' : '') + '>Superuser</option>' +
-                        '<option value="user" ' + (user.role === 'user' ? 'selected' : '') + '>User (Teknisi)</option>' +
-                    '</select>',
-                focusConfirm: false,
-                showCancelButton: true,
-                confirmButtonText: 'Perbarui',
-                cancelButtonText: 'Batal',
-                preConfirm: () => {
-                    return [
-                        document.getElementById('swal-input-pass').value.trim(),
-                        document.getElementById('swal-input-kat').value.trim(),
-                        document.getElementById('swal-input-role').value
-                    ]
-                }
+                html: '<input id="swal-input-pass" type="password" class="swal2-input" placeholder="Password Baru" value="' + user.password + '"><input id="swal-input-kat" class="swal2-input" placeholder="Wilayah / Kategori" value="' + user.kategori + '"><select id="swal-input-role" class="swal2-input"><option value="admin" ' + (user.role === 'admin' ? 'selected' : '') + '>Admin</option><option value="superuser" ' + (user.role === 'superuser' ? 'selected' : '') + '>Superuser</option><option value="user" ' + (user.role === 'user' ? 'selected' : '') + '>User (Teknisi)</option></select>',
+                focusConfirm: false, showCancelButton: true, confirmButtonText: 'Perbarui', cancelButtonText: 'Batal',
+                preConfirm: () => [document.getElementById('swal-input-pass').value.trim(), document.getElementById('swal-input-kat').value.trim(), document.getElementById('swal-input-role').value]
             });
-
             if (formValues) {
                 const [password, kategori, role] = formValues;
                 globalUsersCache[username].password = password || user.password;
@@ -675,14 +665,9 @@
         function deleteUser(username) {
             if (currentUser.role !== 'admin') return;
             Swal.fire({
-                title: 'Hapus User?',
-                text: 'Anda yakin ingin menghapus user "' + username + '"?',
-                icon: 'warning',
-                showCancelButton: true,
-                confirmButtonText: 'Ya, Hapus',
-                cancelButtonText: 'Batal'
-            }).then((result) => {
-                if (result.isConfirmed) {
+                title: 'Hapus User?', text: 'Hapus user "' + username + '"?', icon: 'warning', showCancelButton: true, confirmButtonText: 'Ya, Hapus', cancelButtonText: 'Batal'
+            }).then((res) => {
+                if (res.isConfirmed) {
                     delete globalUsersCache[username];
                     localStorage.setItem('nte_users_db', JSON.stringify(globalUsersCache));
                     renderUsersTable();
@@ -692,9 +677,7 @@
         }
 
         function showView(viewId) {
-            if (viewId === 'usersView' && currentUser.role !== 'admin') {
-                return Swal.fire('Akses Ditolak', 'Menu ini khusus untuk Administrator.', 'error');
-            }
+            if (viewId === 'usersView' && currentUser.role !== 'admin') return Swal.fire('Akses Ditolak', 'Khusus Administrator.', 'error');
             document.querySelectorAll('.view-section').forEach(el => el.classList.remove('active'));
             document.querySelectorAll('.navbar-nav .nav-link').forEach(el => el.classList.remove('active'));
             document.getElementById(viewId).classList.add('active');
@@ -703,9 +686,7 @@
             else if (viewId === 'statusView') {
                 document.getElementById('nav-status').classList.add('active');
                 setTimeout(() => document.getElementById('inputCariSN').focus(), 200);
-            } else if (viewId === 'usersView') {
-                document.getElementById('nav-users').classList.add('active');
-            }
+            } else if (viewId === 'usersView') document.getElementById('nav-users').classList.add('active');
         }
 
         function parseGVizTable(sheetName, jsonData) {
@@ -780,7 +761,7 @@
             }
         }
 
-        // AUTO-FILL NIK & NAMA DUA ARAH (Ketik NIK muncul Nama, Ketik/Pilih Nama muncul NIK)
+        // AUTO-FILL LENGKAP (NIK, NAMA, PEKERJAAN, MITRA DUA ARAH)
         document.addEventListener('input', function (e) {
             if (e.target.classList.contains('tech-nik-input')) {
                 const val = e.target.value.trim().toLowerCase();
@@ -789,8 +770,10 @@
                     const wrapper = e.target.closest('form');
                     if (wrapper) {
                         const namaInput = wrapper.querySelector('.tech-nama-input');
+                        const mitraInput = wrapper.querySelector('#MITRA_AWAL, #updateMitra');
                         const pekInput = wrapper.querySelector('#updatePekerjaan, #PEKERJAAN_AWAL');
                         if (namaInput) namaInput.value = found.nama;
+                        if (mitraInput) mitraInput.value = found.mitra;
                         if (pekInput) pekInput.value = found.pekerjaan;
                     }
                 }
@@ -801,13 +784,29 @@
                     const wrapper = e.target.closest('form');
                     if (wrapper) {
                         const nikInput = wrapper.querySelector('.tech-nik-input');
+                        const mitraInput = wrapper.querySelector('#MITRA_AWAL, #updateMitra');
                         const pekInput = wrapper.querySelector('#updatePekerjaan, #PEKERJAAN_AWAL');
                         if (nikInput) nikInput.value = found.nik;
+                        if (mitraInput) mitraInput.value = found.mitra;
                         if (pekInput) pekInput.value = found.pekerjaan;
                     }
                 }
             }
         });
+
+        function updatePosisiDropdownOptions() {
+            const sheet = document.getElementById('inputSheet').value;
+            const optScmtInitial = document.getElementById('optScmtInitial');
+            const optScmtUpdate = document.getElementById('optScmtUpdate');
+            
+            if (sheet === 'TIF' || sheet === 'TELKOM') {
+                if(optScmtInitial) optScmtInitial.style.display = 'block';
+                if(optScmtUpdate) optScmtUpdate.style.display = 'block';
+            } else {
+                if(optScmtInitial) optScmtInitial.style.display = 'none';
+                if(optScmtUpdate) optScmtUpdate.style.display = 'none';
+            }
+        }
 
         function applyFilters() {
             const sheetFilter = document.getElementById('pilihanSheet').value;
@@ -849,32 +848,17 @@
             let no = startIndex + 1;
             pageItems.forEach(item => {
                 let pos = item.posisi.toUpperCase();
-                
                 let badgeClass = 'bg-secondary';
                 if (pos.includes('STOCK')) badgeClass = 'bg-success text-white';
                 else if (pos.includes('INTECH')) badgeClass = 'bg-warning text-dark';
                 else if (pos.includes('INSTALLED')) badgeClass = 'bg-primary text-white';
-                else if (pos.includes('DISMANTLE') || pos.includes('RETUR') || pos.includes('CABUT')) badgeClass = 'bg-danger text-white';
-                else badgeClass = 'bg-info text-dark';
+                else if (pos.includes('SCMT')) badgeClass = 'bg-dark text-white';
+                else if (pos.includes('DISMANTLE')) badgeClass = 'bg-danger text-white';
 
-                let teknisiHtml = '-';
-                if (item.nama !== '-' && item.nama !== '') {
-                    teknisiHtml = item.nama + '<br><small class="text-muted fw-semibold">' + item.nik + '</small>';
-                }
+                let teknisiHtml = item.nama !== '-' && item.nama !== '' ? (item.nama + '<br><small class="text-muted fw-semibold">' + item.nik + '</small>') : '-';
 
                 const tr = document.createElement('tr');
-                tr.innerHTML = 
-                    '<td>' + (no++) + '</td>' +
-                    '<td><span class="badge bg-secondary">' + item.sheet + '</span></td>' +
-                    '<td>' + item.tglIn + '</td>' +
-                    '<td><strong>' + item.barang + '</strong></td>' +
-                    '<td><code>' + item.sn + '</code></td>' +
-                    '<td>' + item.type + '</td>' +
-                    '<td><span class="badge-status ' + badgeClass + '">' + item.posisi + '</span></td>' +
-                    '<td>' + teknisiHtml + '</td>' +
-                    '<td>' + item.mitra + '</td>' +
-                    '<td><span class="badge bg-light text-dark border">' + item.pekerjaan + '</span></td>' +
-                    '<td><code>' + item.tiket + '</code></td>';
+                tr.innerHTML = '<td>' + (no++) + '</td><td><span class="badge bg-secondary">' + item.sheet + '</span></td><td>' + item.tglIn + '</td><td><strong>' + item.barang + '</strong></td><td><code>' + item.sn + '</code></td><td>' + item.type + '</td><td><span class="badge-status ' + badgeClass + '">' + item.posisi + '</span></td><td>' + teknisiHtml + '</td><td>' + item.mitra + '</td><td><span class="badge bg-light text-dark border">' + item.pekerjaan + '</span></td><td><code>' + item.tiket + '</code></td>';
                 tbody.appendChild(tr);
             });
             renderPaginationButtons(totalPages);
@@ -884,7 +868,6 @@
             const ul = document.getElementById('paginationControls');
             ul.innerHTML = '';
             if (totalPages <= 1) return;
-
             const liPrev = document.createElement('li');
             liPrev.className = 'page-item ' + (currentPage === 1 ? 'disabled' : '');
             liPrev.innerHTML = '<a class="page-link">&laquo;</a>';
@@ -922,16 +905,12 @@
 
         function renderCharts(dataList, stb, modem) {
             let statusCounts = {};
-            dataList.forEach(item => {
-                let st = item.posisi || 'STOCK';
-                statusCounts[st] = (statusCounts[st] || 0) + 1;
-            });
-
+            dataList.forEach(item => { let st = item.posisi || 'STOCK'; statusCounts[st] = (statusCounts[st] || 0) + 1; });
             const ctxPie = document.getElementById('chartStatusPie').getContext('2d');
             if (chartPieInstance) chartPieInstance.destroy();
             chartPieInstance = new Chart(ctxPie, {
                 type: 'doughnut',
-                data: { labels: Object.keys(statusCounts), datasets: [{ data: Object.values(statusCounts), backgroundColor: ['#198754', '#ffc107', '#0d6efd', '#dc3545', '#6c757d'] }] },
+                data: { labels: Object.keys(statusCounts), datasets: [{ data: Object.values(statusCounts), backgroundColor: ['#198754', '#ffc107', '#0d6efd', '#dc3545', '#334155', '#6c757d'] }] },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
             });
 
@@ -949,19 +928,26 @@
         }
 
         function toggleUpdateStatusFields(val) {
-            const fieldContainer = document.getElementById('fieldsTeknisiUpdate');
-            if (val !== 'STOCK') {
-                fieldContainer.style.display = 'block';
-            } else {
-                fieldContainer.style.display = 'none';
-            }
+            document.getElementById('fieldsTeknisiUpdate').style.display = val !== 'STOCK' ? 'block' : 'none';
         }
 
-        // FORM TAMBAH BARANG BARU (Pekerjaan dikosongkan, Status NTE = NEW)
+        // UNDUH CONTOH FORMAT CSV UNTUK SUPERUSER / ADMIN
+        function downloadTemplateCSV() {
+            const csvContent = "BARANG,SN,MAC,TYPE,POSISI\nONT PREMIUM,SN12345678,AA:BB:CC:11:22:33,ZTE,STOCK\nSTB,SN87654321,AA:BB:CC:44:55:66,HG680,STATUS SCMT";
+            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'Template_Upload_NTE.csv';
+            a.click();
+        }
+
+        // FORM TAMBAH BARANG BARU SATUAN
         document.getElementById('formNTE').addEventListener('submit', function(e) {
             e.preventDefault();
-            if (currentUser.role === 'user') return Swal.fire('Akses Ditolak', 'Teknisi lapangan tidak memiliki izin menambah barang baru.', 'error');
+            if (currentUser.role === 'user') return Swal.fire('Akses Ditolak', 'Tidak memiliki izin.', 'error');
             
+            const sheetName = document.getElementById('inputSheet').value;
             const btn = document.getElementById('btnSimpan');
             btn.disabled = true;
 
@@ -972,8 +958,8 @@
                 headers: { "Content-Type": "text/plain;charset=utf-8" },
                 body: JSON.stringify({
                     action: 'create', 
-                    sheetName: document.getElementById('inputSheet').value,
-                    "BARANG": document.getElementById('BARANG').value.trim(),
+                    sheetName: sheetName,
+                    "BARANG": document.getElementById('BARANG').value,
                     "SN": document.getElementById('SN').value.trim(),
                     "MAC": document.getElementById('MAC').value.trim(),
                     "TYPE": document.getElementById('TYPE').value.trim(),
@@ -981,19 +967,19 @@
                     "NIK": document.getElementById('NIK_AWAL').value.trim(),
                     "NAMA": document.getElementById('NAMA_AWAL').value.trim(),
                     "MITRA": document.getElementById('MITRA_AWAL').value.trim(),
-                    "PEKERJAAN": "", // Dikosongkan untuk data baru
+                    "PEKERJAAN": "",
                     "TIKET": document.getElementById('TIKET_AWAL').value.trim()
                 })
             })
             .then(res => res.text())
             .then(text => {
                 let res;
-                try { res = JSON.parse(text); } catch(err) { res = { status: 'success', message: 'Data baru berhasil disimpan.' }; }
-                
+                try { res = JSON.parse(text); } catch(err) { res = { status: 'success', message: 'Data berhasil disimpan.' }; }
                 if(res.status === 'success' || !res.status) {
                     Swal.fire({ icon: 'success', title: 'Berhasil', text: res.message || 'Data baru berhasil disimpan.', timer: 1500, showConfirmButton: false });
                     document.getElementById('formNTE').reset();
-                    loadData(); // Auto-refresh otomatis
+                    updatePosisiDropdownOptions();
+                    loadData();
                 } else {
                     Swal.fire('Gagal', res.message || 'Terjadi kesalahan.', 'error');
                 }
@@ -1005,6 +991,55 @@
             })
             .finally(() => btn.disabled = false);
         });
+
+        // PROSES UPLOAD BATCH CSV
+        function processBatchUpload() {
+            const fileInput = document.getElementById('batchFile');
+            const targetSheet = document.getElementById('batchSheet').value;
+            if (fileInput.files.length === 0) return Swal.fire('Peringatan', 'Pilih file CSV terlebih dahulu.', 'warning');
+
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                const text = e.target.result;
+                const lines = text.split(/\r\n|\n/);
+                if (lines.length <= 1) return Swal.fire('Error', 'File CSV kosong atau format tidak sesuai.', 'error');
+
+                Swal.fire({ title: 'Mengunggah Data Massal...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+
+                let successCount = 0;
+                for (let i = 1; i < lines.length; i++) {
+                    const line = lines[i].trim();
+                    if (!line) continue;
+                    const cols = line.split(',');
+                    if (cols.length >= 2) {
+                        const barang = cols[0] ? cols[0].replace(/"/g, '').trim() : '';
+                        const sn = cols[1] ? cols[1].replace(/"/g, '').trim() : '';
+                        const mac = cols[2] ? cols[2].replace(/"/g, '').trim() : '';
+                        const type = cols[3] ? cols[3].replace(/"/g, '').trim() : '';
+                        const posisi = cols[4] ? cols[4].replace(/"/g, '').trim() : 'STOCK';
+
+                        if (sn) {
+                            try {
+                                await fetch(SCRIPT_URL, {
+                                    method: 'POST',
+                                    headers: { "Content-Type": "text/plain;charset=utf-8" },
+                                    body: JSON.stringify({
+                                        action: 'create', sheetName: targetSheet,
+                                        BARANG: barang, SN: sn, MAC: mac, TYPE: type, POSISI: posisi, PEKERJAAN: ""
+                                    })
+                                });
+                                successCount++;
+                            } catch(err) {}
+                        }
+                    }
+                }
+                Swal.fire('Berhasil!', successCount + ' data berhasil diunggah secara massal ke ' + targetSheet, 'success');
+                fileInput.value = '';
+                loadData();
+            };
+            reader.readAsText(file);
+        }
 
         function handleCariSN(e) {
             e.preventDefault();
@@ -1022,10 +1057,12 @@
                 if (pos.includes('STOCK')) badgeClass = 'bg-success text-white';
                 else if (pos.includes('INTECH')) badgeClass = 'bg-warning text-dark';
                 else if (pos.includes('INSTALLED')) badgeClass = 'bg-primary text-white';
+                else if (pos.includes('SCMT')) badgeClass = 'bg-dark text-white';
                 else if (pos.includes('DISMANTLE')) badgeClass = 'bg-danger text-white';
 
                 document.getElementById('infoStatusBadge').innerHTML = '<span class="badge-status ' + badgeClass + '">' + found.posisi + '</span>';
-
+                
+                updatePosisiDropdownOptions();
                 document.getElementById('updateStatusSelect').value = found.posisi || 'STOCK';
                 document.getElementById('updateNIK').value = found.nik !== '-' ? found.nik : '';
                 document.getElementById('updateNama').value = found.nama !== '-' ? found.nama : '';
@@ -1047,7 +1084,6 @@
             document.getElementById('inputCariSN').focus();
         }
 
-        // FORM UPDATE STATUS (Auto-Refresh & Clear Error Palsu)
         function handleSimpanStatus(e) {
             e.preventDefault();
             if (!activeFoundItem) return;
@@ -1078,7 +1114,7 @@
                 if(res.status === 'success' || !res.status) {
                     Swal.fire({ icon: 'success', title: 'Berhasil!', text: res.message || 'Status perangkat berhasil diperbarui.', timer: 1500, showConfirmButton: false });
                     batalUpdate();
-                    loadData(); // Auto-refresh otomatis
+                    loadData();
                 } else {
                     Swal.fire('Gagal!', res.message || 'Terjadi kesalahan.', 'error');
                 }
@@ -1086,7 +1122,7 @@
             .catch(() => {
                 Swal.fire({ icon: 'success', title: 'Berhasil!', text: 'Perubahan status berhasil dikirim.', timer: 1500, showConfirmButton: false });
                 batalUpdate();
-                loadData(); // Auto-refresh otomatis
+                loadData();
             });
         }
 
