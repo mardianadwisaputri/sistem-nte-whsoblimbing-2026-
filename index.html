@@ -12,8 +12,8 @@
 
     <style>
         :root {
-            --primary-color: #9b1c28; /* Burgundy Utama */
-            --primary-dark: #75121c;  /* Burgundy Gelap */
+            --primary-color: #9b1c28;
+            --primary-dark: #75121c;
             --bg-color: #f4f6f9;
             --card-bg: #ffffff;
             --text-color: #2b2f33;
@@ -49,7 +49,6 @@
         .nav-link { font-weight: 500; border-radius: 4px; padding: 6px 14px !important; margin: 0 3px; color: rgba(255,255,255,0.9) !important; }
         .nav-link:hover, .nav-link.active { background-color: rgba(255, 255, 255, 0.15) !important; color: #fff !important; font-weight: 600; }
         
-        /* Perbaikan Nav Pills: Tombol Aktif Burgundy, Teks Tidak Putih Polos saat tidak aktif agar jelas */
         .nav-pills .nav-link {
             color: #9b1c28;
             font-weight: 600;
@@ -61,7 +60,6 @@
             color: #ffffff !important;
         }
 
-        /* Penyesuaian Tombol & Badge Burgundy */
         .btn-danger {
             background-color: #9b1c28 !important;
             border-color: #75121c !important;
@@ -207,11 +205,21 @@
             <div id="dataView" class="view-section">
                 <div id="adminAddCard" class="card p-4 shadow-sm mb-4 border-top border-danger border-3" style="display: none;">
                     <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="fw-bold mb-0 text-danger"><i class="bi bi-plus-square me-2"></i>Entri Data Barang Baru & Unggah Massal</h5>
-                        <button class="btn btn-sm btn-outline-danger" onclick="downloadTemplateCSV()"><i class="bi bi-file-earmark-arrow-down me-1"></i> Unduh Contoh Format CSV</button>
+                        <h5 class="fw-bold mb-0 text-danger"><i class="bi bi-plus-square me-2"></i>Entri Data Barang Baru Berdasarkan Kategori Perangkat</h5>
                     </div>
 
-                    <!-- TAB PILIHAN INPUT -->
+                    <!-- PILIH KATEGORI BARANG (ONT, STB, ADD ON, KARTU PERDANA) -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Pilih Kategori Perangkat:</label>
+                        <select id="kategoriBarangInput" class="form-select w-50" onchange="switchBarangForm(this.value)">
+                            <option value="ONT" selected>ONT (Optical Network Terminal)</option>
+                            <option value="STB">STB (Set Top Box)</option>
+                            <option value="ADD ON">ADD ON / AP MESH / ORBIT</option>
+                            <option value="KARTU PERDANA">KARTU PERDANA</option>
+                        </select>
+                    </div>
+
+                    <!-- TAB PILIHAN INPUT (SATUAN / CSV) -->
                     <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
                         <li class="nav-item" role="presentation">
                             <button class="nav-link active py-1.5 px-3" id="pills-single-tab" data-bs-toggle="pill" data-bs-target="#pills-single" type="button" role="tab"><i class="bi bi-pencil-square me-1"></i> Entri Satuan</button>
@@ -224,7 +232,7 @@
                     <div class="tab-content" id="pills-tabContent">
                         <!-- FORM SATUAN -->
                         <div class="tab-pane fade show active" id="pills-single" role="tabpanel">
-                            <form id="formNTE">
+                            <form id="formNTE" onsubmit="submitFormSatuan(event)">
                                 <div class="row g-3">
                                     <div class="col-md-2">
                                         <label class="form-label">Kategori Sheet</label>
@@ -235,28 +243,27 @@
                                             <option value="VULA">VULA</option>
                                         </select>
                                     </div>
+                                    
+                                    <!-- Dinamis berdasarkan Kategori Barang -->
                                     <div class="col-md-3">
                                         <label class="form-label">Jenis Barang</label>
                                         <select id="BARANG" class="form-select" required>
-                                            <option value="" disabled selected>Pilih Jenis Barang...</option>
-                                            <option value="ONT PREMIUM">ONT PREMIUM</option>
-                                            <option value="ONT DUAL BAND">ONT DUAL BAND</option>
-                                            <option value="KARTU PERDANA">KARTU PERDANA</option>
-                                            <option value="AP MESH">AP MESH</option>
-                                            <option value="STB">STB</option>
-                                            <option value="ORBIT">ORBIT</option>
+                                            <!-- Diisi otomatis oleh JavaScript -->
                                         </select>
                                     </div>
+
                                     <div class="col-md-3">
-                                        <label class="form-label">Serial Number (SN)</label>
-                                        <input type="text" id="SN" class="form-control" placeholder="Nomor Serial" required>
+                                        <label class="form-label" id="labelSN">Serial Number (SN)</label>
+                                        <input type="text" id="SN" class="form-control" placeholder="Nomor Serial / ICCID" required>
                                     </div>
-                                    <div class="col-md-2">
+
+                                    <div class="col-md-2" id="wrapperMAC">
                                         <label class="form-label">MAC Address</label>
                                         <input type="text" id="MAC" class="form-control" placeholder="AA:BB:CC...">
                                     </div>
-                                    <div class="col-md-2">
-                                        <label class="form-label">Type NTE</label>
+
+                                    <div class="col-md-2" id="wrapperType">
+                                        <label class="form-label">Type / Model</label>
                                         <input type="text" id="TYPE" class="form-control" placeholder="ZTE / HG680">
                                     </div>
 
@@ -300,8 +307,11 @@
                         <!-- UNGGAH MASSAL CSV -->
                         <div class="tab-pane fade" id="pills-batch" role="tabpanel">
                             <div class="p-3 bg-light rounded border">
-                                <h6 class="fw-bold mb-2 text-dark"><i class="bi bi-info-circle-fill text-danger me-1"></i> Petunjuk Unggah Massal untuk Superuser</h6>
-                                <p class="small text-muted mb-2">Unggah file `.csv` dengan format kolom: <code>BARANG, SN, MAC, TYPE, POSISI</code>.</p>
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <h6 class="fw-bold text-dark mb-0"><i class="bi bi-info-circle-fill text-danger me-1"></i> Petunjuk Unggah Massal Kategori: <span id="labelBatchKategori" class="text-danger">ONT</span></h6>
+                                    <button class="btn btn-sm btn-outline-danger" onclick="downloadTemplateCSV()"><i class="bi bi-file-earmark-arrow-down me-1"></i> Unduh Contoh Format CSV</button>
+                                </div>
+                                <p class="small text-muted mb-2">Format kolom CSV: <code>BARANG, SN, MAC, TYPE, POSISI</code></p>
                                 <div class="row g-3 align-items-center">
                                     <div class="col-md-4">
                                         <label class="form-label">Pilih File CSV:</label>
@@ -524,23 +534,23 @@
     <datalist id="listTeknisi">
         <script>
             const TEKNISI_MASTER_DB = [
-                { nama: "EMERALDO PRIM", nik: "16963673", pekerjaan: "Gangguan", mitra: "GMS" }, { nama: "KOIRUL ADI", nik: "16940763", pekerjaan: "Gangguan", mitra: "GMS" },
-                { nama: "MULYADI", nik: "15885114", pekerjaan: "Gangguan", mitra: "SJU" }, { nama: "DIO", nik: "16992591", pekerjaan: "Gangguan", mitra: "SJU" },
-                { nama: "ANAS", nik: "16981757", pekerjaan: "Gangguan", mitra: "GMS" }, { nama: "ERWIN RAHMADANI", nik: "16002218", pekerjaan: "Gangguan", mitra: "GMS" },
-                { nama: "DIMAS FIRMANSYAH", nik: "16951656", pekerjaan: "Gangguan", mitra: "SJU" }, { nama: "M SUEB", nik: "16830665", pekerjaan: "Gangguan", mitra: "SJU" },
-                { nama: "MUHAMMAD SHOLEH IRFANTO", nik: "16982456", pekerjaan: "Gangguan", mitra: "GMS" }, { nama: "ANDUK SLAMET HARIYONO", nik: "15889049", pekerjaan: "Gangguan", mitra: "GMS" },
-                { nama: "IRVAN ANDI", nik: "16943172", pekerjaan: "Gangguan", mitra: "SJU" }, { nama: "KOIRUL ANGGAR", nik: "16920456", pekerjaan: "Gangguan", mitra: "SJU" },
-                { nama: "ROEDI", nik: "15885128", pekerjaan: "Gangguan", mitra: "GMS" }, { nama: "ALRIZA DIOUF", nik: "16220024", pekerjaan: "Gangguan", mitra: "GMS" },
-                { nama: "AFIF AFFANDI", nik: "16004542", pekerjaan: "PSB", mitra: "GMS" }, { nama: "SONY HARYANTO", nik: "16650052", pekerjaan: "PSB", mitra: "GMS" },
-                { nama: "AGUS SETIAWAN", nik: "16790219", pekerjaan: "PSB", mitra: "SJU" }, { nama: "AHMAD MUSYAFA", nik: "16983579", pekerjaan: "PSB", mitra: "SJU" },
-                { nama: "JOKO PURNOMO", nik: "15892755", pekerjaan: "PSB", mitra: "GMS" }, { nama: "AHMAD JOHAN FUALDI", nik: "16013901", pekerjaan: "PSB", mitra: "GMS" },
-                { nama: "DHEVID WIDHI ANDIKA", nik: "16974527", pekerjaan: "PSB", mitra: "SJU" }, { nama: "EDI SUDRAJAT", nik: "16995159", pekerjaan: "PSB", mitra: "SJU" },
-                { nama: "AGUNG FIRMANSYAH", nik: "16995426", pekerjaan: "PSB", mitra: "GMS" }, { nama: "MUHAMMAD ARIS NUR", nik: "16010921", pekerjaan: "PSB", mitra: "GMS" },
-                { nama: "NGATEMAN", nik: "16740232", pekerjaan: "PSB", mitra: "SJU" }, { nama: "ALE SANDRO FIRDA RAHMAN", nik: "16031033", pekerjaan: "PSB", mitra: "SJU" },
-                { nama: "HARIANTO", nik: "16710111", pekerjaan: "PSB", mitra: "GMS" }, { nama: "ABDI SUROTO", nik: "15896842", pekerjaan: "PSB", mitra: "GMS" },
-                { nama: "ROMLI", nik: "16640053", pekerjaan: "PSB", mitra: "SJU" }, { nama: "AHMAD KHOIRUL HUDA", nik: "16061134", pekerjaan: "PSB", mitra: "SJU" },
-                { nama: "RIZKI PRASETIYO", nik: "16974797", pekerjaan: "PSB", mitra: "GMS" }, { nama: "YOGA A", nik: "26990111", pekerjaan: "REPLACE", mitra: "GMS" },
-                { nama: "RENDY ANDIKA", nik: "26070088", pekerjaan: "REPLACE", mitra: "SJU" }, { nama: "MIKAELL", nik: "26000155", pekerjaan: "REPLACE", mitra: "SJU" }
+                { nama: "EMERALDO PRIM", nik: "16963673", pekerjaan: "Gangguan", mitra: "WAHANA ERA SEJAHTERA" }, { nama: "KOIRUL ADI", nik: "16940763", pekerjaan: "Gangguan", mitra: "WAHANA ERA SEJAHTERA" },
+                { nama: "MULYADI", nik: "15885114", pekerjaan: "Gangguan", mitra: "WAHANA ERA SEJAHTERA" }, { nama: "DIO", nik: "16992591", pekerjaan: "Gangguan", mitra: "WAHANA ERA SEJAHTERA" },
+                { nama: "ANAS", nik: "16981757", pekerjaan: "Gangguan", mitra: "WAHANA ERA SEJAHTERA" }, { nama: "ERWIN RAHMADANI", nik: "16002218", pekerjaan: "Gangguan", mitra: "WAHANA ERA SEJAHTERA" },
+                { nama: "DIMAS FIRMANSYAH", nik: "16951656", pekerjaan: "Gangguan", mitra: "WAHANA ERA SEJAHTERA" }, { nama: "M SUEB", nik: "16830665", pekerjaan: "Gangguan", mitra: "WAHANA ERA SEJAHTERA" },
+                { nama: "MUHAMMAD SHOLEH IRFANTO", nik: "16982456", pekerjaan: "Gangguan", mitra: "WAHANA ERA SEJAHTERA" }, { nama: "ANDUK SLAMET HARIYONO", nik: "15889049", pekerjaan: "Gangguan", mitra: "WAHANA ERA SEJAHTERA" },
+                { nama: "IRVAN ANDI", nik: "16943172", pekerjaan: "Gangguan", mitra: "WAHANA ERA SEJAHTERA" }, { nama: "KOIRUL ANGGAR", nik: "16920456", pekerjaan: "Gangguan", mitra: "WAHANA ERA SEJAHTERA" },
+                { nama: "ROEDI", nik: "15885128", pekerjaan: "Gangguan", mitra: "WAHANA ERA SEJAHTERA" }, { nama: "ALRIZA DIOUF", nik: "16220024", pekerjaan: "Gangguan", mitra: "WAHANA ERA SEJAHTERA" },
+                { nama: "AFIF AFFANDI", nik: "16004542", pekerjaan: "PSB", mitra: "WAHANA ERA SEJAHTERA" }, { nama: "SONY HARYANTO", nik: "16650052", pekerjaan: "PSB", mitra: "WAHANA ERA SEJAHTERA" },
+                { nama: "AGUS SETIAWAN", nik: "16790219", pekerjaan: "PSB", mitra: "WAHANA ERA SEJAHTERA" }, { nama: "AHMAD MUSYAFA", nik: "16983579", pekerjaan: "PSB", mitra: "WAHANA ERA SEJAHTERA" },
+                { nama: "JOKO PURNOMO", nik: "15892755", pekerjaan: "PSB", mitra: "WAHANA ERA SEJAHTERA" }, { nama: "AHMAD JOHAN FUALDI", nik: "16013901", pekerjaan: "PSB", mitra: "WAHANA ERA SEJAHTERA" },
+                { nama: "DHEVID WIDHI ANDIKA", nik: "16974527", pekerjaan: "PSB", mitra: "WAHANA ERA SEJAHTERA" }, { nama: "EDI SUDRAJAT", nik: "16995159", pekerjaan: "PSB", mitra: "WAHANA ERA SEJAHTERA" },
+                { nama: "AGUNG FIRMANSYAH", nik: "16995426", pekerjaan: "PSB", mitra: "WAHANA ERA SEJAHTERA" }, { nama: "MUHAMMAD ARIS NUR", nik: "16010921", pekerjaan: "PSB", mitra: "WAHANA ERA SEJAHTERA" },
+                { nama: "NGATEMAN", nik: "16740232", pekerjaan: "PSB", mitra: "WAHANA ERA SEJAHTERA" }, { nama: "ALE SANDRO FIRDA RAHMAN", nik: "16031033", pekerjaan: "PSB", mitra: "WAHANA ERA SEJAHTERA" },
+                { nama: "HARIANTO", nik: "16710111", pekerjaan: "PSB", mitra: "WAHANA ERA SEJAHTERA" }, { nama: "ABDI SUROTO", nik: "15896842", pekerjaan: "PSB", mitra: "WAHANA ERA SEJAHTERA" },
+                { nama: "ROMLI", nik: "16640053", pekerjaan: "PSB", mitra: "SJU" }, { nama: "AHMAD KHOIRUL HUDA", nik: "16061134", pekerjaan: "PSB", mitra: "WAHANA ERA SEJAHTERA" },
+                { nama: "RIZKI PRASETIYO", nik: "16974797", pekerjaan: "PSB", mitra: "WAHANA ERA SEJAHTERA" }, { nama: "YOGA A", nik: "26990111", pekerjaan: "REPLACE", mitra: "FREELANCE" },
+                { nama: "RENDY ANDIKA", nik: "26070088", pekerjaan: "REPLACE", mitra: "FREELANCE" }, { nama: "MIKAELL", nik: "26000155", pekerjaan: "REPLACE", mitra: "FREELANCE" }
             ];
             TEKNISI_MASTER_DB.forEach(t => {
                 document.write('<option value="' + t.nama + '">');
@@ -576,6 +586,47 @@
         let chartPieInstance = null;
         let chartBarInstance = null;
         let activeFoundItem = null;
+
+        const LIST_JENIS_BARANG = {
+            "ONT": ["ONT PREMIUM", "ONT DUAL BAND"],
+            "STB": ["STB"],
+            "ADD ON": ["AP MESH", "ORBIT"],
+            "KARTU PERDANA": ["KARTU PERDANA"]
+        };
+
+        function switchBarangForm(kategori) {
+            const selectBarang = document.getElementById('BARANG');
+            selectBarang.innerHTML = '';
+            const items = LIST_JENIS_BARANG[kategori] || [];
+            items.forEach(item => {
+                const opt = document.createElement('option');
+                opt.value = item;
+                opt.innerText = item;
+                selectBarang.appendChild(opt);
+            });
+
+            // Ubah label SN / MAC / Type sesuai kategori (misal Kartu Perdana butuh ICCID)
+            const labelSN = document.getElementById('labelSN');
+            const wrapperMAC = document.getElementById('wrapperMAC');
+            const wrapperType = document.getElementById('wrapperType');
+            const labelBatchKategori = document.getElementById('labelBatchKategori');
+
+            if(labelBatchKategori) labelBatchKategori.innerText = kategori;
+
+            if (kategori === 'KARTU PERDANA') {
+                labelSN.innerText = "Nomor ICCID / SN Perdana";
+                wrapperMAC.style.display = 'none';
+                wrapperType.style.display = 'none';
+            } else if (kategori === 'ADD ON') {
+                labelSN.innerText = "Serial Number (SN)";
+                wrapperMAC.style.display = 'block';
+                wrapperType.style.display = 'block';
+            } else {
+                labelSN.innerText = "Serial Number (SN)";
+                wrapperMAC.style.display = 'block';
+                wrapperType.style.display = 'block';
+            }
+        }
 
         function initTheme() {
             const savedTheme = localStorage.getItem('nte_theme') || 'light';
@@ -642,6 +693,7 @@
             if (role === 'user') { showView('statusView'); } else { showView('dashboardView'); }
             loadData();
             updatePosisiDropdownOptions();
+            switchBarangForm('ONT');
         }
 
         function renderUsersTable() {
@@ -964,16 +1016,17 @@
         }
 
         function downloadTemplateCSV() {
-            const csvContent = "BARANG,SN,MAC,TYPE,POSISI\nONT PREMIUM,SN12345678,AA:BB:CC:11:22:33,ZTE,STOCK\nSTB,SN87654321,AA:BB:CC:44:55:66,HG680,STATUS SCMT";
+            const kategori = document.getElementById('kategoriBarangInput').value;
+            const csvContent = "BARANG,SN,MAC,TYPE,POSISI\n" + (kategori === 'KARTU PERDANA' ? "KARTU PERDANA,ICCID123456,-,-,STOCK" : "ONT PREMIUM,SN12345678,AA:BB:CC:11:22:33,ZTE,STOCK");
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'Template_Upload_NTE.csv';
+            a.download = 'Template_Upload_' + kategori.replace(/\s+/g, '_') + '.csv';
             a.click();
         }
 
-        document.getElementById('formNTE').addEventListener('submit', function(e) {
+        function submitFormSatuan(e) {
             e.preventDefault();
             if (currentUser.role === 'user') return Swal.fire('Akses Ditolak', 'Tidak memiliki izin.', 'error');
             
@@ -1009,6 +1062,7 @@
                     Swal.fire({ icon: 'success', title: 'Berhasil', text: res.message || 'Data baru berhasil disimpan.', timer: 1500, showConfirmButton: false });
                     document.getElementById('formNTE').reset();
                     updatePosisiDropdownOptions();
+                    switchBarangForm(document.getElementById('kategoriBarangInput').value);
                     loadData();
                 } else {
                     Swal.fire('Gagal', res.message || 'Terjadi kesalahan.', 'error');
@@ -1020,7 +1074,7 @@
                 loadData();
             })
             .finally(() => btn.disabled = false);
-        });
+        }
 
         function processBatchUpload() {
             const fileInput = document.getElementById('batchFile');
