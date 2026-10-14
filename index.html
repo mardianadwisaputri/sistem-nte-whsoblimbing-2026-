@@ -208,15 +208,20 @@
                         <h5 class="fw-bold mb-0 text-danger"><i class="bi bi-plus-square me-2"></i>Entri Data Barang Baru Berdasarkan Kategori Perangkat</h5>
                     </div>
 
-                    <!-- PILIH KATEGORI BARANG (ONT, STB, ADD ON, KARTU PERDANA) -->
-                    <div class="mb-3">
-                        <label class="form-label fw-bold">Pilih Kategori Perangkat:</label>
-                        <select id="kategoriBarangInput" class="form-select w-50" onchange="switchBarangForm(this.value)">
-                            <option value="ONT" selected>ONT (Optical Network Terminal)</option>
-                            <option value="STB">STB (Set Top Box)</option>
-                            <option value="ADD ON">ADD ON / AP MESH / ORBIT</option>
-                            <option value="KARTU PERDANA">KARTU PERDANA</option>
-                        </select>
+                    <!-- PILIH KATEGORI BARANG SESUAI BRIEF -->
+                    <div class="row g-3 mb-3">
+                        <div class="col-md-4">
+                            <label class="form-label fw-bold">Pilih Kategori / Tipe Barang:</label>
+                            <select id="kategoriBarangInput" class="form-select" onchange="onKategoriPerangkatChange(this.value)">
+                                <option value="ONT_TSEL" selected>ONT TSEL</option>
+                                <option value="ONT_TELKOM">ONT TELKOM</option>
+                                <option value="ONT_TIF">ONT TIF</option>
+                                <option value="STB_TSEL">STB TSEL</option>
+                                <option value="STB_TELKOM">STB TELKOM</option>
+                                <option value="KARTU_PERDANA">KARTU PERDANA</option>
+                                <option value="ADD_ON">ADD ON / AP MESH / ORBIT</option>
+                            </select>
+                        </div>
                     </div>
 
                     <!-- TAB PILIHAN INPUT (SATUAN / CSV) -->
@@ -234,9 +239,9 @@
                         <div class="tab-pane fade show active" id="pills-single" role="tabpanel">
                             <form id="formNTE" onsubmit="submitFormSatuan(event)">
                                 <div class="row g-3">
-                                    <div class="col-md-2">
+                                    <div class="col-md-2" id="wrapperSheet">
                                         <label class="form-label">Kategori Sheet</label>
-                                        <select id="inputSheet" class="form-select" required onchange="updatePosisiDropdownOptions()">
+                                        <select id="inputSheet" class="form-select" required>
                                             <option value="TSEL">TSEL</option>
                                             <option value="TIF">TIF</option>
                                             <option value="TELKOM">TELKOM</option>
@@ -244,17 +249,29 @@
                                         </select>
                                     </div>
                                     
-                                    <!-- Dinamis berdasarkan Kategori Barang -->
                                     <div class="col-md-3">
-                                        <label class="form-label">Jenis Barang</label>
-                                        <select id="BARANG" class="form-select" required>
-                                            <!-- Diisi otomatis oleh JavaScript -->
-                                        </select>
+                                        <label class="form-label">Barang (<small class="text-muted">Kolom BARANG</small>)</label>
+                                        <input type="text" id="BARANG" class="form-control" readonly required>
+                                    </div>
+
+                                    <div class="col-md-2">
+                                        <label class="form-label">Tanggal Masuk (<small class="text-muted">Kolom TGL IN</small>)</label>
+                                        <input type="date" id="TGL_IN" class="form-control" required>
+                                    </div>
+
+                                    <div class="col-md-2">
+                                        <label class="form-label">Nomor Kardus (<small class="text-muted">Kolom NO</small>)</label>
+                                        <input type="text" id="NOMOR_KARDUS" class="form-control" placeholder="No Kardus" required>
                                     </div>
 
                                     <div class="col-md-3">
+                                        <label class="form-label">WH SO</label>
+                                        <input type="text" id="WH_SO" class="form-control" readonly required>
+                                    </div>
+
+                                    <div class="col-md-3" id="wrapperSN">
                                         <label class="form-label" id="labelSN">Serial Number (SN)</label>
-                                        <input type="text" id="SN" class="form-control" placeholder="Nomor Serial / ICCID" required>
+                                        <input type="text" id="SN" class="form-control" placeholder="Nomor Serial / STBID / No HP" required>
                                     </div>
 
                                     <div class="col-md-2" id="wrapperMAC">
@@ -262,37 +279,21 @@
                                         <input type="text" id="MAC" class="form-control" placeholder="AA:BB:CC...">
                                     </div>
 
-                                    <div class="col-md-2" id="wrapperType">
-                                        <label class="form-label">Type / Model</label>
-                                        <input type="text" id="TYPE" class="form-control" placeholder="ZTE / HG680">
+                                    <div class="col-md-3" id="wrapperType">
+                                        <label class="form-label" id="labelType">Type / Model</label>
+                                        <input type="text" id="TYPE" class="form-control" placeholder="ex: ONT_HUAWEI_HG8145X6-10">
                                     </div>
 
-                                    <div class="col-md-3">
-                                        <label class="form-label">Status Posisi</label>
-                                        <select id="STATUS_AWAL" class="form-select" onchange="toggleInitialStatusFields(this.value)">
-                                            <option value="STOCK">STOCK</option>
-                                            <option value="INTECH">INTECH</option>
-                                            <option value="INSTALLED">INSTALLED</option>
-                                            <option value="DISMANTLE">DISMANTLE</option>
-                                            <option value="STATUS SCMT" id="optScmtInitial" style="display: none;">STATUS SCMT</option>
+                                    <div class="col-md-2" id="wrapperJenis">
+                                        <label class="form-label">Jenis</label>
+                                        <select id="JENIS" class="form-select">
+                                            <!-- Dinamis sesuai kategori -->
                                         </select>
                                     </div>
 
-                                    <div class="col-md-2 initial-tech-field" style="display: none;">
-                                        <label class="form-label">NIK Teknisi</label>
-                                        <input type="text" id="NIK_AWAL" class="form-control tech-nik-input" placeholder="NIK">
-                                    </div>
-                                    <div class="col-md-3 initial-tech-field" style="display: none;">
-                                        <label class="form-label">Nama Teknisi</label>
-                                        <input type="text" id="NAMA_AWAL" class="form-control tech-nama-input" list="listTeknisi" placeholder="Pilih / Ketik Nama">
-                                    </div>
-                                    <div class="col-md-2 initial-tech-field" style="display: none;">
-                                        <label class="form-label">Mitra</label>
-                                        <input type="text" id="MITRA_AWAL" class="form-control" placeholder="GMS / SJU dll">
-                                    </div>
-                                    <div class="col-md-3 initial-tech-field" style="display: none;">
-                                        <label class="form-label">Nomor Tiket</label>
-                                        <input type="text" id="TIKET_AWAL" class="form-control" placeholder="SCxxxx">
+                                    <div class="col-md-2">
+                                        <label class="form-label" id="labelPosisiStatus">Posisi & Status</label>
+                                        <input type="text" id="POSISI_STATUS_DEFAULT" class="form-control bg-light fw-bold text-success" value="STOCK" readonly>
                                     </div>
 
                                     <div class="col-md-3 d-flex align-items-end">
@@ -308,10 +309,10 @@
                         <div class="tab-pane fade" id="pills-batch" role="tabpanel">
                             <div class="p-3 bg-light rounded border">
                                 <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <h6 class="fw-bold text-dark mb-0"><i class="bi bi-info-circle-fill text-danger me-1"></i> Petunjuk Unggah Massal Kategori: <span id="labelBatchKategori" class="text-danger">ONT</span></h6>
+                                    <h6 class="fw-bold text-dark mb-0"><i class="bi bi-info-circle-fill text-danger me-1"></i> Petunjuk Unggah Massal Kategori: <span id="labelBatchKategori" class="text-danger">ONT TSEL</span></h6>
                                     <button class="btn btn-sm btn-outline-danger" onclick="downloadTemplateCSV()"><i class="bi bi-file-earmark-arrow-down me-1"></i> Unduh Contoh Format CSV</button>
                                 </div>
-                                <p class="small text-muted mb-2">Format kolom CSV: <code>BARANG, SN, MAC, TYPE, POSISI</code></p>
+                                <p class="small text-muted mb-2">Format kolom CSV disesuaikan dengan standar gudang Blimbing.</p>
                                 <div class="row g-3 align-items-center">
                                     <div class="col-md-4">
                                         <label class="form-label">Pilih File CSV:</label>
@@ -587,44 +588,111 @@
         let chartBarInstance = null;
         let activeFoundItem = null;
 
-        const LIST_JENIS_BARANG = {
-            "ONT": ["ONT PREMIUM", "ONT DUAL BAND"],
-            "STB": ["STB"],
-            "ADD ON": ["AP MESH", "ORBIT"],
-            "KARTU PERDANA": ["KARTU PERDANA"]
-        };
-
-        function switchBarangForm(kategori) {
-            const selectBarang = document.getElementById('BARANG');
-            selectBarang.innerHTML = '';
-            const items = LIST_JENIS_BARANG[kategori] || [];
-            items.forEach(item => {
-                const opt = document.createElement('option');
-                opt.value = item;
-                opt.innerText = item;
-                selectBarang.appendChild(opt);
-            });
-
-            // Ubah label SN / MAC / Type sesuai kategori (misal Kartu Perdana butuh ICCID)
+        // Penanganan Logika Form Berdasarkan Brief
+        function onKategoriPerangkatChange(kategori) {
+            const inputSheet = document.getElementById('inputSheet');
+            const barangInput = document.getElementById('BARANG');
+            const whSoInput = document.getElementById('WH_SO');
             const labelSN = document.getElementById('labelSN');
+            const labelType = document.getElementById('labelType');
             const wrapperMAC = document.getElementById('wrapperMAC');
             const wrapperType = document.getElementById('wrapperType');
+            const wrapperJenis = document.getElementById('wrapperJenis');
+            const selectJenis = document.getElementById('JENIS');
             const labelBatchKategori = document.getElementById('labelBatchKategori');
+            const wrapperSheet = document.getElementById('wrapperSheet');
 
             if(labelBatchKategori) labelBatchKategori.innerText = kategori;
+            selectJenis.innerHTML = '';
+            wrapperJenis.style.display = 'block';
+            wrapperMAC.style.display = 'block';
+            wrapperType.style.display = 'block';
+            wrapperSheet.style.display = 'block';
+            document.getElementById('TGL_IN').valueAsDate = new Date();
 
-            if (kategori === 'KARTU PERDANA') {
-                labelSN.innerText = "Nomor ICCID / SN Perdana";
+            if (kategori === 'ONT_TSEL') {
+                inputSheet.value = 'TSEL';
+                inputSheet.disabled = true;
+                barangInput.value = 'ONT';
+                whSoInput.value = 'TA SO INV BLIMBING WH';
+                labelSN.innerText = 'Serial Number (SN)';
+                labelType.innerText = 'Type (ex: ONT_HUAWEI_HG8145X6-10)';
+                document.getElementById('TYPE').placeholder = 'ONT_HUAWEI_HG8145X6-10';
+                
+                ['ONT single band', 'ont dual band', 'ont premium', 'BIG ONT'].forEach(opt => {
+                    selectJenis.innerHTML += `<option value="${opt}">${opt}</option>`;
+                });
+            } 
+            else if (kategori === 'ONT_TELKOM') {
+                inputSheet.value = 'TELKOM';
+                inputSheet.disabled = true;
+                barangInput.value = 'ONT';
+                whSoInput.value = 'TA SO CCAN BLIMBING WH';
+                labelSN.innerText = 'Serial Number (SN)';
+                labelType.innerText = 'Type';
+                document.getElementById('TYPE').placeholder = 'ZTE / Huawei';
+
+                ['ONT single band', 'ont dual band', 'ont premium'].forEach(opt => {
+                    selectJenis.innerHTML += `<option value="${opt}">${opt}</option>`;
+                });
+            }
+            else if (kategori === 'ONT_TIF') {
+                inputSheet.value = 'TIF';
+                inputSheet.disabled = true;
+                barangInput.value = 'ONT';
+                whSoInput.value = 'TIF SO BLIMBING WH';
+                labelSN.innerText = 'Serial Number (SN)';
+                labelType.innerText = 'Type';
+                document.getElementById('TYPE').placeholder = 'Type ONT TIF';
+
+                ['ONT single band', 'ont dual band', 'ont premium'].forEach(opt => {
+                    selectJenis.innerHTML += `<option value="${opt}">${opt}</option>`;
+                });
+            }
+            else if (kategori === 'STB_TSEL') {
+                inputSheet.value = 'TSEL';
+                inputSheet.disabled = true;
+                barangInput.value = 'STB';
+                whSoInput.value = 'TA SO INV BLIMBING WH';
+                labelSN.innerText = 'STBID';
+                labelType.innerText = 'Type';
+                document.getElementById('TYPE').placeholder = 'Type STB';
+
+                selectJenis.innerHTML = '<option value="STB">STB</option>';
+            }
+            else if (kategori === 'STB_TELKOM') {
+                inputSheet.value = 'TELKOM';
+                inputSheet.disabled = true;
+                barangInput.value = 'STB';
+                whSoInput.value = 'TA SO CCAN BLIMBING WH';
+                labelSN.innerText = 'STBID';
+                labelType.innerText = 'Type';
+                document.getElementById('TYPE').placeholder = 'Type STB';
+
+                selectJenis.innerHTML = '<option value="STB">STB</option>';
+            }
+            else if (kategori === 'KARTU_PERDANA') {
+                inputSheet.value = 'TSEL';
+                inputSheet.disabled = true;
+                barangInput.value = 'SIM CARD';
+                whSoInput.value = 'TA SO CCAN BLIMBING WH';
+                labelSN.innerText = 'NO HP';
+                labelType.innerText = 'Type';
+                document.getElementById('TYPE').placeholder = 'Type Kartu Perdana';
                 wrapperMAC.style.display = 'none';
-                wrapperType.style.display = 'none';
-            } else if (kategori === 'ADD ON') {
-                labelSN.innerText = "Serial Number (SN)";
-                wrapperMAC.style.display = 'block';
-                wrapperType.style.display = 'block';
-            } else {
-                labelSN.innerText = "Serial Number (SN)";
-                wrapperMAC.style.display = 'block';
-                wrapperType.style.display = 'block';
+
+                selectJenis.innerHTML = '<option value="KARTU PERDANA">KARTU PERDANA</option>';
+            }
+            else if (kategori === 'ADD_ON') {
+                inputSheet.disabled = false;
+                barangInput.value = 'AP MESH / ORBIT';
+                whSoInput.value = 'TA SO INV BLIMBING WH';
+                labelSN.innerText = 'Serial Number (SN)';
+                labelType.innerText = 'Type';
+
+                ['AP MESH', 'ORBIT'].forEach(opt => {
+                    selectJenis.innerHTML += `<option value="${opt}">${opt}</option>`;
+                });
             }
         }
 
@@ -692,8 +760,7 @@
 
             if (role === 'user') { showView('statusView'); } else { showView('dashboardView'); }
             loadData();
-            updatePosisiDropdownOptions();
-            switchBarangForm('ONT');
+            onKategoriPerangkatChange('ONT_TSEL');
         }
 
         function renderUsersTable() {
@@ -784,11 +851,11 @@
                 return found !== -1 ? found : fallbackIdx;
             };
 
-            const idxSN = findCol(['SN', 'SERIAL NUMBER'], 5);
+            const idxSN = findCol(['SN', 'SERIAL NUMBER', 'STBID'], 5);
             const idxBarang = findCol(['BARANG', 'PERANGKAT'], 4);
-            const idxTglIn = findCol(['TGL', 'TANGGAL'], 2);
+            const idxTglIn = findCol(['TGL IN', 'TGL', 'TANGGAL'], 2);
             const idxType = findCol(['TYPE', 'TIPE'], 6);
-            const idxPosisi = findCol(['POSISI', 'STATUS PARADISE', 'STATUS'], 17);
+            const idxPosisi = findCol(['POSISI', 'STATUS PARADISE', 'STATUS SCMT', 'STATUS'], 17);
             const idxNik = findCol(['NIK'], 10);
             const idxNama = findCol(['NAMA TEKNISI', 'NAMA'], 11);
             const idxMitra = findCol(['MITRA'], 12);
@@ -878,20 +945,6 @@
             }
         });
 
-        function updatePosisiDropdownOptions() {
-            const sheet = document.getElementById('inputSheet').value;
-            const optScmtInitial = document.getElementById('optScmtInitial');
-            const optScmtUpdate = document.getElementById('optScmtUpdate');
-            
-            if (sheet === 'TIF' || sheet === 'TELKOM') {
-                if(optScmtInitial) optScmtInitial.style.display = 'block';
-                if(optScmtUpdate) optScmtUpdate.style.display = 'block';
-            } else {
-                if(optScmtInitial) optScmtInitial.style.display = 'none';
-                if(optScmtUpdate) optScmtUpdate.style.display = 'none';
-            }
-        }
-
         function applyFilters() {
             const sheetFilter = document.getElementById('pilihanSheet').value;
             const q = document.getElementById('filterTableSearch').value.toLowerCase().trim();
@@ -975,7 +1028,7 @@
             allNormalizedData.forEach(item => {
                 const b = item.barang.toUpperCase();
                 const p = item.posisi.toUpperCase();
-                if (b.includes('STB')) totalSTB++; else totalModem++;
+                if (b.includes('STB') || b.includes('SIM CARD')) totalSTB++; else totalModem++;
                 if (p.includes('STOCK')) totalStock++;
                 if (p.includes('INTECH')) totalIntech++;
             });
@@ -1002,13 +1055,9 @@
             if (chartBarInstance) chartBarInstance.destroy();
             chartBarInstance = new Chart(ctxBar, {
                 type: 'bar',
-                data: { labels: ['TOTAL'], datasets: [{ label: 'STB', data: [stb], backgroundColor: '#0dcaf0' }, { label: 'Modem', data: [modem], backgroundColor: '#6c757d' }] },
+                data: { labels: ['TOTAL'], datasets: [{ label: 'STB / SIM', data: [stb], backgroundColor: '#0dcaf0' }, { label: 'Modem', data: [modem], backgroundColor: '#6c757d' }] },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
             });
-        }
-
-        function toggleInitialStatusFields(val) {
-            document.querySelectorAll('.initial-tech-field').forEach(f => f.style.display = val !== 'STOCK' ? 'block' : 'none');
         }
 
         function toggleUpdateStatusFields(val) {
@@ -1017,12 +1066,12 @@
 
         function downloadTemplateCSV() {
             const kategori = document.getElementById('kategoriBarangInput').value;
-            const csvContent = "BARANG,SN,MAC,TYPE,POSISI\n" + (kategori === 'KARTU PERDANA' ? "KARTU PERDANA,ICCID123456,-,-,STOCK" : "ONT PREMIUM,SN12345678,AA:BB:CC:11:22:33,ZTE,STOCK");
+            const csvContent = "BARANG,SN,MAC,TYPE,POSISI\n" + (kategori.includes('KARTU') ? "SIM CARD,08123456789,-,-,STOCK" : "ONT,SN12345678,AA:BB:CC:11:22:33,ONT_HUAWEI_HG8145X6-10,STOCK");
             const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'Template_Upload_' + kategori.replace(/\s+/g, '_') + '.csv';
+            a.download = 'Template_Upload_' + kategori + '.csv';
             a.click();
         }
 
@@ -1036,23 +1085,30 @@
 
             Swal.fire({ title: 'Menyimpan Barang Baru...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
+            // Menentukan kolom status spreadsheet (STATUS PARADISE atau STATUS SCMT) berdasarkan sheet
+            let statusKey = (sheetName === 'TIF' || sheetName === 'TELKOM') ? 'STATUS SCMT' : 'STATUS PARADISE';
+            let statusNteKey = (sheetName === 'TIF' || sheetName === 'TELKOM') ? 'STATUS ONT' : 'STATUS NTE';
+
+            let postPayload = {
+                action: 'create',
+                sheetName: sheetName,
+                "BARANG": document.getElementById('BARANG').value,
+                "TGL IN": document.getElementById('TGL_IN').value,
+                "NO": document.getElementById('NOMOR_KARDUS').value.trim(),
+                "WH SO": document.getElementById('WH_SO').value,
+                "SN": document.getElementById('SN').value.trim(),
+                "MAC": document.getElementById('MAC').value.trim(),
+                "TYPE": document.getElementById('TYPE').value.trim(),
+                "JENIS": document.getElementById('JENIS').value,
+                "POSISI": "STOCK",
+                [statusKey]: "STOCK",
+                [statusNteKey]: "NEW"
+            };
+
             fetch(SCRIPT_URL, {
                 method: 'POST',
                 headers: { "Content-Type": "text/plain;charset=utf-8" },
-                body: JSON.stringify({
-                    action: 'create', 
-                    sheetName: sheetName,
-                    "BARANG": document.getElementById('BARANG').value,
-                    "SN": document.getElementById('SN').value.trim(),
-                    "MAC": document.getElementById('MAC').value.trim(),
-                    "TYPE": document.getElementById('TYPE').value.trim(),
-                    "POSISI": document.getElementById('STATUS_AWAL').value,
-                    "NIK": document.getElementById('NIK_AWAL').value.trim(),
-                    "NAMA": document.getElementById('NAMA_AWAL').value.trim(),
-                    "MITRA": document.getElementById('MITRA_AWAL').value.trim(),
-                    "PEKERJAAN": "",
-                    "TIKET": document.getElementById('TIKET_AWAL').value.trim()
-                })
+                body: JSON.stringify(postPayload)
             })
             .then(res => res.text())
             .then(text => {
@@ -1061,8 +1117,7 @@
                 if(res.status === 'success' || !res.status) {
                     Swal.fire({ icon: 'success', title: 'Berhasil', text: res.message || 'Data baru berhasil disimpan.', timer: 1500, showConfirmButton: false });
                     document.getElementById('formNTE').reset();
-                    updatePosisiDropdownOptions();
-                    switchBarangForm(document.getElementById('kategoriBarangInput').value);
+                    onKategoriPerangkatChange(document.getElementById('kategoriBarangInput').value);
                     loadData();
                 } else {
                     Swal.fire('Gagal', res.message || 'Terjadi kesalahan.', 'error');
@@ -1109,7 +1164,7 @@
                                     headers: { "Content-Type": "text/plain;charset=utf-8" },
                                     body: JSON.stringify({
                                         action: 'create', sheetName: targetSheet,
-                                        BARANG: barang, SN: sn, MAC: mac, TYPE: type, POSISI: posisi, PEKERJAAN: ""
+                                        BARANG: barang, SN: sn, MAC: mac, TYPE: type, POSISI: posisi
                                     })
                                 });
                                 successCount++;
@@ -1145,7 +1200,6 @@
 
                 document.getElementById('infoStatusBadge').innerHTML = '<span class="badge-status ' + badgeClass + '">' + found.posisi + '</span>';
                 
-                updatePosisiDropdownOptions();
                 document.getElementById('updateStatusSelect').value = found.posisi || 'STOCK';
                 document.getElementById('updateNIK').value = found.nik !== '-' ? found.nik : '';
                 document.getElementById('updateNama').value = found.nama !== '-' ? found.nama : '';
