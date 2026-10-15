@@ -38,6 +38,7 @@
             color: var(--text-color);
             font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
             min-height: 100vh;
+            transition: background-color 0.2s ease, color 0.2s ease;
         }
 
         .card {
@@ -53,22 +54,6 @@
         .nav-link { font-weight: 500; border-radius: 6px; padding: 6px 14px !important; margin: 0 3px; color: rgba(255,255,255,0.9) !important; }
         .nav-link:hover, .nav-link.active { background-color: rgba(255, 255, 255, 0.15) !important; color: #fff !important; font-weight: 600; }
         
-        .nav-pills .nav-link {
-            color: #9b1c28;
-            font-weight: 600;
-            border: 1px solid #9b1c28;
-            margin-right: 6px;
-        }
-        [data-theme="dark"] .nav-pills .nav-link {
-            color: #f8fafc;
-            border-color: #475569;
-        }
-        .nav-pills .nav-link.active {
-            background-color: #9b1c28 !important;
-            color: #ffffff !important;
-            border-color: #9b1c28 !important;
-        }
-
         .btn-danger { background-color: #9b1c28 !important; border-color: #75121c !important; }
         .btn-danger:hover { background-color: #75121c !important; }
         
@@ -92,7 +77,6 @@
         
         [data-theme="dark"] .bg-light { background-color: #111827 !important; color: #f8fafc !important; border-color: #334155 !important; }
         [data-theme="dark"] .text-muted { color: #94a3b8 !important; }
-        [data-theme="dark"] .modal-content { background-color: #1e293b; color: #f8fafc; border: 1px solid #334155; }
         [data-theme="dark"] .table { color: #f8fafc !important; }
         [data-theme="dark"] .input-group-text { background-color: #334155; color: #f8fafc; border-color: #475569; }
     </style>
@@ -196,10 +180,8 @@
             <!-- DATA MASTER NTE -->
             <div id="dataView" class="view-section">
                 <div id="adminAddCard" class="card p-4 shadow-sm mb-4 border-top border-danger border-3" style="display: none;">
-                    <div class="d-flex justify-content-between align-items-center mb-3">
-                        <h5 class="fw-bold mb-0 text-danger"><i class="bi bi-plus-square me-2"></i>Entri Data Barang Baru Berdasarkan Kategori Perangkat</h5>
-                    </div>
-
+                    <h5 class="fw-bold mb-3 text-danger"><i class="bi bi-plus-square me-2"></i>Entri Data Barang Baru Berdasarkan Kategori Perangkat</h5>
+                    
                     <div class="mb-3">
                         <label class="form-label fw-bold">Pilih Kategori Perangkat:</label>
                         <select id="kategoriPerangkatInput" class="form-select w-50" onchange="switchKategoriPerangkat(this.value)">
@@ -224,52 +206,42 @@
                                     <option value="VULA">VULA</option>
                                 </select>
                             </div>
-
                             <div class="col-md-2">
                                 <label class="form-label">Tanggal Masuk (Tgl In)</label>
                                 <input type="date" id="inputTglIn" class="form-control" required>
                             </div>
-
                             <div class="col-md-2">
                                 <label class="form-label">Nomor Kardus (No)</label>
                                 <input type="text" id="inputNoKardus" class="form-control" placeholder="Cth: 12">
                             </div>
-
                             <div class="col-md-3">
                                 <label class="form-label">Jenis Barang</label>
                                 <select id="inputJenisBarang" class="form-select" required></select>
                             </div>
-
                             <div class="col-md-3" id="wrapperSNOrStbid">
                                 <label class="form-label" id="labelSNOrStbid">Serial Number (SN)</label>
                                 <input type="text" id="inputSNOrStbid" class="form-control" placeholder="Masukkan SN / STBID" required>
                             </div>
-
                             <div class="col-md-3" id="wrapperMAC">
                                 <label class="form-label">MAC Address</label>
                                 <input type="text" id="inputMAC" class="form-control" placeholder="AA:BB:CC...">
                             </div>
-
                             <div class="col-md-3" id="wrapperType">
                                 <label class="form-label">Type / Model</label>
                                 <input type="text" id="inputType" class="form-control" placeholder="ZTE / HG8145X6">
                             </div>
-
                             <div class="col-md-3">
                                 <label class="form-label">Status Posisi Awal</label>
                                 <input type="text" class="form-control bg-light" value="STOCK" readonly>
                             </div>
-
                             <div class="col-md-3">
                                 <label class="form-label" id="labelStatusKhusus">Status SCMT / Paradise</label>
                                 <input type="text" id="inputStatusKhususVal" class="form-control bg-light" value="STOCK" readonly>
                             </div>
-
                             <div class="col-md-3">
                                 <label class="form-label" id="labelStatusNteOnt">Status NTE / ONT</label>
                                 <input type="text" id="inputStatusNteVal" class="form-control bg-light" value="NEW" readonly>
                             </div>
-
                             <div class="col-md-3 d-flex align-items-end">
                                 <button type="submit" class="btn btn-danger w-100" id="btnSimpan">
                                     <i class="bi bi-save me-1"></i> Simpan Data Baru
@@ -299,12 +271,8 @@
                             </div>
                         </div>
                         <div class="col-md-4 text-md-end pt-md-4">
-                            <button class="btn btn-outline-danger btn-sm me-1" onclick="loadData(true)">
-                                <i class="bi bi-arrow-repeat me-1"></i> Muat Ulang
-                            </button>
-                            <button class="btn btn-outline-secondary btn-sm" onclick="exportTableToCSV()">
-                                <i class="bi bi-download me-1"></i> Ekspor CSV
-                            </button>
+                            <button class="btn btn-outline-danger btn-sm me-1" onclick="loadData(true)"><i class="bi bi-arrow-repeat me-1"></i> Muat Ulang</button>
+                            <button class="btn btn-outline-secondary btn-sm" onclick="exportTableToCSV()"><i class="bi bi-download me-1"></i> Ekspor CSV</button>
                         </div>
                     </div>
                     
@@ -312,17 +280,7 @@
                         <table class="table table-hover align-middle mb-0" id="mainNteTable">
                             <thead>
                                 <tr>
-                                    <th>No</th>
-                                    <th>Kategori</th>
-                                    <th>Tgl In</th>
-                                    <th>Barang</th>
-                                    <th>SN / STBID</th>
-                                    <th>Type</th>
-                                    <th>Posisi</th>
-                                    <th>Teknisi</th>
-                                    <th>Mitra</th>
-                                    <th>Pekerjaan</th>
-                                    <th>Tiket</th>
+                                    <th>No</th><th>Kategori</th><th>Tgl In</th><th>Barang</th><th>SN / STBID</th><th>Type</th><th>Posisi</th><th>Teknisi</th><th>Mitra</th><th>Pekerjaan</th><th>Tiket</th>
                                 </tr>
                             </thead>
                             <tbody id="tabelBody">
@@ -335,9 +293,7 @@
                         <div class="d-flex align-items-center gap-2">
                             <span class="text-muted small" id="tableDataCount">Menampilkan: 0 data</span>
                             <select id="selectPageSize" class="form-select form-select-sm" style="width: auto;" onchange="changePageSize(this.value)">
-                                <option value="25">25 per hal</option>
-                                <option value="50" selected>50 per hal</option>
-                                <option value="100">100 per hal</option>
+                                <option value="25">25 per hal</option><option value="50" selected>50 per hal</option><option value="100">100 per hal</option>
                             </select>
                         </div>
                         <nav><ul class="pagination pagination-sm mb-0" id="paginationControls"></ul></nav>
@@ -352,7 +308,7 @@
                         <div class="card quick-sn-box p-4 shadow-sm mb-4">
                             <div class="d-flex align-items-center gap-3">
                                 <div class="bg-white text-danger p-3 rounded-3 shadow-sm"><i class="bi bi-arrow-left-right fs-3"></i></div>
-                                <div><h5 class="fw-bold mb-1">Form Pembaruan Status & Mutasi</h5><p class="mb-0 opacity-75 small">Perbarui posisi perangkat lengkap dengan data teknisi, mitra, pekerjaan, dan tiket.</p></div>
+                                <div><h5 class="fw-bold mb-1">Form Pembaruan Status & Mutasi</h5><p class="mb-0 opacity-75 small">Perbarui posisi perangkat lengkap dengan status NTE/ONT, teknisi, mitra, pekerjaan, dan tiket.</p></div>
                             </div>
                         </div>
 
@@ -385,14 +341,26 @@
                             </div>
 
                             <form id="formUpdateStatus" onsubmit="handleSimpanStatus(event)">
-                                <div class="mb-3">
-                                    <label class="form-label">Pilih Status / Posisi Baru:</label>
-                                    <select id="updateStatusSelect" class="form-select" onchange="toggleUpdateStatusFields(this.value)" required>
-                                        <option value="STOCK">STOCK</option>
-                                        <option value="INTECH">INTECH</option>
-                                        <option value="INSTALLED">INSTALLED</option>
-                                        <option value="DISMANTLE">DISMANTLE</option>
-                                    </select>
+                                <div class="row g-3 mb-3">
+                                    <div class="col-md-6">
+                                        <label class="form-label">Pilih Status / Posisi Baru:</label>
+                                        <select id="updateStatusSelect" class="form-select" onchange="toggleUpdateStatusFields(this.value)" required>
+                                            <option value="STOCK">STOCK</option>
+                                            <option value="INTECH">INTECH</option>
+                                            <option value="INSTALLED">INSTALLED</option>
+                                            <option value="DISMANTLE">DISMANTLE</option>
+                                            <option value="TAG REBALANCING">TAG REBALANCING</option>
+                                            <option value="HILANG">HILANG</option>
+                                        </select>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <label class="form-label" id="labelUpdateStatusNteOnt">Status NTE / ONT:</label>
+                                        <select id="updateStatusNteOntSelect" class="form-select" required>
+                                            <option value="NEW">NEW</option>
+                                            <option value="REFURBISH">REFURBISH</option>
+                                            <option value="DISMANTLING">DISMANTLING</option>
+                                        </select>
+                                    </div>
                                 </div>
 
                                 <div id="fieldsTeknisiUpdate" class="p-3 bg-warning-subtle rounded-3 border border-warning mb-4" style="display: none;">
@@ -413,12 +381,7 @@
                                         <div class="col-md-4">
                                             <label class="form-label text-dark">Pekerjaan</label>
                                             <select id="updatePekerjaan" class="form-select">
-                                                <option value="PSB">PSB</option>
-                                                <option value="PDA">PDA</option>
-                                                <option value="ASSURANCE">ASSURANCE</option>
-                                                <option value="GARANSI PSB">GARANSI PSB</option>
-                                                <option value="MO">MO</option>
-                                                <option value="REPLACE">REPLACE</option>
+                                                <option value="PSB">PSB</option><option value="PDA">PDA</option><option value="ASSURANCE">ASSURANCE</option><option value="GARANSI PSB">GARANSI PSB</option><option value="MO">MO</option><option value="REPLACE">REPLACE</option>
                                             </select>
                                         </div>
                                         <div class="col-md-4">
@@ -445,19 +408,12 @@
                         <div class="card p-4 shadow-sm mb-4 border-top border-danger border-3">
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <h5 class="fw-bold mb-0"><i class="bi bi-people-fill me-2 text-danger"></i>Manajemen Hak Akses Pengguna</h5>
-                                <button class="btn btn-danger btn-sm" onclick="openAddUserModal()">
-                                    <i class="bi bi-person-plus-fill me-1"></i> Tambah User Baru
-                                </button>
+                                <button class="btn btn-danger btn-sm" onclick="openAddUserModal()"><i class="bi bi-person-plus-fill me-1"></i> Tambah User Baru</button>
                             </div>
                             <div class="table-responsive border rounded">
                                 <table class="table table-hover align-middle mb-0">
                                     <thead>
-                                        <tr>
-                                            <th>Username</th>
-                                            <th>Wilayah / Kategori</th>
-                                            <th>Role</th>
-                                            <th class="text-center">Aksi</th>
-                                        </tr>
+                                        <tr><th>Username</th><th>Wilayah / Kategori</th><th>Role</th><th class="text-center">Aksi</th></tr>
                                     </thead>
                                     <tbody id="tabelUsersBody"></tbody>
                                 </table>
@@ -537,11 +493,9 @@
         function switchKategoriPerangkat(kategori) {
             const selectJenis = document.getElementById('inputJenisBarang');
             selectJenis.innerHTML = '';
-            const items = LIST_JENIS_KATEGORI[kategori] || [];
-            items.forEach(item => {
+            (LIST_JENIS_KATEGORI[kategori] || []).forEach(item => {
                 const opt = document.createElement('option');
-                opt.value = item;
-                opt.innerText = item;
+                opt.value = item; opt.innerText = item;
                 selectJenis.appendChild(opt);
             });
 
@@ -560,16 +514,13 @@
 
             if (kategori === 'KARTU PERDANA') {
                 labelSNOrStbid.innerText = "Nomor HP / STBID";
-                wrapperMAC.style.display = 'none';
-                wrapperType.style.display = 'none';
+                wrapperMAC.style.display = 'none'; wrapperType.style.display = 'none';
             } else if (kategori.includes('STB')) {
                 labelSNOrStbid.innerText = "STBID";
-                wrapperMAC.style.display = 'block';
-                wrapperType.style.display = 'block';
+                wrapperMAC.style.display = 'block'; wrapperType.style.display = 'block';
             } else {
                 labelSNOrStbid.innerText = "Serial Number (SN)";
-                wrapperMAC.style.display = 'block';
-                wrapperType.style.display = 'block';
+                wrapperMAC.style.display = 'block'; wrapperType.style.display = 'block';
             }
 
             if (kategori.includes('TSEL') || kategori === 'KARTU PERDANA' || kategori.includes('STB')) {
@@ -606,10 +557,7 @@
             if (savedUser) {
                 try { 
                     currentUser = JSON.parse(savedUser); 
-                    if (currentUser && currentUser.username) {
-                        initAppUI(); 
-                        return;
-                    }
+                    if (currentUser && currentUser.username) { initAppUI(); return; }
                 } catch (e) {} 
             } 
             showLogin();
@@ -634,11 +582,7 @@
             }
         }
 
-        function handleLogout() { 
-            localStorage.removeItem('nte_session_user'); 
-            currentUser = null; 
-            showLogin(); 
-        }
+        function handleLogout() { localStorage.removeItem('nte_session_user'); currentUser = null; showLogin(); }
 
         function initAppUI() {
             document.getElementById('loginScreen').style.display = 'none';
@@ -896,6 +840,7 @@
                 else if (pos.includes('INTECH')) badgeClass = 'bg-warning text-dark';
                 else if (pos.includes('INSTALLED')) badgeClass = 'bg-primary text-white';
                 else if (pos.includes('DISMANTLE')) badgeClass = 'bg-danger text-white';
+                else if (pos.includes('REBALANCING') || pos.includes('HILANG')) badgeClass = 'bg-dark text-white';
 
                 let teknisiHtml = item.nama !== '-' && item.nama !== '' ? (item.nama + '<br><small class="text-muted fw-semibold">' + item.nik + '</small>') : '-';
 
@@ -1033,10 +978,13 @@
                 else if (pos.includes('INTECH')) badgeClass = 'bg-warning text-dark';
                 else if (pos.includes('INSTALLED')) badgeClass = 'bg-primary text-white';
                 else if (pos.includes('DISMANTLE')) badgeClass = 'bg-danger text-white';
+                else if (pos.includes('REBALANCING') || pos.includes('HILANG')) badgeClass = 'bg-dark text-white';
 
                 document.getElementById('infoStatusBadge').innerHTML = '<span class="badge-status ' + badgeClass + '">' + found.posisi + '</span>';
                 
                 document.getElementById('updateStatusSelect').value = found.posisi || 'STOCK';
+                document.getElementById('labelUpdateStatusNteOnt').innerText = (found.sheet === 'TSEL') ? 'Status NTE:' : 'Status ONT:';
+                
                 document.getElementById('updateNIK').value = found.nik !== '-' ? found.nik : '';
                 document.getElementById('updateNama').value = found.nama !== '-' ? found.nama : '';
                 document.getElementById('updateMitra').value = found.mitra !== '-' ? found.mitra : '';
@@ -1061,6 +1009,7 @@
             e.preventDefault();
             if (!activeFoundItem) return;
             const newStatus = document.getElementById('updateStatusSelect').value;
+            const statusNteOntVal = document.getElementById('updateStatusNteOntSelect').value;
             
             Swal.fire({ title: 'Menyimpan ke Spreadsheet...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
             
@@ -1072,6 +1021,7 @@
                     sheetName: activeFoundItem.sheet, 
                     sn: activeFoundItem.sn,
                     status: newStatus,
+                    statusNteOnt: statusNteOntVal,
                     nik: newStatus === 'STOCK' ? '' : document.getElementById('updateNIK').value.trim(),
                     nama: newStatus === 'STOCK' ? '' : document.getElementById('updateNama').value.trim(),
                     mitra: newStatus === 'STOCK' ? '' : document.getElementById('updateMitra').value.trim(),
