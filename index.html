@@ -38,7 +38,6 @@
             color: var(--text-color);
             font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
             min-height: 100vh;
-            transition: background-color 0.2s ease, color 0.2s ease;
         }
 
         .card {
@@ -50,8 +49,8 @@
         }
 
         .navbar { background-color: #9b1c28 !important; border-bottom: 2px solid #75121c; padding: 0.8rem 1rem; }
-        .navbar-brand { font-weight: 700; color: #fff !important; letter-spacing: -0.5px; }
-        .nav-link { font-weight: 500; border-radius: 6px; padding: 6px 14px !important; margin: 0 3px; color: rgba(255,255,255,0.9) !important; transition: all 0.2s; }
+        .navbar-brand { font-weight: 700; color: #fff !important; }
+        .nav-link { font-weight: 500; border-radius: 6px; padding: 6px 14px !important; margin: 0 3px; color: rgba(255,255,255,0.9) !important; }
         .nav-link:hover, .nav-link.active { background-color: rgba(255, 255, 255, 0.15) !important; color: #fff !important; font-weight: 600; }
         
         .nav-pills .nav-link {
@@ -80,7 +79,7 @@
         .table { font-size: 0.85rem; color: var(--text-color) !important; vertical-align: middle; }
         .table-hover tbody tr:hover { background-color: var(--table-hover) !important; }
         .table-responsive { max-height: 560px; overflow-y: auto; }
-        th { position: sticky; top: 0; background-color: #9b1c28 !important; color: white !important; z-index: 2; white-space: nowrap; font-weight: 600; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px; }
+        th { position: sticky; top: 0; background-color: #9b1c28 !important; color: white !important; z-index: 2; white-space: nowrap; font-weight: 600; font-size: 0.78rem; text-transform: uppercase; }
         
         .badge-status { font-weight: 700; padding: 5px 12px; border-radius: 6px; display: inline-block; font-size: 0.75rem; letter-spacing: 0.5px; }
         .view-section { display: none; }
@@ -113,10 +112,10 @@
                 </div>
                 <div class="card shadow-sm p-4 border-0">
                     <h6 class="fw-bold mb-3 text-secondary text-uppercase fs-7 text-center">Autentikasi Pengguna</h6>
-                    <form id="formLogin">
+                    <form id="formLogin" onsubmit="handleLoginSubmit(event)">
                         <div class="mb-3">
                             <label class="form-label">Username</label>
-                            <input type="text" id="loginUsername" class="form-control" placeholder="Masukkan username..." required>
+                            <input type="text" id="loginUsername" class="form-control" placeholder="admin / superuser / user" required>
                         </div>
                         <div class="mb-3">
                             <label class="form-label">Password</label>
@@ -201,7 +200,6 @@
                         <h5 class="fw-bold mb-0 text-danger"><i class="bi bi-plus-square me-2"></i>Entri Data Barang Baru Berdasarkan Kategori Perangkat</h5>
                     </div>
 
-                    <!-- PILIH KATEGORI PERANGKAT -->
                     <div class="mb-3">
                         <label class="form-label fw-bold">Pilih Kategori Perangkat:</label>
                         <select id="kategoriPerangkatInput" class="form-select w-50" onchange="switchKategoriPerangkat(this.value)">
@@ -239,14 +237,12 @@
 
                             <div class="col-md-3">
                                 <label class="form-label">Jenis Barang</label>
-                                <select id="inputJenisBarang" class="form-select" required>
-                                    <!-- Diisi otomatis script -->
-                                </select>
+                                <select id="inputJenisBarang" class="form-select" required></select>
                             </div>
 
                             <div class="col-md-3" id="wrapperSNOrStbid">
                                 <label class="form-label" id="labelSNOrStbid">Serial Number (SN)</label>
-                                <input type="text" id="inputSNOrStbid" class="form-control" placeholder="Masukkan SN / STBID / No HP" required>
+                                <input type="text" id="inputSNOrStbid" class="form-control" placeholder="Masukkan SN / STBID" required>
                             </div>
 
                             <div class="col-md-3" id="wrapperMAC">
@@ -299,7 +295,7 @@
                             <label class="form-label">Pencarian Universal:</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="bi bi-search"></i></span>
-                                <input type="text" id="filterTableSearch" class="form-control" placeholder="Cari SN, STBID, Teknisi, Mitra, Tiket..." onkeyup="handleSearchChange()">
+                                <input type="text" id="filterTableSearch" class="form-control" placeholder="Cari SN, STBID, Teknisi, Mitra..." onkeyup="handleSearchChange()">
                             </div>
                         </div>
                         <div class="col-md-4 text-md-end pt-md-4">
@@ -549,7 +545,6 @@
                 selectJenis.appendChild(opt);
             });
 
-            // Atur otomatis sheet target berdasarkan kategori
             const selectSheet = document.getElementById('inputSheet');
             if (kategori.includes('TSEL') || kategori === 'KARTU PERDANA') selectSheet.value = 'TSEL';
             else if (kategori.includes('TELKOM')) selectSheet.value = 'TELKOM';
@@ -577,7 +572,6 @@
                 wrapperType.style.display = 'block';
             }
 
-            // Label Status khusus sesuai brief
             if (kategori.includes('TSEL') || kategori === 'KARTU PERDANA' || kategori.includes('STB')) {
                 labelStatusKhusus.innerText = "Status Paradise";
                 inputStatusKhususVal.value = "STOCK";
@@ -610,8 +604,15 @@
             initTheme();
             const savedUser = localStorage.getItem('nte_session_user');
             if (savedUser) {
-                try { currentUser = JSON.parse(savedUser); initAppUI(); } catch (e) { showLogin(); }
-            } else { showLogin(); }
+                try { 
+                    currentUser = JSON.parse(savedUser); 
+                    if (currentUser && currentUser.username) {
+                        initAppUI(); 
+                        return;
+                    }
+                } catch (e) {} 
+            } 
+            showLogin();
         }
 
         function showLogin() {
@@ -619,20 +620,25 @@
             document.getElementById('mainApp').style.display = 'none';
         }
 
-        document.getElementById('formLogin').addEventListener('submit', function(e) {
+        function handleLoginSubmit(e) {
             e.preventDefault();
             const u = document.getElementById('loginUsername').value.trim();
             const p = document.getElementById('loginPassword').value.trim();
+            
             if (globalUsersCache[u] && globalUsersCache[u].password === p) {
                 currentUser = { username: u, role: globalUsersCache[u].role, kategori: globalUsersCache[u].kategori };
                 localStorage.setItem('nte_session_user', JSON.stringify(currentUser));
                 initAppUI();
             } else {
-                Swal.fire({ icon: 'error', title: 'Akses Ditolak', text: 'Periksa kembali username atau password Anda.' });
+                Swal.fire({ icon: 'error', title: 'Akses Ditolak', text: 'Username atau password salah! (Coba: admin / admin123)' });
             }
-        });
+        }
 
-        function handleLogout() { localStorage.removeItem('nte_session_user'); currentUser = null; showLogin(); }
+        function handleLogout() { 
+            localStorage.removeItem('nte_session_user'); 
+            currentUser = null; 
+            showLogin(); 
+        }
 
         function initAppUI() {
             document.getElementById('loginScreen').style.display = 'none';
@@ -658,7 +664,6 @@
 
             if (role === 'user') { showView('statusView'); } else { showView('dashboardView'); }
             
-            // Set default tanggal hari ini di form entri
             document.getElementById('inputTglIn').valueAsDate = new Date();
             switchKategoriPerangkat('ONT TSEL');
             loadData();
@@ -702,7 +707,7 @@
                 title: 'Edit Pengguna: ' + username,
                 html: '<input id="swal-input-pass" type="password" class="swal2-input" placeholder="Password Baru" value="' + user.password + '"><input id="swal-input-kat" class="swal2-input" placeholder="Wilayah / Kategori" value="' + user.kategori + '"><select id="swal-input-role" class="swal2-input"><option value="admin" ' + (user.role === 'admin' ? 'selected' : '') + '>Admin</option><option value="superuser" ' + (user.role === 'superuser' ? 'selected' : '') + '>Superuser</option><option value="user" ' + (user.role === 'user' ? 'selected' : '') + '>User (Teknisi)</option></select>',
                 focusConfirm: false, showCancelButton: true, confirmButtonText: 'Perbarui', cancelButtonText: 'Batal',
-                preConfirm: () => [document.getElementById('swal-input-pass').value.trim(), document.getElementById('swal-input-kat').value.trim(), document.getElementById('swal-input-role'].value]
+                preConfirm: () => [document.getElementById('swal-input-pass').value.trim(), document.getElementById('swal-input-kat').value.trim(), document.getElementById('swal-input-role').value]
             });
             if (formValues) {
                 const [password, kategori, role] = formValues;
