@@ -212,7 +212,16 @@
                             </div>
                             <div class="col-md-2">
                                 <label class="form-label">Nomor Kardus (No)</label>
-                                <input type="text" id="inputNoKardus" class="form-control" placeholder="Cth: 12">
+                                <input type="text" id="inputNoKardus" class="form-control" placeholder="Cth: 12" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Barang</label>
+                                <select id="inputBarang" class="form-select" required>
+                                    <option value="ONT">ONT</option>
+                                    <option value="STB">STB</option>
+                                    <option value="ADD ON">ADD ON</option>
+                                    <option value="SIM CARD">SIM CARD</option>
+                                </select>
                             </div>
                             <div class="col-md-3">
                                 <label class="form-label">Jenis Barang</label>
@@ -267,7 +276,7 @@
                             <label class="form-label">Pencarian Universal:</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="bi bi-search"></i></span>
-                                <input type="text" id="filterTableSearch" class="form-control" placeholder="Cari SN, STBID, Teknisi, Mitra..." onkeyup="handleSearchChange()">
+                                <input type="text" id="filterTableSearch" class="form-control" placeholder="Cari No, SN, STBID, Teknisi..." onkeyup="handleSearchChange()">
                             </div>
                         </div>
                         <div class="col-md-4 text-md-end pt-md-4">
@@ -280,7 +289,7 @@
                         <table class="table table-hover align-middle mb-0" id="mainNteTable">
                             <thead>
                                 <tr>
-                                    <th>No</th><th>Kategori</th><th>Tgl In</th><th>Barang</th><th>SN / STBID</th><th>Type</th><th>Posisi</th><th>Teknisi</th><th>Mitra</th><th>Pekerjaan</th><th>Tiket</th>
+                                    <th>No Kardus</th><th>Kategori</th><th>Tgl In</th><th>Barang</th><th>SN / STBID</th><th>Type</th><th>Posisi</th><th>Teknisi</th><th>Mitra</th><th>Pekerjaan</th><th>Tiket</th>
                                 </tr>
                             </thead>
                             <tbody id="tabelBody">
@@ -481,19 +490,26 @@
         let activeFoundItem = null;
 
         const LIST_JENIS_KATEGORI = {
-            "ONT TSEL": ["ONT single band", "ont dual band", "ont premium", "BIG ONT"],
-            "ONT TELKOM": ["ONT single band", "ont dual band", "ont premium"],
-            "ONT TIF": ["ONT single band", "ont dual band", "ont premium"],
-            "STB TSEL": ["STB"],
-            "STB TELKOM": ["STB"],
-            "KARTU PERDANA": ["KARTU PERDANA"],
-            "ADD ON": ["AP MESH", "ORBIT"]
+            "ONT TSEL": { barang: "ONT", jenis: ["ONT single band", "ont dual band", "ont premium", "BIG ONT"] },
+            "ONT TELKOM": { barang: "ONT", jenis: ["ONT single band", "ont dual band", "ont premium"] },
+            "ONT TIF": { barang: "ONT", jenis: ["ONT single band", "ont dual band", "ont premium"] },
+            "STB TSEL": { barang: "STB", jenis: ["STB"] },
+            "STB TELKOM": { barang: "STB", jenis: ["STB"] },
+            "KARTU PERDANA": { barang: "SIM CARD", jenis: ["KARTU PERDANA"] },
+            "ADD ON": { barang: "ADD ON", jenis: ["AP MESH", "ORBIT"] }
         };
 
         function switchKategoriPerangkat(kategori) {
+            const config = LIST_JENIS_KATEGORI[kategori] || { barang: "ONT", jenis: [] };
+            
+            // Set dropdown Barang
+            const selectBarang = document.getElementById('inputBarang');
+            selectBarang.value = config.barang;
+
+            // Set dropdown Jenis Barang
             const selectJenis = document.getElementById('inputJenisBarang');
             selectJenis.innerHTML = '';
-            (LIST_JENIS_KATEGORI[kategori] || []).forEach(item => {
+            config.jenis.forEach(item => {
                 const opt = document.createElement('option');
                 opt.value = item; opt.innerText = item;
                 selectJenis.appendChild(opt);
@@ -512,15 +528,14 @@
             const labelStatusNteOnt = document.getElementById('labelStatusNteOnt');
             const inputStatusNteVal = document.getElementById('inputStatusNteVal');
 
-            if (kategori === 'KARTU PERDANA') {
-                labelSNOrStbid.innerText = "Nomor HP / STBID";
-                wrapperMAC.style.display = 'none'; wrapperType.style.display = 'none';
-            } else if (kategori.includes('STB')) {
+            if (config.barang === 'STB' || config.barang === 'SIM CARD') {
                 labelSNOrStbid.innerText = "STBID";
-                wrapperMAC.style.display = 'block'; wrapperType.style.display = 'block';
+                wrapperMAC.style.display = config.barang === 'STB' ? 'block' : 'none';
+                wrapperType.style.display = config.barang === 'STB' ? 'block' : 'none';
             } else {
                 labelSNOrStbid.innerText = "Serial Number (SN)";
-                wrapperMAC.style.display = 'block'; wrapperType.style.display = 'block';
+                wrapperMAC.style.display = 'block';
+                wrapperType.style.display = 'block';
             }
 
             if (kategori.includes('TSEL') || kategori === 'KARTU PERDANA' || kategori.includes('STB')) {
@@ -631,7 +646,7 @@
                 title: 'Tambah Pengguna Baru',
                 html: '<input id="swal-input-user" class="swal2-input" placeholder="Username"><input id="swal-input-pass" type="password" class="swal2-input" placeholder="Password"><input id="swal-input-kat" class="swal2-input" placeholder="Wilayah / Kategori"><select id="swal-input-role" class="swal2-input"><option value="admin">Admin</option><option value="superuser">Superuser</option><option value="user" selected>User (Teknisi)</option></select>',
                 focusConfirm: false, showCancelButton: true, confirmButtonText: 'Simpan', cancelButtonText: 'Batal',
-                preConfirm: () => [document.getElementById('swal-input-user').value.trim(), document.getElementById('swal-input-pass').value.trim(), document.getElementById('swal-input-kat').value.trim(), document.getElementById('swal-input-role').value]
+                preConfirm: () => [document.getElementById('swal-input-user').value.trim(), document.getElementById('swal-input-pass').value.trim(), document.getElementById('swal-input-kat'].value.trim(), document.getElementById('swal-input-role').value]
             });
             if (formValues) {
                 const [username, password, kategori, role] = formValues;
@@ -701,16 +716,18 @@
                 return found !== -1 ? found : fallbackIdx;
             };
 
-            const idxSN = findCol(['SN', 'SERIAL NUMBER', 'STBID'], 4);
-            const idxBarang = findCol(['BARANG', 'PERANGKAT'], 2);
+            const idxNo = findCol(['NO'], 0);
+            const idxSN = findCol(['SN', 'SERIAL NUMBER'], 5);
+            const idxStbid = findCol(['STBID'], 5);
+            const idxBarang = findCol(['BARANG', 'PERANGKAT'], 8);
             const idxTglIn = findCol(['TGL IN', 'TANGGAL'], 1);
-            const idxType = findCol(['TYPE', 'TIPE'], 6);
-            const idxPosisi = findCol(['POSISI'], 8);
-            const idxNik = findCol(['NIK'], 11);
-            const idxNama = findCol(['NAMA TEKNISI', 'NAMA'], 12);
-            const idxMitra = findCol(['MITRA'], 13);
-            const idxPekerjaan = findCol(['PEKERJAAN'], 14);
-            const idxTiket = findCol(['TIKET'], 15);
+            const idxType = findCol(['TYPE', 'TIPE'], 7);
+            const idxPosisi = findCol(['POSISI'], 10);
+            const idxNik = findCol(['NIK TEKNISI', 'NIK'], 13);
+            const idxNama = findCol(['NAMA TEKNISI', 'NAMA'], 14);
+            const idxMitra = findCol(['MITRA'], 15);
+            const idxPekerjaan = findCol(['PEKERJAAN'], 16);
+            const idxTiket = findCol(['TIKET'], 17);
 
             let result = [];
             rows.forEach(row => {
@@ -719,16 +736,19 @@
                 const getVal = (idx) => (idx !== -1 && c[idx] && c[idx].v !== null) ? String(c[idx].v).trim() : '';
                 const getFormattedVal = (idx) => (idx !== -1 && c[idx] && c[idx].f !== null) ? String(c[idx].f).trim() : getVal(idx);
 
-                const sn = getVal(idxSN);
+                const snVal = getVal(idxSN);
+                const stbidVal = getVal(idxStbid);
+                const identifier = snVal || stbidVal;
                 const barang = getVal(idxBarang);
-                if (!sn && !barang) return;
+                if (!identifier && !barang) return;
 
                 let posisiVal = getVal(idxPosisi) || 'STOCK';
 
                 result.push({
                     sheet: sheetName,
-                    sn: sn || '-',
-                    barang: barang || '-',
+                    no: getVal(idxNo) || '-',
+                    sn: identifier || '-',
+                    barang: barang || 'ONT',
                     tglIn: getFormattedVal(idxTglIn) || '-',
                     type: getVal(idxType) || '-',
                     posisi: posisiVal.toUpperCase(),
@@ -845,7 +865,7 @@
                 let teknisiHtml = item.nama !== '-' && item.nama !== '' ? (item.nama + '<br><small class="text-muted fw-semibold">' + item.nik + '</small>') : '-';
 
                 const tr = document.createElement('tr');
-                tr.innerHTML = '<td>' + (no++) + '</td><td><span class="badge bg-secondary">' + item.sheet + '</span></td><td>' + item.tglIn + '</td><td><strong>' + item.barang + '</strong></td><td><code>' + item.sn + '</code></td><td>' + item.type + '</td><td><span class="badge-status ' + badgeClass + '">' + item.posisi + '</span></td><td>' + teknisiHtml + '</td><td>' + item.mitra + '</td><td><span class="badge bg-light text-dark border">' + item.pekerjaan + '</span></td><td><code>' + item.tiket + '</code></td>';
+                tr.innerHTML = '<td><code>' + item.no + '</code></td><td><span class="badge bg-secondary">' + item.sheet + '</span></td><td>' + item.tglIn + '</td><td><strong>' + item.barang + '</strong></td><td><code>' + item.sn + '</code></td><td>' + item.type + '</td><td><span class="badge-status ' + badgeClass + '">' + item.posisi + '</span></td><td>' + teknisiHtml + '</td><td>' + item.mitra + '</td><td><span class="badge bg-light text-dark border">' + item.pekerjaan + '</span></td><td><code>' + item.tiket + '</code></td>';
                 tbody.appendChild(tr);
             });
             renderPaginationButtons(totalPages);
@@ -923,14 +943,19 @@
 
             Swal.fire({ title: 'Menyimpan Barang Baru...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
+            const barangVal = document.getElementById('inputBarang').value;
+            const targetCol = (barangVal === 'STB' || barangVal === 'SIM CARD') ? 'STBID' : 'SN';
+
             const payload = {
                 action: 'create',
                 sheetName: document.getElementById('inputSheet').value,
                 kategoriPerangkat: document.getElementById('kategoriPerangkatInput').value,
                 "TGL IN": document.getElementById('inputTglIn').value,
                 "NO": document.getElementById('inputNoKardus').value.trim(),
+                "BARANG": barangVal,
                 "JENIS": document.getElementById('inputJenisBarang').value,
                 "SN_OR_STBID": document.getElementById('inputSNOrStbid').value.trim(),
+                "TARGET_COL": targetCol,
                 "MAC": document.getElementById('inputMAC').value.trim(),
                 "TYPE": document.getElementById('inputType').value.trim()
             };
@@ -1051,8 +1076,8 @@
 
         function exportTableToCSV() {
             if (filteredData.length === 0) return Swal.fire('Info', 'Tidak ada data.', 'info');
-            let csv = "No,Kategori,Tgl In,Barang,SN/STBID,Type,Posisi,Nama Teknisi,Mitra,Pekerjaan,Tiket\n";
-            filteredData.forEach((r, idx) => { csv += '"' + (idx+1) + '","' + r.sheet + '","' + r.tglIn + '","' + r.barang + '","' + r.sn + '","' + r.type + '","' + r.posisi + '","' + r.nama + '","' + r.mitra + '","' + r.pekerjaan + '","' + r.tiket + '"\n'; });
+            let csv = "No Kardus,Kategori,Tgl In,Barang,SN/STBID,Type,Posisi,Nama Teknisi,Mitra,Pekerjaan,Tiket\n";
+            filteredData.forEach((r, idx) => { csv += '"' + r.no + '","' + r.sheet + '","' + r.tglIn + '","' + r.barang + '","' + r.sn + '","' + r.type + '","' + r.posisi + '","' + r.nama + '","' + r.mitra + '","' + r.pekerjaan + '","' + r.tiket + '"\n'; });
             const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
             a.download = 'NTE_Report.csv'; a.click();
         }
