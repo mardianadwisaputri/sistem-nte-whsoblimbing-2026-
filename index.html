@@ -38,7 +38,6 @@
             color: var(--text-color);
             font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
             min-height: 100vh;
-            transition: background-color 0.2s ease, color 0.2s ease;
         }
 
         .card {
@@ -474,11 +473,13 @@
             "VULA": "491664178"
         };
 
-        let globalUsersCache = JSON.parse(localStorage.getItem('nte_users_db')) || {
+        // Reset paksa cache user lokal agar login menggunakan admin / admin123 selalu berhasil
+        let globalUsersCache = {
             "admin": { password: "admin123", role: "admin", kategori: "Pusat / All" },
             "superuser": { password: "super123", role: "superuser", kategori: "WH SO Blimbing" },
             "user": { password: "user123", role: "user", kategori: "Teknisi Lapangan" }
         };
+        localStorage.setItem('nte_users_db', JSON.stringify(globalUsersCache));
 
         let currentUser = null; 
         let allNormalizedData = []; 
@@ -502,11 +503,9 @@
         function switchKategoriPerangkat(kategori) {
             const config = LIST_JENIS_KATEGORI[kategori] || { barang: "ONT", jenis: [] };
             
-            // Set dropdown Barang
             const selectBarang = document.getElementById('inputBarang');
             selectBarang.value = config.barang;
 
-            // Set dropdown Jenis Barang
             const selectJenis = document.getElementById('inputJenisBarang');
             selectJenis.innerHTML = '';
             config.jenis.forEach(item => {
@@ -593,7 +592,7 @@
                 localStorage.setItem('nte_session_user', JSON.stringify(currentUser));
                 initAppUI();
             } else {
-                Swal.fire({ icon: 'error', title: 'Akses Ditolak', text: 'Username atau password salah! (Coba: admin / admin123)' });
+                Swal.fire({ icon: 'error', title: 'Akses Ditolak', text: 'Username atau password salah! (Gunakan: admin / admin123)' });
             }
         }
 
@@ -646,7 +645,7 @@
                 title: 'Tambah Pengguna Baru',
                 html: '<input id="swal-input-user" class="swal2-input" placeholder="Username"><input id="swal-input-pass" type="password" class="swal2-input" placeholder="Password"><input id="swal-input-kat" class="swal2-input" placeholder="Wilayah / Kategori"><select id="swal-input-role" class="swal2-input"><option value="admin">Admin</option><option value="superuser">Superuser</option><option value="user" selected>User (Teknisi)</option></select>',
                 focusConfirm: false, showCancelButton: true, confirmButtonText: 'Simpan', cancelButtonText: 'Batal',
-                preConfirm: () => [document.getElementById('swal-input-user').value.trim(), document.getElementById('swal-input-pass').value.trim(), document.getElementById('swal-input-kat'].value.trim(), document.getElementById('swal-input-role').value]
+                preConfirm: () => [document.getElementById('swal-input-user').value.trim(), document.getElementById('swal-input-pass').value.trim(), document.getElementById('swal-input-kat').value.trim(), document.getElementById('swal-input-role').value]
             });
             if (formValues) {
                 const [username, password, kategori, role] = formValues;
