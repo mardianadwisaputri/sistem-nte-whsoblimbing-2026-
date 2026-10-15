@@ -6,7 +6,7 @@
     <title>Sistem Manajemen NTE - WH SO BLIMBING</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 
@@ -14,95 +14,88 @@
         :root {
             --primary-color: #9b1c28;
             --primary-dark: #75121c;
-            --bg-color: #f4f6f9;
+            --bg-color: #f8fafc;
             --card-bg: #ffffff;
-            --text-color: #2b2f33;
+            --text-color: #1e293b;
+            --text-muted: #64748b;
             --border-color: #e2e8f0;
-            --table-hover: #f8f9fa;
+            --table-hover: #f1f5f9;
+            --input-bg: #ffffff;
         }
 
         [data-theme="dark"] {
-            --bg-color: #121824;
+            --bg-color: #0f172a;
             --card-bg: #1e293b;
-            --text-color: #f1f5f9;
+            --text-color: #f8fafc;
+            --text-muted: #94a3b8;
             --border-color: #334155;
             --table-hover: #273548;
+            --input-bg: #0f172a;
         }
 
         body {
             background-color: var(--bg-color);
             color: var(--text-color);
-            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, sans-serif;
             min-height: 100vh;
+            transition: background-color 0.2s ease, color 0.2s ease;
         }
 
         .card {
             background-color: var(--card-bg) !important;
             border: 1px solid var(--border-color) !important;
             color: var(--text-color) !important;
-            border-radius: 8px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+            border-radius: 10px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
         }
 
-        .navbar { background-color: #9b1c28 !important; border-bottom: 2px solid #75121c; padding: 0.75rem 1rem; }
-        .navbar-brand { font-weight: 700; color: #fff !important; }
-        .nav-link { font-weight: 500; border-radius: 4px; padding: 6px 14px !important; margin: 0 3px; color: rgba(255,255,255,0.9) !important; }
+        .navbar { background-color: #9b1c28 !important; border-bottom: 2px solid #75121c; padding: 0.8rem 1rem; }
+        .navbar-brand { font-weight: 700; color: #fff !important; letter-spacing: -0.5px; }
+        .nav-link { font-weight: 500; border-radius: 6px; padding: 6px 14px !important; margin: 0 3px; color: rgba(255,255,255,0.9) !important; transition: all 0.2s; }
         .nav-link:hover, .nav-link.active { background-color: rgba(255, 255, 255, 0.15) !important; color: #fff !important; font-weight: 600; }
         
         .nav-pills .nav-link {
             color: #9b1c28;
             font-weight: 600;
             border: 1px solid #9b1c28;
-            margin-right: 5px;
+            margin-right: 6px;
         }
-        .nav-pills .nav-link.active, .nav-pills .show > .nav-link {
+        [data-theme="dark"] .nav-pills .nav-link {
+            color: #f8fafc;
+            border-color: #475569;
+        }
+        .nav-pills .nav-link.active {
             background-color: #9b1c28 !important;
             color: #ffffff !important;
-        }
-
-        .btn-danger {
-            background-color: #9b1c28 !important;
-            border-color: #75121c !important;
-        }
-        .btn-danger:hover, .btn-danger:focus {
-            background-color: #75121c !important;
-            border-color: #75121c !important;
-        }
-        .btn-outline-danger {
-            color: #9b1c28 !important;
             border-color: #9b1c28 !important;
         }
-        .btn-outline-danger:hover {
-            background-color: #9b1c28 !important;
-            color: #fff !important;
-        }
 
-        .text-danger { color: #9b1c28 !important; }
-        .border-danger { border-color: #9b1c28 !important; }
-        .bg-danger { background-color: #9b1c28 !important; }
+        .btn-danger { background-color: #9b1c28 !important; border-color: #75121c !important; }
+        .btn-danger:hover { background-color: #75121c !important; }
         
         .stat-card { transition: transform 0.15s ease, box-shadow 0.15s ease; }
-        .stat-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
-        .stat-icon { width: 42px; height: 42px; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; }
+        .stat-card:hover { transform: translateY(-2px); box-shadow: 0 6px 15px rgba(0,0,0,0.06); }
+        .stat-icon { width: 44px; height: 44px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 1.3rem; }
         
-        .table { font-size: 0.85rem; color: var(--text-color) !important; }
-        .table-hover tbody tr:hover { background-color: var(--table-hover) !important; color: var(--text-color); }
-        .table-responsive { max-height: 540px; overflow-y: auto; }
-        th { position: sticky; top: 0; background-color: #9b1c28 !important; color: white !important; z-index: 2; white-space: nowrap; font-weight: 600; font-size: 0.8rem; text-transform: uppercase; }
+        .table { font-size: 0.85rem; color: var(--text-color) !important; vertical-align: middle; }
+        .table-hover tbody tr:hover { background-color: var(--table-hover) !important; }
+        .table-responsive { max-height: 560px; overflow-y: auto; }
+        th { position: sticky; top: 0; background-color: #9b1c28 !important; color: white !important; z-index: 2; white-space: nowrap; font-weight: 600; font-size: 0.78rem; text-transform: uppercase; letter-spacing: 0.5px; }
         
         .badge-status { font-weight: 700; padding: 5px 12px; border-radius: 6px; display: inline-block; font-size: 0.75rem; letter-spacing: 0.5px; }
-        .login-card { max-width: 420px; margin: auto; border-radius: 8px; border-top: 4px solid #9b1c28; }
         .view-section { display: none; }
         .view-section.active { display: block; }
-        .quick-sn-box { background: linear-gradient(135deg, #9b1c28, #75121c); color: white; border-radius: 8px; }
+        .quick-sn-box { background: linear-gradient(135deg, #9b1c28, #75121c); color: white; border-radius: 10px; }
         
-        .form-control, .form-select { font-size: 0.95rem; border-color: var(--border-color); background-color: var(--card-bg); color: var(--text-color); border-radius: 6px; }
-        .form-label { font-size: 0.85rem; font-weight: 600; margin-bottom: 0.3rem; }
+        .form-control, .form-select { font-size: 0.9rem; border-color: var(--border-color); background-color: var(--input-bg); color: var(--text-color); border-radius: 8px; padding: 0.6rem 0.8rem; }
+        .form-control:focus, .form-select:focus { background-color: var(--input-bg); color: var(--text-color); border-color: #9b1c28; box-shadow: 0 0 0 0.25rem rgba(155, 28, 40, 0.15); }
+        .form-label { font-size: 0.83rem; font-weight: 600; margin-bottom: 0.35rem; color: var(--text-color); }
         
-        [data-theme="dark"] .bg-light { background-color: #111827 !important; color: #f1f5f9 !important; }
-        [data-theme="dark"] .border { border-color: #334155 !important; }
+        [data-theme="dark"] .bg-light { background-color: #111827 !important; color: #f8fafc !important; border-color: #334155 !important; }
         [data-theme="dark"] .text-muted { color: #94a3b8 !important; }
-        [data-theme="dark"] .modal-content { background-color: #1e293b; color: #f1f5f9; border: 1px solid #334155; }
+        [data-theme="dark"] .modal-content { background-color: #1e293b; color: #f8fafc; border: 1px solid #334155; }
+        [data-theme="dark"] .table { color: #f8fafc !important; }
+        [data-theme="dark"] .input-group-text { background-color: #334155; color: #f8fafc; border-color: #475569; }
     </style>
 </head>
 <body data-theme="light">
@@ -112,13 +105,13 @@
         <div class="row justify-content-center pt-5">
             <div class="col-md-5">
                 <div class="text-center mb-4">
-                    <div class="d-inline-flex p-3 bg-danger text-white rounded-2 shadow-sm mb-3">
+                    <div class="d-inline-flex p-3 bg-danger text-white rounded-3 shadow-sm mb-3">
                         <i class="bi bi-shield-lock-fill fs-2"></i>
                     </div>
                     <h4 class="fw-bold mb-1">Portal Manajemen Logistik NTE</h4>
                     <p class="text-muted small">Warehouse SO Blimbing — Telkom Akses</p>
                 </div>
-                <div class="card login-card shadow-sm p-4">
+                <div class="card shadow-sm p-4 border-0">
                     <h6 class="fw-bold mb-3 text-secondary text-uppercase fs-7 text-center">Autentikasi Pengguna</h6>
                     <form id="formLogin">
                         <div class="mb-3">
@@ -143,7 +136,7 @@
         <nav class="navbar navbar-expand-lg navbar-dark shadow-sm sticky-top">
             <div class="container-fluid px-lg-4">
                 <a class="navbar-brand d-flex align-items-center" href="#" onclick="showView('dashboardView')">
-                    <i class="bi bi-building-fill-gear me-2"></i><span id="navBrandText">WH SO BLIMBING</span>
+                    <i class="bi bi-building-fill-gear me-2"></i><span>WH SO BLIMBING</span>
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navMenu">
                     <span class="navbar-toggler-icon"></span>
@@ -188,11 +181,11 @@
                 </div>
 
                 <div class="row g-3 mb-4">
-                    <div class="col-6 col-md-4 col-xl-2"><div class="card stat-card p-3 border-top border-danger border-3"><div class="d-flex justify-content-between align-items-center"><div><span class="text-muted small fw-semibold text-uppercase fs-8">TOTAL NTE</span><h3 class="fw-bold mb-0 text-danger" id="kpiTotalNTE">0</h3></div><div class="stat-icon bg-danger-subtle text-danger"><i class="bi bi-boxes"></i></div></div></div></div>
-                    <div class="col-6 col-md-4 col-xl-2"><div class="card stat-card p-3 border-top border-info border-3"><div class="d-flex justify-content-between align-items-center"><div><span class="text-muted small fw-semibold text-uppercase fs-8">TOTAL STB</span><h3 class="fw-bold mb-0 text-info" id="kpiTotalSTB">0</h3></div><div class="stat-icon bg-info-subtle text-info"><i class="bi bi-tv"></i></div></div></div></div>
-                    <div class="col-6 col-md-4 col-xl-2"><div class="card stat-card p-3 border-top border-secondary border-3"><div class="d-flex justify-content-between align-items-center"><div><span class="text-muted small fw-semibold text-uppercase fs-8">TOTAL MODEM</span><h3 class="fw-bold mb-0 text-secondary" id="kpiTotalModem">0</h3></div><div class="stat-icon bg-secondary-subtle text-secondary"><i class="bi bi-router"></i></div></div></div></div>
-                    <div class="col-6 col-md-4 col-xl-3"><div class="card stat-card p-3 border-top border-success border-3"><div class="d-flex justify-content-between align-items-center"><div><span class="text-muted small fw-semibold text-uppercase fs-8">STOCK</span><h3 class="fw-bold mb-0 text-success" id="kpiTotalStock">0</h3></div><div class="stat-icon bg-success-subtle text-success"><i class="bi bi-check-circle"></i></div></div></div></div>
-                    <div class="col-6 col-md-4 col-xl-3"><div class="card stat-card p-3 border-top border-warning border-3"><div class="d-flex justify-content-between align-items-center"><div><span class="text-muted small fw-semibold text-uppercase fs-8">INTECH</span><h3 class="fw-bold mb-0 text-warning" id="kpiTotalIntech">0</h3></div><div class="stat-icon bg-warning-subtle text-warning"><i class="bi bi-person-gear"></i></div></div></div></div>
+                    <div class="col-6 col-md-4 col-xl-2"><div class="card stat-card p-3 border-top border-danger border-3"><div class="d-flex justify-content-between align-items-center"><div><span class="text-muted small fw-semibold text-uppercase">TOTAL NTE</span><h3 class="fw-bold mb-0 text-danger" id="kpiTotalNTE">0</h3></div><div class="stat-icon bg-danger-subtle text-danger"><i class="bi bi-boxes"></i></div></div></div></div>
+                    <div class="col-6 col-md-4 col-xl-2"><div class="card stat-card p-3 border-top border-info border-3"><div class="d-flex justify-content-between align-items-center"><div><span class="text-muted small fw-semibold text-uppercase">TOTAL STB</span><h3 class="fw-bold mb-0 text-info" id="kpiTotalSTB">0</h3></div><div class="stat-icon bg-info-subtle text-info"><i class="bi bi-tv"></i></div></div></div></div>
+                    <div class="col-6 col-md-4 col-xl-2"><div class="card stat-card p-3 border-top border-secondary border-3"><div class="d-flex justify-content-between align-items-center"><div><span class="text-muted small fw-semibold text-uppercase">TOTAL MODEM</span><h3 class="fw-bold mb-0 text-secondary" id="kpiTotalModem">0</h3></div><div class="stat-icon bg-secondary-subtle text-secondary"><i class="bi bi-router"></i></div></div></div></div>
+                    <div class="col-6 col-md-4 col-xl-3"><div class="card stat-card p-3 border-top border-success border-3"><div class="d-flex justify-content-between align-items-center"><div><span class="text-muted small fw-semibold text-uppercase">STOCK</span><h3 class="fw-bold mb-0 text-success" id="kpiTotalStock">0</h3></div><div class="stat-icon bg-success-subtle text-success"><i class="bi bi-check-circle"></i></div></div></div></div>
+                    <div class="col-6 col-md-4 col-xl-3"><div class="card stat-card p-3 border-top border-warning border-3"><div class="d-flex justify-content-between align-items-center"><div><span class="text-muted small fw-semibold text-uppercase">INTECH</span><h3 class="fw-bold mb-0 text-warning" id="kpiTotalIntech">0</h3></div><div class="stat-icon bg-warning-subtle text-warning"><i class="bi bi-person-gear"></i></div></div></div></div>
                 </div>
 
                 <div class="row g-4">
@@ -208,134 +201,86 @@
                         <h5 class="fw-bold mb-0 text-danger"><i class="bi bi-plus-square me-2"></i>Entri Data Barang Baru Berdasarkan Kategori Perangkat</h5>
                     </div>
 
-                    <!-- PILIH KATEGORI BARANG SESUAI BRIEF -->
-                    <div class="row g-3 mb-3">
-                        <div class="col-md-4">
-                            <label class="form-label fw-bold">Pilih Kategori / Tipe Barang:</label>
-                            <select id="kategoriBarangInput" class="form-select" onchange="onKategoriPerangkatChange(this.value)">
-                                <option value="ONT_TSEL" selected>ONT TSEL</option>
-                                <option value="ONT_TELKOM">ONT TELKOM</option>
-                                <option value="ONT_TIF">ONT TIF</option>
-                                <option value="STB_TSEL">STB TSEL</option>
-                                <option value="STB_TELKOM">STB TELKOM</option>
-                                <option value="KARTU_PERDANA">KARTU PERDANA</option>
-                                <option value="ADD_ON">ADD ON / AP MESH / ORBIT</option>
-                            </select>
-                        </div>
+                    <!-- PILIH KATEGORI PERANGKAT -->
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Pilih Kategori Perangkat:</label>
+                        <select id="kategoriPerangkatInput" class="form-select w-50" onchange="switchKategoriPerangkat(this.value)">
+                            <option value="ONT TSEL" selected>ONT TSEL (Telkomsel)</option>
+                            <option value="ONT TELKOM">ONT TELKOM (Reguler)</option>
+                            <option value="ONT TIF">ONT TIF (IndiHome Fiber)</option>
+                            <option value="STB TSEL">STB TSEL</option>
+                            <option value="STB TELKOM">STB TELKOM</option>
+                            <option value="KARTU PERDANA">KARTU PERDANA</option>
+                            <option value="ADD ON">ADD ON / AP MESH / ORBIT</option>
+                        </select>
                     </div>
 
-                    <!-- TAB PILIHAN INPUT (SATUAN / CSV) -->
-                    <ul class="nav nav-pills mb-3" id="pills-tab" role="tablist">
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link active py-1.5 px-3" id="pills-single-tab" data-bs-toggle="pill" data-bs-target="#pills-single" type="button" role="tab"><i class="bi bi-pencil-square me-1"></i> Entri Satuan</button>
-                        </li>
-                        <li class="nav-item" role="presentation">
-                            <button class="nav-link py-1.5 px-3" id="pills-batch-tab" data-bs-toggle="pill" data-bs-target="#pills-batch" type="button" role="tab"><i class="bi bi-file-earmark-arrow-up me-1"></i> Unggah Massal (CSV)</button>
-                        </li>
-                    </ul>
+                    <form id="formNTE" onsubmit="submitFormSatuan(event)">
+                        <div class="row g-3">
+                            <div class="col-md-2">
+                                <label class="form-label">Kategori Sheet</label>
+                                <select id="inputSheet" class="form-select" required>
+                                    <option value="TSEL">TSEL</option>
+                                    <option value="TIF">TIF</option>
+                                    <option value="TELKOM">TELKOM</option>
+                                    <option value="VULA">VULA</option>
+                                </select>
+                            </div>
 
-                    <div class="tab-content" id="pills-tabContent">
-                        <!-- FORM SATUAN -->
-                        <div class="tab-pane fade show active" id="pills-single" role="tabpanel">
-                            <form id="formNTE" onsubmit="submitFormSatuan(event)">
-                                <div class="row g-3">
-                                    <div class="col-md-2" id="wrapperSheet">
-                                        <label class="form-label">Kategori Sheet</label>
-                                        <select id="inputSheet" class="form-select" required>
-                                            <option value="TSEL">TSEL</option>
-                                            <option value="TIF">TIF</option>
-                                            <option value="TELKOM">TELKOM</option>
-                                            <option value="VULA">VULA</option>
-                                        </select>
-                                    </div>
-                                    
-                                    <div class="col-md-3">
-                                        <label class="form-label">Barang (<small class="text-muted">Kolom BARANG</small>)</label>
-                                        <input type="text" id="BARANG" class="form-control" readonly required>
-                                    </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Tanggal Masuk (Tgl In)</label>
+                                <input type="date" id="inputTglIn" class="form-control" required>
+                            </div>
 
-                                    <div class="col-md-2">
-                                        <label class="form-label">Tanggal Masuk (<small class="text-muted">Kolom TGL IN</small>)</label>
-                                        <input type="date" id="TGL_IN" class="form-control" required>
-                                    </div>
+                            <div class="col-md-2">
+                                <label class="form-label">Nomor Kardus (No)</label>
+                                <input type="text" id="inputNoKardus" class="form-control" placeholder="Cth: 12">
+                            </div>
 
-                                    <div class="col-md-2">
-                                        <label class="form-label">Nomor Kardus (<small class="text-muted">Kolom NO</small>)</label>
-                                        <input type="text" id="NOMOR_KARDUS" class="form-control" placeholder="No Kardus" required>
-                                    </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Jenis Barang</label>
+                                <select id="inputJenisBarang" class="form-select" required>
+                                    <!-- Diisi otomatis script -->
+                                </select>
+                            </div>
 
-                                    <div class="col-md-3">
-                                        <label class="form-label">WH SO</label>
-                                        <input type="text" id="WH_SO" class="form-control" readonly required>
-                                    </div>
+                            <div class="col-md-3" id="wrapperSNOrStbid">
+                                <label class="form-label" id="labelSNOrStbid">Serial Number (SN)</label>
+                                <input type="text" id="inputSNOrStbid" class="form-control" placeholder="Masukkan SN / STBID / No HP" required>
+                            </div>
 
-                                    <div class="col-md-3" id="wrapperSN">
-                                        <label class="form-label" id="labelSN">Serial Number (SN)</label>
-                                        <input type="text" id="SN" class="form-control" placeholder="Nomor Serial / STBID / No HP" required>
-                                    </div>
+                            <div class="col-md-3" id="wrapperMAC">
+                                <label class="form-label">MAC Address</label>
+                                <input type="text" id="inputMAC" class="form-control" placeholder="AA:BB:CC...">
+                            </div>
 
-                                    <div class="col-md-2" id="wrapperMAC">
-                                        <label class="form-label">MAC Address</label>
-                                        <input type="text" id="MAC" class="form-control" placeholder="AA:BB:CC...">
-                                    </div>
+                            <div class="col-md-3" id="wrapperType">
+                                <label class="form-label">Type / Model</label>
+                                <input type="text" id="inputType" class="form-control" placeholder="ZTE / HG8145X6">
+                            </div>
 
-                                    <div class="col-md-3" id="wrapperType">
-                                        <label class="form-label" id="labelType">Type / Model</label>
-                                        <input type="text" id="TYPE" class="form-control" placeholder="ex: ONT_HUAWEI_HG8145X6-10">
-                                    </div>
+                            <div class="col-md-3">
+                                <label class="form-label">Status Posisi Awal</label>
+                                <input type="text" class="form-control bg-light" value="STOCK" readonly>
+                            </div>
 
-                                    <div class="col-md-2" id="wrapperJenis">
-                                        <label class="form-label">Jenis</label>
-                                        <select id="JENIS" class="form-select">
-                                            <!-- Dinamis sesuai kategori -->
-                                        </select>
-                                    </div>
+                            <div class="col-md-3">
+                                <label class="form-label" id="labelStatusKhusus">Status SCMT / Paradise</label>
+                                <input type="text" id="inputStatusKhususVal" class="form-control bg-light" value="STOCK" readonly>
+                            </div>
 
-                                    <div class="col-md-2">
-                                        <label class="form-label" id="labelPosisiStatus">Posisi & Status</label>
-                                        <input type="text" id="POSISI_STATUS_DEFAULT" class="form-control bg-light fw-bold text-success" value="STOCK" readonly>
-                                    </div>
+                            <div class="col-md-3">
+                                <label class="form-label" id="labelStatusNteOnt">Status NTE / ONT</label>
+                                <input type="text" id="inputStatusNteVal" class="form-control bg-light" value="NEW" readonly>
+                            </div>
 
-                                    <div class="col-md-3 d-flex align-items-end">
-                                        <button type="submit" class="btn btn-danger w-100" id="btnSimpan">
-                                            <i class="bi bi-save me-1"></i> Simpan Data Baru
-                                        </button>
-                                    </div>
-                                </div>
-                            </form>
-                        </div>
-
-                        <!-- UNGGAH MASSAL CSV -->
-                        <div class="tab-pane fade" id="pills-batch" role="tabpanel">
-                            <div class="p-3 bg-light rounded border">
-                                <div class="d-flex justify-content-between align-items-center mb-2">
-                                    <h6 class="fw-bold text-dark mb-0"><i class="bi bi-info-circle-fill text-danger me-1"></i> Petunjuk Unggah Massal Kategori: <span id="labelBatchKategori" class="text-danger">ONT TSEL</span></h6>
-                                    <button class="btn btn-sm btn-outline-danger" onclick="downloadTemplateCSV()"><i class="bi bi-file-earmark-arrow-down me-1"></i> Unduh Contoh Format CSV</button>
-                                </div>
-                                <p class="small text-muted mb-2">Format kolom CSV disesuaikan dengan standar gudang Blimbing.</p>
-                                <div class="row g-3 align-items-center">
-                                    <div class="col-md-4">
-                                        <label class="form-label">Pilih File CSV:</label>
-                                        <input type="file" id="batchFile" class="form-control" accept=".csv,.txt">
-                                    </div>
-                                    <div class="col-md-3">
-                                        <label class="form-label">Target Sheet:</label>
-                                        <select id="batchSheet" class="form-select">
-                                            <option value="TSEL">TSEL</option>
-                                            <option value="TIF">TIF</option>
-                                            <option value="TELKOM">TELKOM</option>
-                                            <option value="VULA">VULA</option>
-                                        </select>
-                                    </div>
-                                    <div class="col-md-3 d-flex align-items-end pt-3">
-                                        <button type="button" class="btn btn-success w-100" onclick="processBatchUpload()">
-                                            <i class="bi bi-cloud-arrow-up me-1"></i> Proses Unggah Massal
-                                        </button>
-                                    </div>
-                                </div>
+                            <div class="col-md-3 d-flex align-items-end">
+                                <button type="submit" class="btn btn-danger w-100" id="btnSimpan">
+                                    <i class="bi bi-save me-1"></i> Simpan Data Baru
+                                </button>
                             </div>
                         </div>
-                    </div>
+                    </form>
                 </div>
 
                 <div class="card p-4 shadow-sm">
@@ -354,11 +299,11 @@
                             <label class="form-label">Pencarian Universal:</label>
                             <div class="input-group">
                                 <span class="input-group-text"><i class="bi bi-search"></i></span>
-                                <input type="text" id="filterTableSearch" class="form-control" placeholder="Cari SN, Teknisi, Mitra, Pekerjaan, Tiket..." onkeyup="handleSearchChange()">
+                                <input type="text" id="filterTableSearch" class="form-control" placeholder="Cari SN, STBID, Teknisi, Mitra, Tiket..." onkeyup="handleSearchChange()">
                             </div>
                         </div>
                         <div class="col-md-4 text-md-end pt-md-4">
-                            <button class="btn btn-outline-danger btn-sm me-1" onclick="loadData(true)" id="btnRefresh">
+                            <button class="btn btn-outline-danger btn-sm me-1" onclick="loadData(true)">
                                 <i class="bi bi-arrow-repeat me-1"></i> Muat Ulang
                             </button>
                             <button class="btn btn-outline-secondary btn-sm" onclick="exportTableToCSV()">
@@ -375,9 +320,9 @@
                                     <th>Kategori</th>
                                     <th>Tgl In</th>
                                     <th>Barang</th>
-                                    <th>Serial Number (SN)</th>
+                                    <th>SN / STBID</th>
                                     <th>Type</th>
-                                    <th>Status Posisi</th>
+                                    <th>Posisi</th>
                                     <th>Teknisi</th>
                                     <th>Mitra</th>
                                     <th>Pekerjaan</th>
@@ -385,7 +330,7 @@
                                 </tr>
                             </thead>
                             <tbody id="tabelBody">
-                                <tr><td colspan="11" class="text-center py-4 text-muted">Memuat data dari peladen...</td></tr>
+                                <tr><td colspan="11" class="text-center py-4 text-muted">Memuat data dari server...</td></tr>
                             </tbody>
                         </table>
                     </div>
@@ -397,8 +342,6 @@
                                 <option value="25">25 per hal</option>
                                 <option value="50" selected>50 per hal</option>
                                 <option value="100">100 per hal</option>
-                                <option value="250">250 per hal</option>
-                                <option value="1000">1000 per hal</option>
                             </select>
                         </div>
                         <nav><ul class="pagination pagination-sm mb-0" id="paginationControls"></ul></nav>
@@ -412,23 +355,23 @@
                     <div class="col-lg-8">
                         <div class="card quick-sn-box p-4 shadow-sm mb-4">
                             <div class="d-flex align-items-center gap-3">
-                                <div class="bg-white text-danger p-3 rounded-2 shadow-sm"><i class="bi bi-arrow-left-right fs-3"></i></div>
+                                <div class="bg-white text-danger p-3 rounded-3 shadow-sm"><i class="bi bi-arrow-left-right fs-3"></i></div>
                                 <div><h5 class="fw-bold mb-1">Form Pembaruan Status & Mutasi</h5><p class="mb-0 opacity-75 small">Perbarui posisi perangkat lengkap dengan data teknisi, mitra, pekerjaan, dan tiket.</p></div>
                             </div>
                         </div>
 
                         <div class="card p-4 shadow-sm mb-4">
-                            <h6 class="fw-bold mb-3 text-secondary text-uppercase fs-7"><i class="bi bi-1-circle-fill text-danger me-2"></i>Pindai / Masukkan Serial Number (SN)</h6>
+                            <h6 class="fw-bold mb-3 text-secondary text-uppercase fs-7"><i class="bi bi-1-circle-fill text-danger me-2"></i>Pindai / Masukkan Serial Number (SN / STBID)</h6>
                             <form id="formCariSN" onsubmit="handleCariSN(event)">
                                 <div class="row g-2 align-items-center">
                                     <div class="col-md-9">
                                         <div class="input-group">
                                             <span class="input-group-text"><i class="bi bi-upc-scan"></i></span>
-                                            <input type="text" id="inputCariSN" class="form-control" placeholder="Masukkan Nomor Serial perangkat..." required autofocus>
+                                            <input type="text" id="inputCariSN" class="form-control" placeholder="Masukkan SN atau STBID perangkat..." required autofocus>
                                         </div>
                                     </div>
                                     <div class="col-md-3">
-                                        <button type="submit" class="btn btn-danger w-100" id="btnCariSN"><i class="bi bi-search me-1"></i> Cari Data</button>
+                                        <button type="submit" class="btn btn-danger w-100"><i class="bi bi-search me-1"></i> Cari Data</button>
                                     </div>
                                 </div>
                             </form>
@@ -436,10 +379,10 @@
 
                         <div id="boxDetailUpdate" class="card p-4 shadow-sm mb-4 border-top border-danger border-3" style="display: none;">
                             <h6 class="fw-bold mb-3 text-secondary text-uppercase fs-7"><i class="bi bi-2-circle-fill text-danger me-2"></i>Konfirmasi Perubahan Status & Detail Lapangan</h6>
-                            <div class="p-3 bg-light rounded-2 border mb-4">
+                            <div class="p-3 bg-light rounded-3 border mb-4">
                                 <div class="row g-2">
                                     <div class="col-sm-6"><span class="text-muted small">Kategori Sheet:</span><h6 class="fw-bold mb-2 text-danger" id="infoKategori">-</h6></div>
-                                    <div class="col-sm-6"><span class="text-muted small">Serial Number (SN):</span><h6 class="fw-bold mb-2" id="infoSN">-</h6></div>
+                                    <div class="col-sm-6"><span class="text-muted small">SN / STBID:</span><h6 class="fw-bold mb-2" id="infoSN">-</h6></div>
                                     <div class="col-sm-6"><span class="text-muted small">Barang & Tipe:</span><div class="fw-semibold" id="infoBarangType">-</div></div>
                                     <div class="col-sm-6"><span class="text-muted small">Status Posisi Saat Ini:</span><div id="infoStatusBadge">-</div></div>
                                 </div>
@@ -453,11 +396,10 @@
                                         <option value="INTECH">INTECH</option>
                                         <option value="INSTALLED">INSTALLED</option>
                                         <option value="DISMANTLE">DISMANTLE</option>
-                                        <option value="STATUS SCMT" id="optScmtUpdate" style="display: none;">STATUS SCMT</option>
                                     </select>
                                 </div>
 
-                                <div id="fieldsTeknisiUpdate" class="p-3 bg-warning-subtle rounded-2 border border-warning mb-4" style="display: none;">
+                                <div id="fieldsTeknisiUpdate" class="p-3 bg-warning-subtle rounded-3 border border-warning mb-4" style="display: none;">
                                     <h6 class="fw-bold text-dark mb-2 fs-7 text-uppercase"><i class="bi bi-person-vcard me-1"></i> Detail Identitas & Lapangan</h6>
                                     <div class="row g-3">
                                         <div class="col-md-4">
@@ -492,7 +434,7 @@
 
                                 <div class="d-flex justify-content-end gap-2">
                                     <button type="button" class="btn btn-outline-secondary px-3" onclick="batalUpdate()">Batal</button>
-                                    <button type="submit" class="btn btn-danger px-4" id="btnSimpanStatus"><i class="bi bi-check-lg me-1"></i> Simpan Perubahan</button>
+                                    <button type="submit" class="btn btn-danger px-4"><i class="bi bi-check-lg me-1"></i> Simpan Perubahan</button>
                                 </div>
                             </form>
                         </div>
@@ -553,9 +495,7 @@
                 { nama: "RIZKI PRASETIYO", nik: "16974797", pekerjaan: "PSB", mitra: "WAHANA ERA SEJAHTERA" }, { nama: "YOGA A", nik: "26990111", pekerjaan: "REPLACE", mitra: "FREELANCE" },
                 { nama: "RENDY ANDIKA", nik: "26070088", pekerjaan: "REPLACE", mitra: "FREELANCE" }, { nama: "MIKAELL", nik: "26000155", pekerjaan: "REPLACE", mitra: "FREELANCE" }
             ];
-            TEKNISI_MASTER_DB.forEach(t => {
-                document.write('<option value="' + t.nama + '">');
-            });
+            TEKNISI_MASTER_DB.forEach(t => { document.write('<option value="' + t.nama + '">'); });
         </script>
     </datalist>
 
@@ -588,117 +528,74 @@
         let chartBarInstance = null;
         let activeFoundItem = null;
 
-        // Penanganan Logika Form Berdasarkan Brief
-        function onKategoriPerangkatChange(kategori) {
-            const inputSheet = document.getElementById('inputSheet');
-            const barangInput = document.getElementById('BARANG');
-            const whSoInput = document.getElementById('WH_SO');
-            const labelSN = document.getElementById('labelSN');
-            const labelType = document.getElementById('labelType');
+        const LIST_JENIS_KATEGORI = {
+            "ONT TSEL": ["ONT single band", "ont dual band", "ont premium", "BIG ONT"],
+            "ONT TELKOM": ["ONT single band", "ont dual band", "ont premium"],
+            "ONT TIF": ["ONT single band", "ont dual band", "ont premium"],
+            "STB TSEL": ["STB"],
+            "STB TELKOM": ["STB"],
+            "KARTU PERDANA": ["KARTU PERDANA"],
+            "ADD ON": ["AP MESH", "ORBIT"]
+        };
+
+        function switchKategoriPerangkat(kategori) {
+            const selectJenis = document.getElementById('inputJenisBarang');
+            selectJenis.innerHTML = '';
+            const items = LIST_JENIS_KATEGORI[kategori] || [];
+            items.forEach(item => {
+                const opt = document.createElement('option');
+                opt.value = item;
+                opt.innerText = item;
+                selectJenis.appendChild(opt);
+            });
+
+            // Atur otomatis sheet target berdasarkan kategori
+            const selectSheet = document.getElementById('inputSheet');
+            if (kategori.includes('TSEL') || kategori === 'KARTU PERDANA') selectSheet.value = 'TSEL';
+            else if (kategori.includes('TELKOM')) selectSheet.value = 'TELKOM';
+            else if (kategori.includes('TIF')) selectSheet.value = 'TIF';
+
+            const labelSNOrStbid = document.getElementById('labelSNOrStbid');
             const wrapperMAC = document.getElementById('wrapperMAC');
             const wrapperType = document.getElementById('wrapperType');
-            const wrapperJenis = document.getElementById('wrapperJenis');
-            const selectJenis = document.getElementById('JENIS');
-            const labelBatchKategori = document.getElementById('labelBatchKategori');
-            const wrapperSheet = document.getElementById('wrapperSheet');
+            const labelStatusKhusus = document.getElementById('labelStatusKhusus');
+            const inputStatusKhususVal = document.getElementById('inputStatusKhususVal');
+            const labelStatusNteOnt = document.getElementById('labelStatusNteOnt');
+            const inputStatusNteVal = document.getElementById('inputStatusNteVal');
 
-            if(labelBatchKategori) labelBatchKategori.innerText = kategori;
-            selectJenis.innerHTML = '';
-            wrapperJenis.style.display = 'block';
-            wrapperMAC.style.display = 'block';
-            wrapperType.style.display = 'block';
-            wrapperSheet.style.display = 'block';
-            document.getElementById('TGL_IN').valueAsDate = new Date();
-
-            if (kategori === 'ONT_TSEL') {
-                inputSheet.value = 'TSEL';
-                inputSheet.disabled = true;
-                barangInput.value = 'ONT';
-                whSoInput.value = 'TA SO INV BLIMBING WH';
-                labelSN.innerText = 'Serial Number (SN)';
-                labelType.innerText = 'Type (ex: ONT_HUAWEI_HG8145X6-10)';
-                document.getElementById('TYPE').placeholder = 'ONT_HUAWEI_HG8145X6-10';
-                
-                ['ONT single band', 'ont dual band', 'ont premium', 'BIG ONT'].forEach(opt => {
-                    selectJenis.innerHTML += `<option value="${opt}">${opt}</option>`;
-                });
-            } 
-            else if (kategori === 'ONT_TELKOM') {
-                inputSheet.value = 'TELKOM';
-                inputSheet.disabled = true;
-                barangInput.value = 'ONT';
-                whSoInput.value = 'TA SO CCAN BLIMBING WH';
-                labelSN.innerText = 'Serial Number (SN)';
-                labelType.innerText = 'Type';
-                document.getElementById('TYPE').placeholder = 'ZTE / Huawei';
-
-                ['ONT single band', 'ont dual band', 'ont premium'].forEach(opt => {
-                    selectJenis.innerHTML += `<option value="${opt}">${opt}</option>`;
-                });
-            }
-            else if (kategori === 'ONT_TIF') {
-                inputSheet.value = 'TIF';
-                inputSheet.disabled = true;
-                barangInput.value = 'ONT';
-                whSoInput.value = 'TIF SO BLIMBING WH';
-                labelSN.innerText = 'Serial Number (SN)';
-                labelType.innerText = 'Type';
-                document.getElementById('TYPE').placeholder = 'Type ONT TIF';
-
-                ['ONT single band', 'ont dual band', 'ont premium'].forEach(opt => {
-                    selectJenis.innerHTML += `<option value="${opt}">${opt}</option>`;
-                });
-            }
-            else if (kategori === 'STB_TSEL') {
-                inputSheet.value = 'TSEL';
-                inputSheet.disabled = true;
-                barangInput.value = 'STB';
-                whSoInput.value = 'TA SO INV BLIMBING WH';
-                labelSN.innerText = 'STBID';
-                labelType.innerText = 'Type';
-                document.getElementById('TYPE').placeholder = 'Type STB';
-
-                selectJenis.innerHTML = '<option value="STB">STB</option>';
-            }
-            else if (kategori === 'STB_TELKOM') {
-                inputSheet.value = 'TELKOM';
-                inputSheet.disabled = true;
-                barangInput.value = 'STB';
-                whSoInput.value = 'TA SO CCAN BLIMBING WH';
-                labelSN.innerText = 'STBID';
-                labelType.innerText = 'Type';
-                document.getElementById('TYPE').placeholder = 'Type STB';
-
-                selectJenis.innerHTML = '<option value="STB">STB</option>';
-            }
-            else if (kategori === 'KARTU_PERDANA') {
-                inputSheet.value = 'TSEL';
-                inputSheet.disabled = true;
-                barangInput.value = 'SIM CARD';
-                whSoInput.value = 'TA SO CCAN BLIMBING WH';
-                labelSN.innerText = 'NO HP';
-                labelType.innerText = 'Type';
-                document.getElementById('TYPE').placeholder = 'Type Kartu Perdana';
+            if (kategori === 'KARTU PERDANA') {
+                labelSNOrStbid.innerText = "Nomor HP / STBID";
                 wrapperMAC.style.display = 'none';
-
-                selectJenis.innerHTML = '<option value="KARTU PERDANA">KARTU PERDANA</option>';
+                wrapperType.style.display = 'none';
+            } else if (kategori.includes('STB')) {
+                labelSNOrStbid.innerText = "STBID";
+                wrapperMAC.style.display = 'block';
+                wrapperType.style.display = 'block';
+            } else {
+                labelSNOrStbid.innerText = "Serial Number (SN)";
+                wrapperMAC.style.display = 'block';
+                wrapperType.style.display = 'block';
             }
-            else if (kategori === 'ADD_ON') {
-                inputSheet.disabled = false;
-                barangInput.value = 'AP MESH / ORBIT';
-                whSoInput.value = 'TA SO INV BLIMBING WH';
-                labelSN.innerText = 'Serial Number (SN)';
-                labelType.innerText = 'Type';
 
-                ['AP MESH', 'ORBIT'].forEach(opt => {
-                    selectJenis.innerHTML += `<option value="${opt}">${opt}</option>`;
-                });
+            // Label Status khusus sesuai brief
+            if (kategori.includes('TSEL') || kategori === 'KARTU PERDANA' || kategori.includes('STB')) {
+                labelStatusKhusus.innerText = "Status Paradise";
+                inputStatusKhususVal.value = "STOCK";
+                labelStatusNteOnt.innerText = "Status NTE";
+                inputStatusNteVal.value = "NEW";
+            } else {
+                labelStatusKhusus.innerText = "Status SCMT";
+                inputStatusKhususVal.value = "STOCK";
+                labelStatusNteOnt.innerText = "Status ONT";
+                inputStatusNteVal.value = "NEW";
             }
         }
 
         function initTheme() {
             const savedTheme = localStorage.getItem('nte_theme') || 'light';
             document.body.setAttribute('data-theme', savedTheme);
+            const icon = document.getElementById('navThemeIcon');
+            if(icon) icon.className = savedTheme === 'dark' ? 'bi bi-sun-fill text-warning' : 'bi bi-moon-fill';
         }
 
         function toggleTheme() {
@@ -706,6 +603,7 @@
             const newTheme = currentTheme === 'dark' ? 'light' : 'dark';
             document.body.setAttribute('data-theme', newTheme);
             localStorage.setItem('nte_theme', newTheme);
+            initTheme();
         }
 
         function checkAuth() {
@@ -759,8 +657,11 @@
             }
 
             if (role === 'user') { showView('statusView'); } else { showView('dashboardView'); }
+            
+            // Set default tanggal hari ini di form entri
+            document.getElementById('inputTglIn').valueAsDate = new Date();
+            switchKategoriPerangkat('ONT TSEL');
             loadData();
-            onKategoriPerangkatChange('ONT_TSEL');
         }
 
         function renderUsersTable() {
@@ -776,7 +677,7 @@
         }
 
         async function openAddUserModal() {
-            if (currentUser.role !== 'admin') return Swal.fire('Akses Ditolak', 'Hanya Admin utama.', 'error');
+            if (currentUser.role !== 'admin') return;
             const { value: formValues } = await Swal.fire({
                 title: 'Tambah Pengguna Baru',
                 html: '<input id="swal-input-user" class="swal2-input" placeholder="Username"><input id="swal-input-pass" type="password" class="swal2-input" placeholder="Password"><input id="swal-input-kat" class="swal2-input" placeholder="Wilayah / Kategori"><select id="swal-input-role" class="swal2-input"><option value="admin">Admin</option><option value="superuser">Superuser</option><option value="user" selected>User (Teknisi)</option></select>',
@@ -801,7 +702,7 @@
                 title: 'Edit Pengguna: ' + username,
                 html: '<input id="swal-input-pass" type="password" class="swal2-input" placeholder="Password Baru" value="' + user.password + '"><input id="swal-input-kat" class="swal2-input" placeholder="Wilayah / Kategori" value="' + user.kategori + '"><select id="swal-input-role" class="swal2-input"><option value="admin" ' + (user.role === 'admin' ? 'selected' : '') + '>Admin</option><option value="superuser" ' + (user.role === 'superuser' ? 'selected' : '') + '>Superuser</option><option value="user" ' + (user.role === 'user' ? 'selected' : '') + '>User (Teknisi)</option></select>',
                 focusConfirm: false, showCancelButton: true, confirmButtonText: 'Perbarui', cancelButtonText: 'Batal',
-                preConfirm: () => [document.getElementById('swal-input-pass').value.trim(), document.getElementById('swal-input-kat').value.trim(), document.getElementById('swal-input-role').value]
+                preConfirm: () => [document.getElementById('swal-input-pass').value.trim(), document.getElementById('swal-input-kat').value.trim(), document.getElementById('swal-input-role'].value]
             });
             if (formValues) {
                 const [password, kategori, role] = formValues;
@@ -851,16 +752,16 @@
                 return found !== -1 ? found : fallbackIdx;
             };
 
-            const idxSN = findCol(['SN', 'SERIAL NUMBER', 'STBID'], 5);
-            const idxBarang = findCol(['BARANG', 'PERANGKAT'], 4);
-            const idxTglIn = findCol(['TGL IN', 'TGL', 'TANGGAL'], 2);
+            const idxSN = findCol(['SN', 'SERIAL NUMBER', 'STBID'], 4);
+            const idxBarang = findCol(['BARANG', 'PERANGKAT'], 2);
+            const idxTglIn = findCol(['TGL IN', 'TANGGAL'], 1);
             const idxType = findCol(['TYPE', 'TIPE'], 6);
-            const idxPosisi = findCol(['POSISI', 'STATUS PARADISE', 'STATUS SCMT', 'STATUS'], 17);
-            const idxNik = findCol(['NIK'], 10);
-            const idxNama = findCol(['NAMA TEKNISI', 'NAMA'], 11);
-            const idxMitra = findCol(['MITRA'], 12);
-            const idxPekerjaan = findCol(['PEKERJAAN'], 13);
-            const idxTiket = findCol(['TIKET'], 14);
+            const idxPosisi = findCol(['POSISI'], 8);
+            const idxNik = findCol(['NIK'], 11);
+            const idxNama = findCol(['NAMA TEKNISI', 'NAMA'], 12);
+            const idxMitra = findCol(['MITRA'], 13);
+            const idxPekerjaan = findCol(['PEKERJAAN'], 14);
+            const idxTiket = findCol(['TIKET'], 15);
 
             let result = [];
             rows.forEach(row => {
@@ -873,7 +774,7 @@
                 const barang = getVal(idxBarang);
                 if (!sn && !barang) return;
 
-                let posisiVal = getVal(idxPosisi) || getVal(18) || getVal(17) || 'STOCK';
+                let posisiVal = getVal(idxPosisi) || 'STOCK';
 
                 result.push({
                     sheet: sheetName,
@@ -894,7 +795,7 @@
 
         async function loadData(isRefresh = false) {
             const tbody = document.getElementById('tabelBody');
-            tbody.innerHTML = '<tr><td colspan="11" class="text-center py-4">Sinkronisasi database...</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="11" class="text-center py-4 text-muted">Sinkronisasi database...</td></tr>';
             try {
                 let allData = [];
                 for (const name of Object.keys(SHEET_GIDS)) {
@@ -909,7 +810,7 @@
                 updateDashboardStats();
                 if (isRefresh) Swal.fire({ icon: 'success', title: 'Data Diperbarui', timer: 800, showConfirmButton: false });
             } catch (error) {
-                tbody.innerHTML = '<tr><td colspan="11" class="text-center text-danger py-4">Gagal memuat data peladen.</td></tr>';
+                tbody.innerHTML = '<tr><td colspan="11" class="text-center text-danger py-4">Gagal memuat data server.</td></tr>';
             }
         }
 
@@ -921,8 +822,8 @@
                     const wrapper = e.target.closest('form');
                     if (wrapper) {
                         const namaInput = wrapper.querySelector('.tech-nama-input');
-                        const mitraInput = wrapper.querySelector('#MITRA_AWAL, #updateMitra');
-                        const pekInput = wrapper.querySelector('#updatePekerjaan, #PEKERJAAN_AWAL');
+                        const mitraInput = wrapper.querySelector('#updateMitra');
+                        const pekInput = wrapper.querySelector('#updatePekerjaan');
                         if (namaInput) namaInput.value = found.nama;
                         if (mitraInput) mitraInput.value = found.mitra;
                         if (pekInput) pekInput.value = found.pekerjaan;
@@ -935,8 +836,8 @@
                     const wrapper = e.target.closest('form');
                     if (wrapper) {
                         const nikInput = wrapper.querySelector('.tech-nik-input');
-                        const mitraInput = wrapper.querySelector('#MITRA_AWAL, #updateMitra');
-                        const pekInput = wrapper.querySelector('#updatePekerjaan, #PEKERJAAN_AWAL');
+                        const mitraInput = wrapper.querySelector('#updateMitra');
+                        const pekInput = wrapper.querySelector('#updatePekerjaan');
                         if (nikInput) nikInput.value = found.nik;
                         if (mitraInput) mitraInput.value = found.mitra;
                         if (pekInput) pekInput.value = found.pekerjaan;
@@ -989,7 +890,6 @@
                 if (pos.includes('STOCK')) badgeClass = 'bg-success text-white';
                 else if (pos.includes('INTECH')) badgeClass = 'bg-warning text-dark';
                 else if (pos.includes('INSTALLED')) badgeClass = 'bg-primary text-white';
-                else if (pos.includes('SCMT')) badgeClass = 'bg-dark text-white';
                 else if (pos.includes('DISMANTLE')) badgeClass = 'bg-danger text-white';
 
                 let teknisiHtml = item.nama !== '-' && item.nama !== '' ? (item.nama + '<br><small class="text-muted fw-semibold">' + item.nik + '</small>') : '-';
@@ -1028,7 +928,7 @@
             allNormalizedData.forEach(item => {
                 const b = item.barang.toUpperCase();
                 const p = item.posisi.toUpperCase();
-                if (b.includes('STB') || b.includes('SIM CARD')) totalSTB++; else totalModem++;
+                if (b.includes('STB')) totalSTB++; else totalModem++;
                 if (p.includes('STOCK')) totalStock++;
                 if (p.includes('INTECH')) totalIntech++;
             });
@@ -1055,7 +955,7 @@
             if (chartBarInstance) chartBarInstance.destroy();
             chartBarInstance = new Chart(ctxBar, {
                 type: 'bar',
-                data: { labels: ['TOTAL'], datasets: [{ label: 'STB / SIM', data: [stb], backgroundColor: '#0dcaf0' }, { label: 'Modem', data: [modem], backgroundColor: '#6c757d' }] },
+                data: { labels: ['TOTAL'], datasets: [{ label: 'STB', data: [stb], backgroundColor: '#0dcaf0' }, { label: 'Modem', data: [modem], backgroundColor: '#6c757d' }] },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { position: 'bottom' } } }
             });
         }
@@ -1064,51 +964,31 @@
             document.getElementById('fieldsTeknisiUpdate').style.display = val !== 'STOCK' ? 'block' : 'none';
         }
 
-        function downloadTemplateCSV() {
-            const kategori = document.getElementById('kategoriBarangInput').value;
-            const csvContent = "BARANG,SN,MAC,TYPE,POSISI\n" + (kategori.includes('KARTU') ? "SIM CARD,08123456789,-,-,STOCK" : "ONT,SN12345678,AA:BB:CC:11:22:33,ONT_HUAWEI_HG8145X6-10,STOCK");
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'Template_Upload_' + kategori + '.csv';
-            a.click();
-        }
-
         function submitFormSatuan(e) {
             e.preventDefault();
             if (currentUser.role === 'user') return Swal.fire('Akses Ditolak', 'Tidak memiliki izin.', 'error');
             
-            const sheetName = document.getElementById('inputSheet').value;
             const btn = document.getElementById('btnSimpan');
             btn.disabled = true;
 
             Swal.fire({ title: 'Menyimpan Barang Baru...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
-            // Menentukan kolom status spreadsheet (STATUS PARADISE atau STATUS SCMT) berdasarkan sheet
-            let statusKey = (sheetName === 'TIF' || sheetName === 'TELKOM') ? 'STATUS SCMT' : 'STATUS PARADISE';
-            let statusNteKey = (sheetName === 'TIF' || sheetName === 'TELKOM') ? 'STATUS ONT' : 'STATUS NTE';
-
-            let postPayload = {
+            const payload = {
                 action: 'create',
-                sheetName: sheetName,
-                "BARANG": document.getElementById('BARANG').value,
-                "TGL IN": document.getElementById('TGL_IN').value,
-                "NO": document.getElementById('NOMOR_KARDUS').value.trim(),
-                "WH SO": document.getElementById('WH_SO').value,
-                "SN": document.getElementById('SN').value.trim(),
-                "MAC": document.getElementById('MAC').value.trim(),
-                "TYPE": document.getElementById('TYPE').value.trim(),
-                "JENIS": document.getElementById('JENIS').value,
-                "POSISI": "STOCK",
-                [statusKey]: "STOCK",
-                [statusNteKey]: "NEW"
+                sheetName: document.getElementById('inputSheet').value,
+                kategoriPerangkat: document.getElementById('kategoriPerangkatInput').value,
+                "TGL IN": document.getElementById('inputTglIn').value,
+                "NO": document.getElementById('inputNoKardus').value.trim(),
+                "JENIS": document.getElementById('inputJenisBarang').value,
+                "SN_OR_STBID": document.getElementById('inputSNOrStbid').value.trim(),
+                "MAC": document.getElementById('inputMAC').value.trim(),
+                "TYPE": document.getElementById('inputType').value.trim()
             };
 
             fetch(SCRIPT_URL, {
                 method: 'POST',
                 headers: { "Content-Type": "text/plain;charset=utf-8" },
-                body: JSON.stringify(postPayload)
+                body: JSON.stringify(payload)
             })
             .then(res => res.text())
             .then(text => {
@@ -1117,66 +997,18 @@
                 if(res.status === 'success' || !res.status) {
                     Swal.fire({ icon: 'success', title: 'Berhasil', text: res.message || 'Data baru berhasil disimpan.', timer: 1500, showConfirmButton: false });
                     document.getElementById('formNTE').reset();
-                    onKategoriPerangkatChange(document.getElementById('kategoriBarangInput').value);
+                    document.getElementById('inputTglIn').valueAsDate = new Date();
+                    switchKategoriPerangkat(document.getElementById('kategoriPerangkatInput').value);
                     loadData();
                 } else {
                     Swal.fire('Gagal', res.message || 'Terjadi kesalahan.', 'error');
                 }
             })
             .catch(() => {
-                Swal.fire({ icon: 'success', title: 'Berhasil', text: 'Data baru berhasil dikirim ke peladen.', timer: 1500, showConfirmButton: false });
-                document.getElementById('formNTE').reset();
+                Swal.fire({ icon: 'success', title: 'Berhasil', text: 'Data baru berhasil dikirim ke server.', timer: 1500, showConfirmButton: false });
                 loadData();
             })
             .finally(() => btn.disabled = false);
-        }
-
-        function processBatchUpload() {
-            const fileInput = document.getElementById('batchFile');
-            const targetSheet = document.getElementById('batchSheet').value;
-            if (fileInput.files.length === 0) return Swal.fire('Peringatan', 'Pilih file CSV terlebih dahulu.', 'warning');
-
-            const file = fileInput.files[0];
-            const reader = new FileReader();
-            reader.onload = async function(e) {
-                const text = e.target.result;
-                const lines = text.split(/\r\n|\n/);
-                if (lines.length <= 1) return Swal.fire('Error', 'File CSV kosong atau format tidak sesuai.', 'error');
-
-                Swal.fire({ title: 'Mengunggah Data Massal...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
-
-                let successCount = 0;
-                for (let i = 1; i < lines.length; i++) {
-                    const line = lines[i].trim();
-                    if (!line) continue;
-                    const cols = line.split(',');
-                    if (cols.length >= 2) {
-                        const barang = cols[0] ? cols[0].replace(/"/g, '').trim() : '';
-                        const sn = cols[1] ? cols[1].replace(/"/g, '').trim() : '';
-                        const mac = cols[2] ? cols[2].replace(/"/g, '').trim() : '';
-                        const type = cols[3] ? cols[3].replace(/"/g, '').trim() : '';
-                        const posisi = cols[4] ? cols[4].replace(/"/g, '').trim() : 'STOCK';
-
-                        if (sn) {
-                            try {
-                                await fetch(SCRIPT_URL, {
-                                    method: 'POST',
-                                    headers: { "Content-Type": "text/plain;charset=utf-8" },
-                                    body: JSON.stringify({
-                                        action: 'create', sheetName: targetSheet,
-                                        BARANG: barang, SN: sn, MAC: mac, TYPE: type, POSISI: posisi
-                                    })
-                                });
-                                successCount++;
-                            } catch(err) {}
-                        }
-                    }
-                }
-                Swal.fire('Berhasil!', successCount + ' data berhasil diunggah secara massal ke ' + targetSheet, 'success');
-                fileInput.value = '';
-                loadData();
-            };
-            reader.readAsText(file);
         }
 
         function handleCariSN(e) {
@@ -1195,7 +1027,6 @@
                 if (pos.includes('STOCK')) badgeClass = 'bg-success text-white';
                 else if (pos.includes('INTECH')) badgeClass = 'bg-warning text-dark';
                 else if (pos.includes('INSTALLED')) badgeClass = 'bg-primary text-white';
-                else if (pos.includes('SCMT')) badgeClass = 'bg-dark text-white';
                 else if (pos.includes('DISMANTLE')) badgeClass = 'bg-danger text-white';
 
                 document.getElementById('infoStatusBadge').innerHTML = '<span class="badge-status ' + badgeClass + '">' + found.posisi + '</span>';
@@ -1210,7 +1041,7 @@
                 toggleUpdateStatusFields(found.posisi || 'STOCK');
                 document.getElementById('boxDetailUpdate').scrollIntoView({ behavior: 'smooth' });
             } else {
-                Swal.fire('Tidak Ditemukan', 'SN "' + sn + '" tidak terdaftar di sistem.', 'warning');
+                Swal.fire('Tidak Ditemukan', 'SN / STBID "' + sn + '" tidak terdaftar di sistem.', 'warning');
             }
         }
 
@@ -1265,7 +1096,7 @@
 
         function exportTableToCSV() {
             if (filteredData.length === 0) return Swal.fire('Info', 'Tidak ada data.', 'info');
-            let csv = "No,Kategori,Tgl In,Barang,SN,Type,Posisi,Nama Teknisi,Mitra,Pekerjaan,Tiket\n";
+            let csv = "No,Kategori,Tgl In,Barang,SN/STBID,Type,Posisi,Nama Teknisi,Mitra,Pekerjaan,Tiket\n";
             filteredData.forEach((r, idx) => { csv += '"' + (idx+1) + '","' + r.sheet + '","' + r.tglIn + '","' + r.barang + '","' + r.sn + '","' + r.type + '","' + r.posisi + '","' + r.nama + '","' + r.mitra + '","' + r.pekerjaan + '","' + r.tiket + '"\n'; });
             const a = document.createElement('a'); a.href = URL.createObjectURL(new Blob([csv], { type: 'text/csv' }));
             a.download = 'NTE_Report.csv'; a.click();
