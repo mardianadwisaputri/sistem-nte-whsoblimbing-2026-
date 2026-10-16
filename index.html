@@ -230,6 +230,11 @@
                                 <label class="form-label" id="labelSNOrStbid">Serial Number (SN)</label>
                                 <input type="text" id="inputSNOrStbid" class="form-control" placeholder="Masukkan SN / STBID" required>
                             </div>
+                            <!-- Tambahan Kolom Khusus Nomor Telepon untuk Kartu Perdana -->
+                            <div class="col-md-3" id="wrapperNoTelp" style="display: none;">
+                                <label class="form-label">Nomor Telepon</label>
+                                <input type="text" id="inputNoTelp" class="form-control" placeholder="08xxxxxxxxxx">
+                            </div>
                             <div class="col-md-3" id="wrapperMAC">
                                 <label class="form-label">MAC Address</label>
                                 <input type="text" id="inputMAC" class="form-control" placeholder="AA:BB:CC...">
@@ -473,7 +478,6 @@
             "VULA": "491664178"
         };
 
-        // Reset paksa cache user lokal agar login menggunakan admin / admin123 selalu berhasil
         let globalUsersCache = {
             "admin": { password: "admin123", role: "admin", kategori: "Pusat / All" },
             "superuser": { password: "super123", role: "superuser", kategori: "WH SO Blimbing" },
@@ -491,9 +495,9 @@
         let activeFoundItem = null;
 
         const LIST_JENIS_KATEGORI = {
-            "ONT TSEL": { barang: "ONT", jenis: ["ONT SINGLE BAND", "ONT DUAL BAND", "ONT PREMIUM"] },
-            "ONT TELKOM": { barang: "ONT", jenis: ["ONT SINGLE BAND", "ONT DUAL BAND", "ONT PREMIUM", "BIG ONT"] },
-            "ONT TIF": { barang: "ONT", jenis: ["ONT SINGLE BAND", "ONT DUAL BAND", "ONT PREMIUM"] },
+            "ONT TSEL": { barang: "ONT", jenis: ["ONT single band", "ont dual band", "ont premium", "BIG ONT"] },
+            "ONT TELKOM": { barang: "ONT", jenis: ["ONT single band", "ont dual band", "ont premium"] },
+            "ONT TIF": { barang: "ONT", jenis: ["ONT single band", "ont dual band", "ont premium"] },
             "STB TSEL": { barang: "STB", jenis: ["STB"] },
             "STB TELKOM": { barang: "STB", jenis: ["STB"] },
             "KARTU PERDANA": { barang: "SIM CARD", jenis: ["KARTU PERDANA"] },
@@ -520,6 +524,7 @@
             else if (kategori.includes('TIF')) selectSheet.value = 'TIF';
 
             const labelSNOrStbid = document.getElementById('labelSNOrStbid');
+            const wrapperNoTelp = document.getElementById('wrapperNoTelp');
             const wrapperMAC = document.getElementById('wrapperMAC');
             const wrapperType = document.getElementById('wrapperType');
             const labelStatusKhusus = document.getElementById('labelStatusKhusus');
@@ -527,12 +532,20 @@
             const labelStatusNteOnt = document.getElementById('labelStatusNteOnt');
             const inputStatusNteVal = document.getElementById('inputStatusNteVal');
 
-            if (config.barang === 'STB' || config.barang === 'SIM CARD') {
+            // Aturan Tampilan Input Berdasarkan Kategori
+            if (kategori === 'KARTU PERDANA') {
+                labelSNOrStbid.innerText = "Serial Number (SN)";
+                wrapperNoTelp.style.display = 'block';
+                wrapperMAC.style.display = 'none';
+                wrapperType.style.display = 'none';
+            } else if (config.barang === 'STB') {
                 labelSNOrStbid.innerText = "STBID";
-                wrapperMAC.style.display = config.barang === 'STB' ? 'block' : 'none';
-                wrapperType.style.display = config.barang === 'STB' ? 'block' : 'none';
+                wrapperNoTelp.style.display = 'none';
+                wrapperMAC.style.display = 'block';
+                wrapperType.style.display = 'block';
             } else {
                 labelSNOrStbid.innerText = "Serial Number (SN)";
+                wrapperNoTelp.style.display = 'none';
                 wrapperMAC.style.display = 'block';
                 wrapperType.style.display = 'block';
             }
@@ -943,18 +956,23 @@
             Swal.fire({ title: 'Menyimpan Barang Baru...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
 
             const barangVal = document.getElementById('inputBarang').value;
-            const targetCol = (barangVal === 'STB' || barangVal === 'SIM CARD') ? 'STBID' : 'SN';
+            const kategoriPerangkat = document.getElementById('kategoriPerangkatInput').value;
+            let targetCol = 'SN';
+            if (barangVal === 'STB') {
+                targetCol = 'STBID';
+            }
 
             const payload = {
                 action: 'create',
                 sheetName: document.getElementById('inputSheet').value,
-                kategoriPerangkat: document.getElementById('kategoriPerangkatInput').value,
+                kategoriPerangkat: kategoriPerangkat,
                 "TGL IN": document.getElementById('inputTglIn').value,
                 "NO": document.getElementById('inputNoKardus').value.trim(),
                 "BARANG": barangVal,
                 "JENIS": document.getElementById('inputJenisBarang').value,
                 "SN_OR_STBID": document.getElementById('inputSNOrStbid').value.trim(),
                 "TARGET_COL": targetCol,
+                "NO_TELP": kategoriPerangkat === 'KARTU PERDANA' ? document.getElementById('inputNoTelp').value.trim() : '',
                 "MAC": document.getElementById('inputMAC').value.trim(),
                 "TYPE": document.getElementById('inputType').value.trim()
             };
