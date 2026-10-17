@@ -428,7 +428,9 @@
                                     <thead>
                                         <tr><th>Username</th><th>Wilayah / Kategori</th><th>Role</th><th class="text-center">Aksi</th></tr>
                                     </thead>
-                                    <tbody id="tabelUsersBody"></tbody>
+                                    <tbody id="tabelUsersBody">
+                                        <tr><td colspan="4" class="text-center py-3 text-muted">Memuat data pengguna...</td></tr>
+                                    </tbody>
                                 </table>
                             </div>
                         </div>
@@ -478,13 +480,7 @@
             "VULA": "491664178"
         };
 
-        let globalUsersCache = {
-            "admin": { password: "admin123", role: "admin", kategori: "Pusat / All" },
-            "superuser": { password: "super123", role: "superuser", kategori: "WH SO Blimbing" },
-            "user": { password: "user123", role: "user", kategori: "Teknisi Lapangan" }
-        };
-        localStorage.setItem('nte_users_db', JSON.stringify(globalUsersCache));
-
+        let globalUsersCache = {};
         let currentUser = null; 
         let allNormalizedData = []; 
         let filteredData = []; 
@@ -532,7 +528,6 @@
             const labelStatusNteOnt = document.getElementById('labelStatusNteOnt');
             const inputStatusNteVal = document.getElementById('inputStatusNteVal');
 
-            // Aturan Tampilan Input Berdasarkan Kategori
             if (kategori === 'KARTU PERDANA') {
                 labelSNOrStbid.innerText = "Serial Number (SN)";
                 wrapperNoTelp.style.display = 'block';
@@ -578,13 +573,34 @@
             initTheme();
         }
 
-        function checkAuth() {
+        async function fetchUsersFromServer() {
+            try {
+                const res = await fetch(SCRIPT_URL + '?action=get_users');
+                const text = await res.text();
+                const json = JSON.parse(text);
+                if (json.status === 'success' && json.users) {
+                    globalUsersCache = json.users;
+                }
+            } catch (err) {
+                globalUsersCache = {
+                    "admin": { password: "admin123", role: "admin", kategori: "Pusat / All" },
+                    "superuser": { password: "super123", role: "superuser", kategori: "WH SO Blimbing" },
+                    "user": { password: "user123", role: "user", kategori: "Teknisi Lapangan" }
+                };
+            }
+        }
+
+        async function checkAuth() {
             initTheme();
+            await fetchUsersFromServer();
             const savedUser = localStorage.getItem('nte_session_user');
             if (savedUser) {
                 try { 
                     currentUser = JSON.parse(savedUser); 
-                    if (currentUser && currentUser.username) { initAppUI(); return; }
+                    if (currentUser && currentUser.username && globalUsersCache[currentUser.username]) { 
+                        initAppUI(); 
+                        return; 
+                    }
                 } catch (e) {} 
             } 
             showLogin();
@@ -595,23 +611,25 @@
             document.getElementById('mainApp').style.display = 'none';
         }
 
-        function handleLoginSubmit(e) {
+        async function handleLoginSubmit(e) {
             e.preventDefault();
             const u = document.getElementById('loginUsername').value.trim();
             const p = document.getElementById('loginPassword').value.trim();
             
+            await fetchUsersFromServer();
+
             if (globalUsersCache[u] && globalUsersCache[u].password === p) {
                 currentUser = { username: u, role: globalUsersCache[u].role, kategori: globalUsersCache[u].kategori };
                 localStorage.setItem('nte_session_user', JSON.stringify(currentUser));
                 initAppUI();
             } else {
-                Swal.fire({ icon: 'error', title: 'Akses Ditolak', text: 'Username atau password salah! (Gunakan: admin / admin123)' });
+                Swal.fire({ icon: 'error', title: 'Akses Ditolak', text: 'Username atau password salah!' });
             }
         }
 
         function handleLogout() { localStorage.removeItem('nte_session_user'); currentUser = null; showLogin(); }
 
-        function initAppUI() {
+        async function initAppUI() {
             document.getElementById('loginScreen').style.display = 'none';
             document.getElementById('mainApp').style.display = 'block';
             document.getElementById('userBadgeName').innerText = currentUser.username;
@@ -624,7 +642,7 @@
             if (role === 'admin') {
                 if(adminAddCard) adminAddCard.style.display = 'block';
                 if(navItemUsers) navItemUsers.style.display = 'block';
-                renderUsersTable();
+                await renderUsersTable();
             } else if (role === 'superuser') {
                 if(adminAddCard) adminAddCard.style.display = 'block';
                 if(navItemUsers) navItemUsers.style.display = 'none';
@@ -640,10 +658,14 @@
             loadData();
         }
 
-        function renderUsersTable() {
+        async function renderUsersTable() {
             if (currentUser.role !== 'admin') return;
             const tbody = document.getElementById('tabelUsersBody');
+            tbody.innerHTML = '<tr><td colspan="4" class="text-center py-3 text-muted">Memuat data pengguna...</td></tr>';
+            
+            await fetchUsersFromServer();
             tbody.innerHTML = '';
+
             for (const [username, details] of Object.entries(globalUsersCache)) {
                 let badgeRole = details.role === 'admin' ? 'bg-danger' : (details.role === 'superuser' ? 'bg-warning text-dark' : 'bg-primary');
                 const tr = document.createElement('tr');
@@ -663,17 +685,32 @@
             if (formValues) {
                 const [username, password, kategori, role] = formValues;
                 if (!username || !password) return Swal.fire('Gagal', 'Username & Password wajib diisi!', 'error');
-                if (globalUsersCache[username]) return Swal.fire('Gagal', 'Username sudah terdaftar!', 'error');
-                globalUsersCache[username] = { password: password, role: role, kategori: kategori || 'Umum' };
-                localStorage.setItem('nte_users_db', JSON.stringify(globalUsersCache));
-                renderUsersTable();
-                Swal.fire('Berhasil', 'Pengguna baru berhasil ditambahkan.', 'success');
+                
+                Swal.fire({ title: 'Menyimpan User...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+                try {
+                    const res = await fetch(SCRIPT_URL, {
+                        method: 'POST',
+                        headers: { "Content-Type": "text/plain;charset=utf-8" },
+                        body: JSON.stringify({ action: 'add_user', username: username, password: password, role: role, kategori: kategori || 'Umum' })
+                    });
+                    const text = await res.text();
+                    let json = JSON.parse(text);
+                    if (json.status === 'success' || !json.status) {
+                        await renderUsersTable();
+                        Swal.fire('Berhasil', 'Pengguna baru berhasil ditambahkan.', 'success');
+                    } else {
+                        Swal.fire('Gagal', json.message || 'Terjadi kesalahan.', 'error');
+                    }
+                } catch (err) {
+                    Swal.fire('Gagal', 'Koneksi ke server gagal.', 'error');
+                }
             }
         }
 
         async function editUser(username) {
             if (currentUser.role !== 'admin') return;
             const user = globalUsersCache[username];
+            if (!user) return;
             const { value: formValues } = await Swal.fire({
                 title: 'Edit Pengguna: ' + username,
                 html: '<input id="swal-input-pass" type="password" class="swal2-input" placeholder="Password Baru" value="' + user.password + '"><input id="swal-input-kat" class="swal2-input" placeholder="Wilayah / Kategori" value="' + user.kategori + '"><select id="swal-input-role" class="swal2-input"><option value="admin" ' + (user.role === 'admin' ? 'selected' : '') + '>Admin</option><option value="superuser" ' + (user.role === 'superuser' ? 'selected' : '') + '>Superuser</option><option value="user" ' + (user.role === 'user' ? 'selected' : '') + '>User (Teknisi)</option></select>',
@@ -682,25 +719,51 @@
             });
             if (formValues) {
                 const [password, kategori, role] = formValues;
-                globalUsersCache[username].password = password || user.password;
-                globalUsersCache[username].kategori = kategori;
-                globalUsersCache[username].role = role;
-                localStorage.setItem('nte_users_db', JSON.stringify(globalUsersCache));
-                renderUsersTable();
-                Swal.fire('Berhasil', 'Data pengguna berhasil diperbarui.', 'success');
+                Swal.fire({ title: 'Memperbarui User...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+                try {
+                    const res = await fetch(SCRIPT_URL, {
+                        method: 'POST',
+                        headers: { "Content-Type": "text/plain;charset=utf-8" },
+                        body: JSON.stringify({ action: 'add_user', username: username, password: password || user.password, role: role, kategori: kategori || 'Umum' })
+                    });
+                    const text = await res.text();
+                    let json = JSON.parse(text);
+                    if (json.status === 'success' || !json.status) {
+                        await renderUsersTable();
+                        Swal.fire('Berhasil', 'Data pengguna berhasil diperbarui.', 'success');
+                    } else {
+                        Swal.fire('Gagal', json.message || 'Terjadi kesalahan.', 'error');
+                    }
+                } catch (err) {
+                    Swal.fire('Gagal', 'Koneksi ke server gagal.', 'error');
+                }
             }
         }
 
         function deleteUser(username) {
             if (currentUser.role !== 'admin') return;
             Swal.fire({
-                title: 'Hapus User?', text: 'Hapus user "' + username + '"?', icon: 'warning', showCancelButton: true, confirmButtonText: 'Ya, Hapus', cancelButtonText: 'Batal'
-            }).then((res) => {
+                title: 'Hapus User?', text: 'Hapus user "' + username + '" dari spreadsheet?', icon: 'warning', showCancelButton: true, confirmButtonText: 'Ya, Hapus', cancelButtonText: 'Batal'
+            }).then(async (res) => {
                 if (res.isConfirmed) {
-                    delete globalUsersCache[username];
-                    localStorage.setItem('nte_users_db', JSON.stringify(globalUsersCache));
-                    renderUsersTable();
-                    Swal.fire('Terhapus!', 'Pengguna berhasil dihapus.', 'success');
+                    Swal.fire({ title: 'Menghapus User...', allowOutsideClick: false, didOpen: () => Swal.showLoading() });
+                    try {
+                        const resp = await fetch(SCRIPT_URL, {
+                            method: 'POST',
+                            headers: { "Content-Type": "text/plain;charset=utf-8" },
+                            body: JSON.stringify({ action: 'delete_user', username: username })
+                        });
+                        const text = await resp.text();
+                        let json = JSON.parse(text);
+                        if (json.status === 'success' || !json.status) {
+                            await renderUsersTable();
+                            Swal.fire('Terhapus!', 'Pengguna berhasil dihapus.', 'success');
+                        } else {
+                            Swal.fire('Gagal', json.message || 'Terjadi kesalahan.', 'error');
+                        }
+                    } catch (err) {
+                        Swal.fire('Gagal', 'Koneksi ke server gagal.', 'error');
+                    }
                 }
             });
         }
@@ -715,7 +778,10 @@
             else if (viewId === 'statusView') {
                 document.getElementById('nav-status').classList.add('active');
                 setTimeout(() => document.getElementById('inputCariSN').focus(), 200);
-            } else if (viewId === 'usersView') document.getElementById('nav-users').classList.add('active');
+            } else if (viewId === 'usersView') {
+                document.getElementById('nav-users').classList.add('active');
+                renderUsersTable();
+            }
         }
 
         function parseGVizTable(sheetName, jsonData) {
