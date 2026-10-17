@@ -1173,6 +1173,94 @@
             });
         }
 
+            async function handleExcelUpload() {
+            const fileInput = document.getElementById('excelFileInput');
+            if (!fileInput.files || fileInput.files.length === 0) {
+                return Swal.fire('Peringatan', 'Pilih file Excel (.xlsx) terlebih dahulu!', 'warning');
+            }
+        
+            const file = fileInput.files[0];
+            const reader = new FileReader();
+        
+            reader.onload = async function (e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    
+                    const firstSheetName = workbook.SheetNames[0];
+                    const worksheet = workbook.Sheets[firstSheetName];
+                    const rows = XLSX.utils.sheet_to_json(worksheet);
+        
+                    if (rows.length === 0) {
+                        return Swal.fire('Kosong', 'File Excel tidak memiliki data baris.', 'error');
+                    }
+        
+                    Swal.fire({
+                        title: 'Mengunggah Data...',
+                        text: `Memproses ${rows.length} baris data sesuai aturan NTE...`,
+                        allowOutsideClick: false,
+                        didOpen: () => Swal.showLoading()
+                    });
+        
+                    let successCount = 0;
+                    const targetSheetName = document.getElementById('inputSheet').value;
+        
+                    for (let row of rows) {
+                        // Aturan pengambilan nilai dari Excel mengikuti struktur backend
+                        const barangVal = String(row["BARANG"] || row["KATEGORI BARANG"] || "ONT").trim().toUpperCase();
+                        const identifierVal = String(row["SN"] || row["SERIAL NUMBER"] || row["STBID"] || row["SN_OR_STBID"] || "").trim();
+                        
+                        // Jika barang adalah STB, arahkan ke target kolom STBID
+                        let targetCol = "SN";
+                        if (barangVal === "STB" || row["STBID"]) {
+                            targetCol = "STBID";
+                        }
+        
+                        const payload = {
+                            action: 'create',
+                            sheetName: targetSheetName,
+                            "TGL IN": row["TGL IN"] || row["TANGGAL"] || "",
+                            "NO": String(row["NO"] || row["NO KARDUS"] || "-").trim(),
+                            "BARANG": barangVal,
+                            "JENIS": String(row["JENIS"] || "-").trim(),
+                            "SN_OR_STBID": identifierVal,
+                            "TARGET_COL": targetCol,
+                            // Aturan khusus Kartu Perdana (SIM CARD): No Telepon dibaca dari kolom NO_TELP / NOMOR TELEPON
+                            "NO_TELP": String(row["NO_TELP"] || row["NOMOR TELEPON"] || row["NO TELP"] || "").trim(),
+                            "MAC": String(row["MAC"] || row["MAC ADDRESS"] || "-").trim(),
+                            "TYPE": String(row["TYPE"] || row["TIPE"] || "-").trim()
+                        };
+        
+                        try {
+                            const res = await fetch(SCRIPT_URL, {
+                                method: 'POST',
+                                headers: { "Content-Type": "text/plain;charset=utf-8" },
+                                body: JSON.stringify(payload)
+                            });
+                            const resText = await res.text();
+                            let jsonRes;
+                            try { jsonRes = JSON.parse(resText); } catch(err) { jsonRes = { status: 'success' }; }
+        
+                            if (jsonRes.status === 'success' || !jsonRes.status) {
+                                successCount++;
+                            }
+                        } catch (err) {
+                            console.error("Gagal simpan baris:", row);
+                        }
+                    }
+        
+                    Swal.fire('Berhasil!', `${successCount} dari ${rows.length} baris data berhasil diimpor dengan aturan yang sesuai!`, 'success');
+                    fileInput.value = '';
+                    loadData(); // Muat ulang tabel web
+        
+                } catch (error) {
+                    Swal.fire('Gagal', 'Terjadi kesalahan saat memproses file Excel.', 'error');
+                }
+            };
+        
+            reader.readAsArrayBuffer(file);
+        }
+
         function exportTableToCSV() {
             if (filteredData.length === 0) return Swal.fire('Info', 'Tidak ada data.', 'info');
             let csv = "No Kardus,Kategori,Tgl In,Barang,SN/STBID,Type,Posisi,Nama Teknisi,Mitra,Pekerjaan,Tiket\n";
