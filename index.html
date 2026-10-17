@@ -194,16 +194,23 @@
                             <option value="ADD ON">ADD ON / AP MESH / ORBIT</option>
                         </select>
                     </div>
-                                        <!-- KOTAK IMPORT EXCEL -->
+                    
+                    <!-- KOTAK IMPORT EXCEL -->
                     <div class="mt-4 pt-3 border-top">
                         <h6 class="fw-bold text-danger mb-2"><i class="bi bi-file-earmark-excel me-2"></i>Impor Data Masal via Excel (.xlsx)</h6>
                         <div class="row g-2 align-items-center">
-                            <div class="col-md-7">
+                            <div class="col-md-5">
                                 <input type="file" id="excelFileInput" class="form-control" accept=".xlsx, .xls, .csv">
                             </div>
-                            <div class="col-md-5">
+                            <div class="col-md-4">
                                 <button class="btn btn-outline-danger w-100" type="button" onclick="handleExcelUpload()">
-                                    <i class="bi bi-upload me-1"></i> Unggah & Simpan ke Spreadsheet
+                                    <i class="bi bi-upload me-1"></i> Unggah & Simpan
+                                </button>
+                            </div>
+                            <!-- TAMBAHAN TOMBOL DOWNLOAD TEMPLATE -->
+                            <div class="col-md-3">
+                                <button class="btn btn-outline-success w-100" type="button" onclick="downloadExcelTemplate()">
+                                    <i class="bi bi-file-earmark-arrow-down me-1"></i> Unduh Template
                                 </button>
                             </div>
                         </div>
