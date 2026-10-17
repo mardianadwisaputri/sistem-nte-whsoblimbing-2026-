@@ -1268,6 +1268,44 @@
             reader.readAsArrayBuffer(file);
         }
 
+        function downloadExcelTemplate() {
+    // Membuat workbook dengan SheetJS (XLSX)
+    const wb = XLSX.utils.book_new();
+
+    // Data Sheet TSEL (ONT & Add On)
+    const dataTsel = [
+        { "TGL IN": "2026-10-18", "NO": "12", "BARANG": "ONT", "JENIS": "ONT DUAL BAND", "SN": "48575443A1B2C3D4", "MAC": "AA:BB:CC:DD:EE:FF", "TYPE": "ZTE F670L" },
+        { "TGL IN": "2026-10-18", "NO": "12", "BARANG": "ADD ON", "JENIS": "AP MESH", "SN": "48575443E5F6G7H8", "MAC": "11:22:33:44:55:66", "TYPE": "Huawei WA8021V5" }
+    ];
+    const wsTsel = XLSX.utils.json_to_sheet(dataTsel);
+    XLSX.utils.book_append_sheet(wb, wsTsel, "TSEL");
+
+    // Data Sheet STB
+    const dataStb = [
+        { "TGL IN": "2026-10-18", "NO": "15", "BARANG": "STB", "JENIS": "STB", "STBID": "STB202610001", "MAC": "77:88:99:AA:BB:CC", "TYPE": "ZTE B860H" }
+    ];
+    const wsStb = XLSX.utils.json_to_sheet(dataStb);
+    XLSX.utils.book_append_sheet(wb, wsStb, "STB");
+
+    // Data Sheet SIM_CARD (Kartu Perdana)
+    const dataSim = [
+        { "TGL IN": "2026-10-18", "NO": "1", "BARANG": "SIM CARD", "JENIS": "KARTU PERDANA", "SN": "896210456789012345", "NO_TELP": "081234567890", "MAC": "-", "TYPE": "-" }
+    ];
+    const wsSim = XLSX.utils.json_to_sheet(dataSim);
+    XLSX.utils.book_append_sheet(wb, wsSim, "SIM_CARD");
+
+    // Ekspor file Excel (.xlsx)
+    XLSX.writeFile(wb, "Template_Import_NTE.xlsx");
+    
+    Swal.fire({
+        icon: 'success',
+        title: 'Template Diunduh',
+        text: 'File Template_Import_NTE.xlsx berhasil diunduh ke perangkat Anda.',
+        timer: 1500,
+        showConfirmButton: false
+    });
+}
+
         function exportTableToCSV() {
             if (filteredData.length === 0) return Swal.fire('Info', 'Tidak ada data.', 'info');
             let csv = "No Kardus,Kategori,Tgl In,Barang,SN/STBID,Type,Posisi,Nama Teknisi,Mitra,Pekerjaan,Tiket\n";
